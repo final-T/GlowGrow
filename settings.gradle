@@ -1,0 +1,6 @@
+rootProject.name = 'env'
+include 'GlowGrow-common'
+include 'GlowGrow-security'
+include 'GlowGrow-redis'
+include 'GlowGrow-kafka'
+include 'GlowGrow-users'
