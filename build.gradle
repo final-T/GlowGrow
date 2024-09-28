@@ -15,7 +15,7 @@ repositories {
 }
 
 subprojects { // 모든 하위 모듈들에 이 설정을 적용합니다.
-    group 'com.example'
+    group 'com.tk.gg'
     version '0.0.1-SNAPSHOT'
     sourceCompatibility = '17'
 
@@ -34,12 +34,22 @@ subprojects { // 모든 하위 모듈들에 이 설정을 적용합니다.
         mavenCentral()
     }
 
+    ext {
+        set('springCloudVersion', "2023.0.3")
+    }
+
     dependencies { // 모든 하위 모듈에 추가 될 의존성 목록입니다.
         implementation 'org.springframework.boot:spring-boot-starter'
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
     }
 
-    test {
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+        }
+    }
+
+        test {
         useJUnitPlatform()
     }
 
