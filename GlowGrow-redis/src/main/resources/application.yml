@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: GlowGrow-redis
+
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
