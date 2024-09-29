@@ -9,3 +9,4 @@ include 'GlowGrow-users'
 // 서비스 모듈
 include 'eureka'
 include 'gateway'
+include 'reservation'
