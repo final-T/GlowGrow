@@ -17,7 +17,7 @@ import java.util.UUID;
 @Getter
 @Builder
 @Entity
-@Table(name = "p_reservation")
+@Table(name = "p_time_slots")
 public class TimeSlot extends BaseEntity {
 
     @Id
