@@ -8,10 +8,9 @@ import com.tk.gg.promotion.application.dto.PromotionCreateRequestDto;
 import com.tk.gg.promotion.application.dto.PromotionResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -37,4 +36,14 @@ public class PromotionController {
         return ApiUtils.success(ResponseMessage.PROMOTION_CREATE_SUCCESS.getMessage(), promotion);
     }
 
+    /**
+     * 프로모션 단건 조회
+     * @param promotionId: 프로모션 ID
+     * @return: 프로모션 단건 조회 응답 DTO
+     */
+    @GetMapping("/{promotionId}")
+    public GlobalResponse<PromotionResponseDto> getPromotion(@PathVariable("promotionId") UUID promotionId) {
+        PromotionResponseDto promotion = promotionApplicationService.getPromotion(promotionId);
+        return ApiUtils.success(ResponseMessage.PROMOTION_RETRIEVE_SUCCESS.getMessage(), promotion);
+    }
 }

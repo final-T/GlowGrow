@@ -14,8 +14,10 @@ public enum GlowGlowError {
 
 
     // Post (게시판 관련 에러)
-    POST_NO_EXIST(404,"POST_001","존재하지 않은 게시물입니다.")
+    POST_NO_EXIST(404,"POST_001","존재하지 않은 게시물입니다."),
 
+    // 프로모션 관련 에러
+    PROMOTION_NO_EXIST(404, "PROMOTION_001", "존재하지 않은 프로모션입니다.")
     ;
 
     private final int statusCode; // HTTP 상태 코드

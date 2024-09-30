@@ -7,6 +7,8 @@ import com.tk.gg.promotion.application.dto.PromotionCreateRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class PromotionApplicationService {
@@ -26,5 +28,10 @@ public class PromotionApplicationService {
         Promotion savedPromotion = promotionDomainService.createPromotion(promotion);
 
         return PromotionResponseDto.from(savedPromotion);
+    }
+
+    public PromotionResponseDto getPromotion(UUID promotionId) {
+        Promotion promotion = promotionDomainService.getPromotion(promotionId);
+        return PromotionResponseDto.from(promotion);
     }
 }
