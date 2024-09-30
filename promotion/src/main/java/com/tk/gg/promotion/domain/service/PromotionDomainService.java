@@ -26,4 +26,23 @@ public class PromotionDomainService {
         return promotionRepository.findById(promotionId)
                 .orElseThrow(() -> new GlowGlowException(PROMOTION_NO_EXIST));
     }
+
+    @Transactional
+    public Promotion updatePromotion(Promotion promotion) {
+        // TODO: 회원 도메인 추가 후 본인 확인 로직 추가 필요.
+        Promotion savedPromotion = promotionRepository.findById(promotion.getPromotionId())
+                .orElseThrow(() -> new GlowGlowException(PROMOTION_NO_EXIST));
+        // 더티 체킹 업데이트
+        savedPromotion.update(promotion);
+        return savedPromotion;
+    }
+
+    @Transactional
+    public void deletePromotion(UUID promotionId) {
+        // TODO: 회원 도메인 추가 후 본인 확인 로직 추가 필요. deletedBy 추가 필요
+
+        Promotion promotion = promotionRepository.findById(promotionId)
+                .orElseThrow(() -> new GlowGlowException(PROMOTION_NO_EXIST));
+        promotionRepository.delete(promotion);
+    }
 }

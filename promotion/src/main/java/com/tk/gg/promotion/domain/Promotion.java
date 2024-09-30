@@ -18,7 +18,7 @@ import java.util.UUID;
 @Table(name = "p_promotions")
 @Getter
 @SQLRestriction("is_delete is false")
-@SQLDelete(sql = "UPDATE p_promotions SET deleted_at = NOW() where promotion_id = ?")
+@SQLDelete(sql = "UPDATE p_promotions SET deleted_at = NOW(), is_delete = true where promotion_id = ?")
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class Promotion extends BaseEntity {
     @Id
@@ -60,5 +60,13 @@ public class Promotion extends BaseEntity {
         this.startDate = startDate;
         this.endDate = endDate;
         this.status = status;
+    }
+
+    public void update(Promotion promotion) {
+        this.title = promotion.title;
+        this.description = promotion.description;
+        this.startDate = promotion.startDate;
+        this.endDate = promotion.endDate;
+        this.status = promotion.status;
     }
 }

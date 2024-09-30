@@ -7,7 +7,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 
 @Data
-public class PromotionCreateRequestDto {
+public class PromotionRequestDto {
     private String title;
     private String description;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)

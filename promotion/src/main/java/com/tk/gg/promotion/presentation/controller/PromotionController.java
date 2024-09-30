@@ -4,7 +4,7 @@ import com.tk.gg.common.response.ApiUtils;
 import com.tk.gg.common.response.GlobalResponse;
 import com.tk.gg.common.response.ResponseMessage;
 import com.tk.gg.promotion.application.PromotionApplicationService;
-import com.tk.gg.promotion.application.dto.PromotionCreateRequestDto;
+import com.tk.gg.promotion.application.dto.PromotionRequestDto;
 import com.tk.gg.promotion.application.dto.PromotionResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +31,7 @@ public class PromotionController {
      * @return: 프로모션 생성 응답 DTO
      */
     @PostMapping
-    public GlobalResponse<PromotionResponseDto> createPromotion(@RequestBody PromotionCreateRequestDto requestDto) {
+    public GlobalResponse<PromotionResponseDto> createPromotion(@RequestBody PromotionRequestDto requestDto) {
         PromotionResponseDto promotion = promotionApplicationService.createPromotion(requestDto);
         return ApiUtils.success(ResponseMessage.PROMOTION_CREATE_SUCCESS.getMessage(), promotion);
     }
@@ -45,5 +45,35 @@ public class PromotionController {
     public GlobalResponse<PromotionResponseDto> getPromotion(@PathVariable("promotionId") UUID promotionId) {
         PromotionResponseDto promotion = promotionApplicationService.getPromotion(promotionId);
         return ApiUtils.success(ResponseMessage.PROMOTION_RETRIEVE_SUCCESS.getMessage(), promotion);
+    }
+
+    /**
+     * 프로모션 수정
+     * @param promotionId: 프로모션 ID
+     * @param requestDto: 프로모션 수정 요청 DTO <br>
+     *                  - title: 프로모션 제목  <br>
+     *                  - description: 프로모션 설명 <br>
+     *                  - startDate: 프로모션 시작일 <br>
+     *                  - endDate: 프로모션 종료일 <br>
+     *                  - status: 프로모션 상태 <br>
+     *
+     * @return: 프로모션 수정 응답 DTO
+     */
+    @PutMapping("/{promotionId}")
+    public GlobalResponse<PromotionResponseDto> updatePromotion(@PathVariable("promotionId") UUID promotionId,
+                                                                @RequestBody PromotionRequestDto requestDto) {
+        PromotionResponseDto promotion = promotionApplicationService.updatePromotion(promotionId, requestDto);
+        return ApiUtils.success(ResponseMessage.PROMOTION_UPDATE_SUCCESS.getMessage(), promotion);
+    }
+
+    /**
+     * 프로모션 삭제
+     * @param promotionId: 프로모션 ID
+     * @return: 프로모션 삭제 응답 DTO
+     */
+    @DeleteMapping("/{promotionId}")
+    public GlobalResponse<UUID> deletePromotion(@PathVariable("promotionId") UUID promotionId) {
+        promotionApplicationService.deletePromotion(promotionId);
+        return ApiUtils.success(ResponseMessage.PROMOTION_DELETE_SUCCESS.getMessage(), promotionId);
     }
 }
