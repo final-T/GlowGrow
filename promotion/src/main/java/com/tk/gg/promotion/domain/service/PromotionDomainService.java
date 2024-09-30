@@ -1,9 +1,13 @@
 package com.tk.gg.promotion.domain.service;
 
 import com.tk.gg.common.response.exception.GlowGlowException;
+import com.tk.gg.promotion.application.dto.PromotionResponseDto;
+import com.tk.gg.promotion.application.dto.PromotionSearch;
 import com.tk.gg.promotion.domain.Promotion;
 import com.tk.gg.promotion.infrastructure.PromotionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,5 +48,9 @@ public class PromotionDomainService {
         Promotion promotion = promotionRepository.findById(promotionId)
                 .orElseThrow(() -> new GlowGlowException(PROMOTION_NO_EXIST));
         promotionRepository.delete(promotion);
+    }
+
+    public Page<PromotionResponseDto> searchPromotions(Pageable pageable, PromotionSearch condition) {
+        return promotionRepository.findPromotionsByCondition(condition, pageable);
     }
 }

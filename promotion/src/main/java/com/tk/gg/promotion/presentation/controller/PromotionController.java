@@ -6,8 +6,11 @@ import com.tk.gg.common.response.ResponseMessage;
 import com.tk.gg.promotion.application.PromotionApplicationService;
 import com.tk.gg.promotion.application.dto.PromotionRequestDto;
 import com.tk.gg.promotion.application.dto.PromotionResponseDto;
+import com.tk.gg.promotion.application.dto.PromotionSearch;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -75,5 +78,27 @@ public class PromotionController {
     public GlobalResponse<UUID> deletePromotion(@PathVariable("promotionId") UUID promotionId) {
         promotionApplicationService.deletePromotion(promotionId);
         return ApiUtils.success(ResponseMessage.PROMOTION_DELETE_SUCCESS.getMessage(), promotionId);
+    }
+
+    /**
+     * 프로모션 검색 및 페이징 조회
+     * @param pageable: 페이징 정보
+     *                - page: 페이지 번호 <br>
+     *                - size: 페이지 크기 <br>
+     *                - sort: 정렬 정보 <br>
+     * @param condition: 프로모션 검색 조건
+     *                 - title: 프로모션 제목 <br>
+     *                 - status: 프로모션 상태 <br>
+     *                 - startDate: 프로모션 시작일 <br>
+     *                 - endDate: 프로모션 종료일 <br>
+     * @return: 프로모션 검색 및 페이징 조회 응답 DTO
+     */
+    @GetMapping
+    public GlobalResponse<Page<PromotionResponseDto>> searchPromotions(
+            Pageable pageable,
+            PromotionSearch condition
+    ) {
+        Page<PromotionResponseDto> promotionResponseDtos = promotionApplicationService.searchPromotions(pageable, condition);
+        return ApiUtils.success(ResponseMessage.PROMOTION_RETRIEVE_SUCCESS.getMessage(), promotionResponseDtos);
     }
 }

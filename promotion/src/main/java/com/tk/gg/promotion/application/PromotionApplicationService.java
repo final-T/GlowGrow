@@ -1,10 +1,13 @@
 package com.tk.gg.promotion.application;
 
 import com.tk.gg.promotion.application.dto.PromotionResponseDto;
+import com.tk.gg.promotion.application.dto.PromotionSearch;
 import com.tk.gg.promotion.domain.Promotion;
 import com.tk.gg.promotion.domain.service.PromotionDomainService;
 import com.tk.gg.promotion.application.dto.PromotionRequestDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -54,5 +57,9 @@ public class PromotionApplicationService {
 
     public void deletePromotion(UUID promotionId) {
         promotionDomainService.deletePromotion(promotionId);
+    }
+
+    public Page<PromotionResponseDto> searchPromotions(Pageable pageable, PromotionSearch condition) {
+        return promotionDomainService.searchPromotions(pageable, condition);
     }
 }
