@@ -9,10 +9,35 @@ spring:
   cloud:
     gateway:
       routes: # Spring Cloud Gateway의 라우팅 설정
-        - id: reservation-service
+        - id: reservation-service # 예약 서비스
           uri: lb://reservation-service
           predicates:
-            - Path=/api/reservations/**
+            - Path=/api/reservations/**, /api/time-slots/**, /api/reviews/**, /api/reports/**,
+        - id: user-service # 사용자 서비스
+          uri: lb://user-service
+          predicates:
+            - Path=/api/auth/**, /api/users/**, /api/profile/**
+        - id: post-service # 게시판 서비스
+          uri: lb://post-service
+          predicates:
+            - Path=/api/posts/**, /api/comments/**, /api/multimedia/**
+        - id: promotion-service # 프로모션 서비스
+          uri: lb://promotion-service
+          predicates:
+            - Path=/api/promotions/**, /api/coupons/**
+        - id: chat-service # 채팅 서비스
+          uri: lb://chat-service
+          predicates:
+            - Path=/api/chat/**
+        - id: payment-service # 결제 서비스
+          uri: lb://payment-service
+          predicates:
+            - Path=/api/payments/**
+        - id: notification-service # 알림 서비스
+          uri: lb://notification-service
+          predicates:
+            - Path=/api/notifications/**
+
       discovery:
         locator:
           enabled: true # 서비스 디스커버리를 통해 동적으로 라우트를 생성하도록 설정
