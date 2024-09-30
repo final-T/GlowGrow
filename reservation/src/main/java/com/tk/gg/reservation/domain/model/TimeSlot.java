@@ -37,7 +37,7 @@ public class TimeSlot extends BaseEntity {
 
     @Builder.Default
     @Column(nullable = false)
-    private Boolean isReserved = true;
+    private Boolean isReserved = false;
 
     @Override
     public boolean equals(Object o) {
