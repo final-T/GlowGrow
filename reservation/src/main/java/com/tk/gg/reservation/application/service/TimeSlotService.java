@@ -5,9 +5,12 @@ import com.tk.gg.reservation.application.dto.UpdateTimeSlotRequestDto;
 import com.tk.gg.reservation.domain.service.TimeSlotDomainService;
 import com.tk.gg.reservation.application.dto.TimeSlotDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,8 +26,8 @@ public class TimeSlotService {
     }
 
     @Transactional(readOnly = true)
-    public List<TimeSlotDto> getAllTimeSlot() {
-        return timeSlotDomainService.getAll().stream().map(TimeSlotDto::from).toList();
+    public Page<TimeSlotDto> getAllTimeSlot(Date startDate, Date endDate, Pageable pageable) {
+        return timeSlotDomainService.getAll(startDate, endDate,pageable).map(TimeSlotDto::from);
     }
 
     @Transactional(readOnly = true)

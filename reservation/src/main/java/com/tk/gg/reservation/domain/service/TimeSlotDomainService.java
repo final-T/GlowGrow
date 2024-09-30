@@ -6,9 +6,11 @@ import com.tk.gg.reservation.application.dto.UpdateTimeSlotRequestDto;
 import com.tk.gg.reservation.domain.model.TimeSlot;
 import com.tk.gg.reservation.domain.repository.TimeSlotRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Date;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -17,10 +19,11 @@ public class TimeSlotDomainService {
 
     private final TimeSlotRepository timeSlotRepository;
 
-    public List<TimeSlot> getAll() {
-        return timeSlotRepository.findAll();
+    public Page<TimeSlot> getAll(Date startDate, Date endDate, Pageable pageable) {
+        return timeSlotRepository.searchTimeSlots(startDate, endDate, pageable);
     }
 
+    // TODO : 커스텀 에러 메시지 Common 모듈에 추가하기
     public TimeSlot getOne(UUID id) {
         return timeSlotRepository.findByReservationId(id).orElseThrow(
                 () -> new IllegalArgumentException("ID 에 해당하는 timeSlot 정보가 없습니다.")
