@@ -1,6 +1,7 @@
 package com.tk.gg.promotion.domain;
 
 import com.tk.gg.common.jpa.BaseEntity;
+import com.tk.gg.promotion.domain.enums.PromotionStatus;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,7 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -28,6 +29,9 @@ public class Promotion extends BaseEntity {
     @OneToMany(mappedBy = "promotion")
     private List<Coupon> coupons = new ArrayList<>();
 
+    @Column(name = "post_user_id", nullable = false)
+    private Long postUserId;
+
     @Column(name = "title", nullable = false)
     private String title;
 
@@ -35,22 +39,26 @@ public class Promotion extends BaseEntity {
     private String description;
 
     @Column(name = "start_date", nullable = false)
-    private LocalDateTime startDate;
+    private LocalDate startDate;
 
     @Column(name = "end_date", nullable = false)
-    private LocalDateTime endDate;
+    private LocalDate endDate;
+
+    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private PromotionStatus status;
 
     @Column(name = "is_delete", nullable = false)
     private boolean isDelete = false;
 
     @Builder
-    public Promotion(String title,
-                     String description,
-                     LocalDateTime startDate,
-                     LocalDateTime endDate) {
+    public Promotion(UUID promotionId, Long postUserId, String title, String description, LocalDate startDate, LocalDate endDate, PromotionStatus status) {
+        this.promotionId = promotionId;
+        this.postUserId = postUserId;
         this.title = title;
         this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.status = status;
     }
 }
