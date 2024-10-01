@@ -5,8 +5,12 @@ import com.tk.gg.common.response.GlobalResponse;
 import com.tk.gg.common.response.ResponseMessage;
 import com.tk.gg.post.application.dto.PostRequestDto;
 import com.tk.gg.post.application.dto.PostResponseDto;
+import com.tk.gg.post.application.dto.PostSearchCondition;
+import com.tk.gg.post.application.dto.PostSearchResponseDto;
 import com.tk.gg.post.application.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,21 +27,20 @@ public class PostController {
     @PostMapping
     public GlobalResponse<PostResponseDto> createPost(@RequestBody PostRequestDto requestDto) {
         PostResponseDto responseDto = postService.createPost(requestDto);
-        return ApiUtils.success("게시글이 성공적으로 생성되었습니다.",responseDto);
+        return ApiUtils.success(ResponseMessage.POST_CREATE_SUCCESS.getMessage(),responseDto);
     }
 
     @GetMapping
     public  GlobalResponse<List<PostResponseDto>> getAllPosts(){
         List<PostResponseDto> responseDto = postService.getAllPosts();
-        return ApiUtils.success("게시글이 성공적으로 조회되었습니다.",responseDto);
+        return ApiUtils.success(ResponseMessage.POST_RETRIEVE_SUCCESS.getMessage(),responseDto);
     }
 
-    // TODO : 게시글 조회시 조회 + 카운트 증가
-//    @GetMapping("/postId")
-//    public GlobalResponse<PostResponseDto> getPostById(@RequestParam("postId") UUID postId){
-//        PostResponseDto responseDto = postService.getPost(postId);
-//        return ApiUtils.success("게시글이 성공적으로 조회되었습니다.",responseDto);
-//    }
+    @GetMapping("/{postId}")
+    public GlobalResponse<PostResponseDto> getPostById(@PathVariable UUID postId){
+        PostResponseDto responseDto = postService.getPost(postId);
+        return ApiUtils.success(ResponseMessage.POST_RETRIEVE_SUCCESS.getMessage(),responseDto);
+    }
 
     @PatchMapping("/{postId}")
     public GlobalResponse<PostResponseDto> updatePost(@PathVariable UUID postId, @RequestBody PostRequestDto requestDto) {
@@ -49,6 +52,15 @@ public class PostController {
     public GlobalResponse<Void> deletePost(@PathVariable UUID postId) {
         postService.deletePost(postId);
         return ApiUtils.success(ResponseMessage.POST_DELETE_SUCCESS.getMessage(), null);
+    }
+
+    @GetMapping("/search")
+    public GlobalResponse<Page<PostSearchResponseDto>> searchPosts(
+            Pageable pageable,
+            PostSearchCondition searchDto
+    ){
+        Page<PostSearchResponseDto> postResponseDtos = postService.searchPosts(pageable,searchDto);
+        return ApiUtils.success(ResponseMessage.POST_RETRIEVE_SUCCESS.getMessage(),postResponseDtos);
     }
 
 }

@@ -3,10 +3,7 @@ package com.tk.gg.post.domain.model;
 import com.tk.gg.common.jpa.BaseEntity;
 import com.tk.gg.post.application.dto.PostRequestDto;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -28,6 +25,7 @@ public class Post extends BaseEntity {
     @Column(name = "content", nullable = false, columnDefinition = "TEXT")
     private String content;
 
+    @Setter
     @Column(name = "views", nullable = false)
     private Integer views;
 
