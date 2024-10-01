@@ -1,6 +1,7 @@
 package com.tk.gg.promotion.domain;
 
 import com.tk.gg.common.jpa.BaseEntity;
+import com.tk.gg.promotion.domain.enums.DiscountType;
 import com.tk.gg.promotion.domain.enums.PromotionStatus;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +28,7 @@ public class Promotion extends BaseEntity {
     @Column(name = "promotion_id")
     private UUID promotionId;
 
-    @OneToMany(mappedBy = "promotion")
+    @OneToMany(mappedBy = "promotion", cascade = CascadeType.ALL)
     private List<Coupon> coupons = new ArrayList<>();
 
     @Column(name = "post_user_id", nullable = false)
@@ -68,5 +70,30 @@ public class Promotion extends BaseEntity {
         this.startDate = promotion.startDate;
         this.endDate = promotion.endDate;
         this.status = promotion.status;
+    }
+
+    public Coupon createCoupon(
+                String description,
+                DiscountType discountType,
+                BigDecimal discountValue,
+                BigDecimal maxDiscount,
+                LocalDate validFrom,
+                LocalDate validUntil,
+                Integer totalQuantity
+    ) {
+        Coupon coupon = Coupon.builder()
+                .promotion(this)
+                // TODO : 일단 RANDOM CODE로 생성
+                .code(UUID.randomUUID().toString())
+                .description(description)
+                .discountType(discountType)
+                .discountValue(discountValue)
+                .maxDiscount(maxDiscount)
+                .validFrom(validFrom)
+                .validUntil(validUntil)
+                .totalQuantity(totalQuantity)
+                .build();
+        this.coupons.add(coupon);
+        return coupon;
     }
 }
