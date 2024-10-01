@@ -57,7 +57,10 @@ public class PromotionRepositoryImpl implements PromotionRepositoryCustom {
         JPAQuery<Promotion> count = queryFactory.selectFrom(promotion)
                 .where(
                         eqTitle(condition.getTitle()),
-                        eqStatus(condition.getStatus()));
+                        eqStatus(condition.getStatus()),
+                        goeStartDate(condition.getStartDate()),
+                        loeEndDate(condition.getEndDate()));
+
 
         return PageableExecutionUtils.getPage(promotions, pageable, count::fetchCount);
     }
