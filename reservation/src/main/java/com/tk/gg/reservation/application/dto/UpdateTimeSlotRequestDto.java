@@ -2,12 +2,12 @@ package com.tk.gg.reservation.application.dto;
 
 import lombok.Builder;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Builder
 public record UpdateTimeSlotRequestDto(
         Long serviceProviderId,
-        Date availableDate,
+        LocalDate availableDate,
         Integer availableTime,
         Boolean isReserved
 ) {
