@@ -83,4 +83,11 @@ public class Coupon extends BaseEntity {
         this.validUntil = validUntil;
         this.totalQuantity = totalQuantity;
     }
+
+    public void issueCoupon() {
+        if (this.totalQuantity <= 0) {
+            throw new IllegalArgumentException("쿠폰 발급 가능 수량이 없습니다.");
+        }
+        this.totalQuantity--;
+    }
 }
