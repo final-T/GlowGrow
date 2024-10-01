@@ -4,6 +4,7 @@ package com.tk.gg.reservation.presentation.response;
 import com.tk.gg.reservation.application.dto.TimeSlotDto;
 import lombok.Builder;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.UUID;
 
@@ -11,7 +12,7 @@ import java.util.UUID;
 public record TimeSlotResponse(
         UUID id,
         Long serviceProviderId,
-        Date availableDate,
+        LocalDate availableDate,
         Integer availableTime,
         Boolean isReserved
 ) {

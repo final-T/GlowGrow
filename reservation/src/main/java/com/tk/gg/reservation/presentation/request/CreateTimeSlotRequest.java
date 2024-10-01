@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public record CreateTimeSlotRequest(
@@ -16,7 +17,7 @@ public record CreateTimeSlotRequest(
         @NotNull(message = "예약 가능 날짜는 필수입니다.")
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "날짜 형식은 yyyy-MM-dd 이어야 합니다.")
-        Date availableDate,
+        LocalDate availableDate,
 
         @NotNull(message = "예약 가능 시간은 필수입니다.")
         @Min(value = 1, message = "예약 가능 시간은 1~24 입니다.")

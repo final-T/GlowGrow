@@ -3,15 +3,15 @@ package com.tk.gg.reservation.application.dto;
 import com.tk.gg.reservation.domain.model.TimeSlot;
 import lombok.Builder;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.UUID;
 
 @Builder
 public record TimeSlotDto(
         UUID id,
         Long serviceProviderId,
-        Date availableDate,
+        LocalDate availableDate,
         Integer availableTime,
         Boolean isReserved,
         String createdBy,

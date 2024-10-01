@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Objects;
@@ -30,7 +31,7 @@ public class TimeSlot extends BaseEntity {
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(nullable = false)
-    private Date availableDate;
+    private LocalDate availableDate;
 
     @Column(nullable = false)
     private Integer availableTime;
@@ -57,6 +58,9 @@ public class TimeSlot extends BaseEntity {
         this.availableDate = dto.availableDate();
         this.availableTime = dto.availableTime();
         this.isReserved = dto.isReserved();
+    }
+    public void updateIsReserved(Boolean isReserved){
+        this.isReserved = isReserved;
     }
 
     public void delete(String deletedBy){

@@ -1,27 +1,30 @@
 package com.tk.gg.reservation.infrastructure.repository;
 
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.tk.gg.reservation.domain.model.QTimeSlot;
 import com.tk.gg.reservation.domain.model.TimeSlot;
-import com.tk.gg.reservation.domain.repository.CustomTimeSlotRepository;
+import com.tk.gg.reservation.domain.repository.TimeSlotRepositoryCustom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Repository
-public class CustomTimeSlotRepositoryImpl implements CustomTimeSlotRepository {
+public class TimeSlotRepositoryImpl implements TimeSlotRepositoryCustom {
     private final JPAQueryFactory queryFactory;
     QTimeSlot timeSlot = QTimeSlot.timeSlot;
 
     @Override
-    public Page<TimeSlot> searchTimeSlots(Date startDate, Date endDate, Pageable pageable) {
+    public Page<TimeSlot> searchTimeSlots(LocalDate startDate, LocalDate endDate, Pageable pageable) {
 
         List<TimeSlot> timeSlotList = queryFactory
                 .selectFrom(timeSlot)
@@ -32,7 +35,7 @@ public class CustomTimeSlotRepositoryImpl implements CustomTimeSlotRepository {
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .orderBy(timeSlot.availableDate.desc()) // 정렬 조건
+                .orderBy(getOrderSpecifiers(pageable.getSort())) // 정렬 조건
                 .fetch();
 
         Long total = queryFactory
@@ -48,13 +51,25 @@ public class CustomTimeSlotRepositoryImpl implements CustomTimeSlotRepository {
         return new PageImpl<>(timeSlotList, pageable, total);
     }
 
+    private OrderSpecifier<?>[] getOrderSpecifiers(Sort sort) {
+        return sort.stream()
+                .map(order -> {
+                    if ("availableDate".equals(order.getProperty())) {
+                        return order.isAscending() ? timeSlot.availableDate.asc() : timeSlot.availableDate.desc();
+                    }
+                    return null;
+                })
+                .filter(Objects::nonNull)
+                .toArray(OrderSpecifier[]::new);
+    }
+
     // 시작 날짜 조건
-    private BooleanExpression startDateCondition(Date startDate) {
+    private BooleanExpression startDateCondition(LocalDate startDate) {
         return startDate != null ? timeSlot.availableDate.goe(startDate) : null;
     }
 
     // 종료 날짜 조건
-    private BooleanExpression endDateCondition(Date endDate) {
+    private BooleanExpression endDateCondition(LocalDate endDate) {
         return endDate != null ? timeSlot.availableDate.loe(endDate) : null;
     }
 

@@ -15,6 +15,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.UUID;
 
@@ -22,7 +23,7 @@ import java.util.UUID;
 // TODO : 응답 메시지 Enum common 에 추가하기
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/time-slot")
+@RequestMapping("/api/time-slots")
 public class TimeSlotController {
 
     private final TimeSlotService timeSlotService;
@@ -40,9 +41,9 @@ public class TimeSlotController {
     @GetMapping
     public GlobalResponse<Page<TimeSlotResponse>> getAll(
             @RequestParam(value = "startDate", required = false)
-            @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
             @RequestParam(value = "endDate", required = false)
-            @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
+            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
             @PageableDefault(sort = {"availableDate"}, direction = Sort.Direction.DESC) Pageable pageable
     ) {
         return ApiUtils.success(
