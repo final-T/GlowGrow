@@ -1,4 +1,4 @@
-package com.tk.gg.promotion.infrastructure;
+package com.tk.gg.promotion.infrastructure.repository;
 
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
