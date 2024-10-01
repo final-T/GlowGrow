@@ -4,8 +4,8 @@ import com.tk.gg.reservation.domain.model.TimeSlot;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.Date;
+import java.time.LocalDate;
 
-public interface CustomTimeSlotRepository {
-    Page<TimeSlot> searchTimeSlots(Date startDate, Date endDate, Pageable pageable);
+public interface TimeSlotRepositoryCustom {
+    Page<TimeSlot> searchTimeSlots(LocalDate startDate, LocalDate endDate, Pageable pageable);
 }

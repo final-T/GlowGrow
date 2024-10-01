@@ -4,13 +4,13 @@ package com.tk.gg.reservation.domain.service;
 import com.tk.gg.reservation.application.dto.CreateTimeSlotRequestDto;
 import com.tk.gg.reservation.application.dto.UpdateTimeSlotRequestDto;
 import com.tk.gg.reservation.domain.model.TimeSlot;
-import com.tk.gg.reservation.domain.repository.TimeSlotRepository;
+import com.tk.gg.reservation.infrastructure.repository.TimeSlotRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -19,7 +19,7 @@ public class TimeSlotDomainService {
 
     private final TimeSlotRepository timeSlotRepository;
 
-    public Page<TimeSlot> getAll(Date startDate, Date endDate, Pageable pageable) {
+    public Page<TimeSlot> getAll(LocalDate startDate, LocalDate endDate, Pageable pageable) {
         return timeSlotRepository.searchTimeSlots(startDate, endDate, pageable);
     }
 

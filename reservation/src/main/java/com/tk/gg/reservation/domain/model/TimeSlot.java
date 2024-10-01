@@ -59,6 +59,9 @@ public class TimeSlot extends BaseEntity {
         this.availableTime = dto.availableTime();
         this.isReserved = dto.isReserved();
     }
+    public void updateIsReserved(Boolean isReserved){
+        this.isReserved = isReserved;
+    }
 
     public void delete(String deletedBy){
         this.deletedAt = LocalDateTime.now();

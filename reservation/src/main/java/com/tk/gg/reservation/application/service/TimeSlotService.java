@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -26,7 +27,7 @@ public class TimeSlotService {
     }
 
     @Transactional(readOnly = true)
-    public Page<TimeSlotDto> getAllTimeSlot(Date startDate, Date endDate, Pageable pageable) {
+    public Page<TimeSlotDto> getAllTimeSlot(LocalDate startDate, LocalDate endDate, Pageable pageable) {
         return timeSlotDomainService.getAll(startDate, endDate,pageable).map(TimeSlotDto::from);
     }
 
