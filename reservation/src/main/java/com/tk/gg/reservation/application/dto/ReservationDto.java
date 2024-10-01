@@ -1,0 +1,46 @@
+package com.tk.gg.reservation.application.dto;
+
+import com.tk.gg.reservation.domain.model.Reservation;
+import com.tk.gg.reservation.domain.model.TimeSlot;
+import com.tk.gg.reservation.domain.type.ReservationStatus;
+import lombok.Builder;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Builder
+public record ReservationDto(
+        UUID id,
+        TimeSlot timeSlot,
+        Long customerId,
+        Long serviceProviderId,
+        ReservationStatus reservationStatus,
+        LocalDate reservationDate,
+        Integer reservationTime,
+        String createdBy,
+        LocalDateTime createdAt,
+        String updatedBy,
+        LocalDateTime updatedAt,
+        String deletedBy,
+        LocalDateTime deletedAt
+) {
+
+    public static ReservationDto from(Reservation entity) {
+        return ReservationDto.builder()
+                .id(entity.getId())
+                .timeSlot(entity.getTimeSlot())
+                .customerId(entity.getCustomerId())
+                .serviceProviderId(entity.getServiceProviderId())
+                .reservationStatus(entity.getReservationStatus())
+                .reservationDate(entity.getReservationDate())
+                .reservationTime(entity.getReservationTime())
+                .createdBy(entity.getCreatedBy())
+                .createdAt(entity.getCreatedAt())
+                .updatedBy(entity.getUpdatedBy())
+                .updatedAt(entity.getUpdatedAt())
+                .deletedBy(entity.getDeletedBy())
+                .deletedAt(entity.getDeletedAt())
+                .build();
+    }
+}
