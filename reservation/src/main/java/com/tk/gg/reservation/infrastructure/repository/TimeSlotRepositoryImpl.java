@@ -29,7 +29,7 @@ public class TimeSlotRepositoryImpl implements TimeSlotRepositoryCustom {
         List<TimeSlot> timeSlotList = queryFactory
                 .selectFrom(timeSlot)
                 .where(
-                        isDeletedByNotNullCondition(), // 삭제되지 않은 것만
+                        isDeletedByNullCondition(), // 삭제되지 않은 것만
                         startDateCondition(startDate),  // 시작 날짜 조건
                         endDateCondition(endDate)     // 종료 날짜 조건
                 )
@@ -42,7 +42,7 @@ public class TimeSlotRepositoryImpl implements TimeSlotRepositoryCustom {
                 .from(timeSlot)
                 .select(timeSlot.count())
                 .where(
-                        isDeletedByNotNullCondition(), 
+                        isDeletedByNullCondition(),
                         startDateCondition(startDate),
                         endDateCondition(endDate)
                 )
@@ -74,7 +74,7 @@ public class TimeSlotRepositoryImpl implements TimeSlotRepositoryCustom {
     }
 
     //삭제 되지 않은 데이터
-    private BooleanExpression isDeletedByNotNullCondition() {
-        return timeSlot.deletedBy.isNotNull();
+    private BooleanExpression isDeletedByNullCondition() {
+        return timeSlot.deletedBy.isNull();
     }
 }
