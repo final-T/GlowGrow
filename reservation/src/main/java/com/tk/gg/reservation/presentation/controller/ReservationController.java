@@ -7,6 +7,7 @@ import com.tk.gg.reservation.application.service.ReservationService;
 import com.tk.gg.reservation.domain.type.ReservationStatus;
 import com.tk.gg.reservation.presentation.request.CreateReservationRequest;
 import com.tk.gg.reservation.presentation.request.UpdateReservationRequest;
+import com.tk.gg.reservation.presentation.request.UpdateReservationStatusRequest;
 import com.tk.gg.reservation.presentation.response.ReservationResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -72,9 +73,9 @@ public class ReservationController {
     @PatchMapping("/{reservationId}/status")
     public GlobalResponse<String> updateReservationStatus(
             @PathVariable(value = "reservationId") UUID reservationId,
-            @RequestBody ReservationStatus reservationStatus
+            @RequestBody @Valid UpdateReservationStatusRequest reservationStatus
     ){
-        reservationService.updateReservationStatus(reservationId,reservationStatus);
+        reservationService.updateReservationStatus(reservationId,reservationStatus.getReservationStatus());
         return ApiUtils.success("예약 상태 수정 성공");
     }
 
