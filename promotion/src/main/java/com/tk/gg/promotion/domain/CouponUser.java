@@ -27,7 +27,7 @@ public class CouponUser extends BaseEntity {
     private Coupon coupon;
 
     @Column(name = "user_id", nullable = false)
-    private UUID userId;
+    private Long userId;
 
     @Column(name = "is_used", nullable = false)
     private boolean isUsed = false;
@@ -36,7 +36,7 @@ public class CouponUser extends BaseEntity {
     private boolean isDelete = false;
 
     @Builder
-    public CouponUser(Coupon coupon, UUID userId) {
+    public CouponUser(Coupon coupon, Long userId) {
         this.coupon = coupon;
         this.userId = userId;
     }

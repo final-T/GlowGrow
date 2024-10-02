@@ -1,4 +1,4 @@
-package com.tk.gg.promotion.application;
+package com.tk.gg.promotion.application.serivce;
 
 import com.tk.gg.promotion.application.dto.PromotionResponseDto;
 import com.tk.gg.promotion.application.dto.PromotionSearch;

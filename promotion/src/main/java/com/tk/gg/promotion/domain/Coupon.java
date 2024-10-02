@@ -11,7 +11,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -36,11 +36,11 @@ public class Coupon extends BaseEntity {
     @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(name = "discount", nullable = false)
-    private BigDecimal discount;
+    @Column(name = "discount_value", nullable = false)
+    private BigDecimal discountValue;
 
     @Column(name = "max_discount", nullable = false)
-    private String maxDiscount;
+    private BigDecimal maxDiscount;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "discount_type", nullable = false)
@@ -51,10 +51,10 @@ public class Coupon extends BaseEntity {
     private CouponStatus status = CouponStatus.ACTIVE;
 
     @Column(name = "valid_from", nullable = false)
-    private LocalDateTime validFrom;
+    private LocalDate validFrom;
 
     @Column(name = "valid_until", nullable = false)
-    private LocalDateTime validUntil;
+    private LocalDate validUntil;
 
     @Column(name = "total_qauantity", nullable = false)
     private Integer totalQuantity;
@@ -66,20 +66,28 @@ public class Coupon extends BaseEntity {
     public Coupon(Promotion promotion,
                   String code,
                   String description,
-                  BigDecimal discount,
-                  String maxDiscount,
+                  BigDecimal discountValue,
+                  BigDecimal maxDiscount,
                   DiscountType discountType,
-                  LocalDateTime validFrom,
-                  LocalDateTime validUntil,
-                  Integer totalQuantity) {
+                  LocalDate validFrom,
+                  LocalDate validUntil,
+                  Integer totalQuantity
+    ) {
         this.promotion = promotion;
         this.code = code;
         this.description = description;
-        this.discount = discount;
+        this.discountValue = discountValue;
         this.maxDiscount = maxDiscount;
         this.discountType = discountType;
         this.validFrom = validFrom;
         this.validUntil = validUntil;
         this.totalQuantity = totalQuantity;
+    }
+
+    public void issueCoupon() {
+        if (this.totalQuantity <= 0) {
+            throw new IllegalArgumentException("쿠폰 발급 가능 수량이 없습니다.");
+        }
+        this.totalQuantity--;
     }
 }
