@@ -31,7 +31,16 @@ public class TimeSlotDomainService {
     }
 
     public TimeSlot create(CreateTimeSlotRequestDto dto) {
+        if (checkAlreadyExist(dto)){
+            throw new IllegalArgumentException("이미 존재하는 timeSlot 정보입니다.");
+        }
         return timeSlotRepository.save(dto.toEntity());
+    }
+
+    public Boolean checkAlreadyExist(CreateTimeSlotRequestDto dto) {
+        return timeSlotRepository.findByAvailableDateEqualsAndAvailableTimeEquals(
+                dto.availableDate(), dto.availableTime()
+        ).isPresent();
     }
 
     public void updateOne(UUID id, UpdateTimeSlotRequestDto dto) {
