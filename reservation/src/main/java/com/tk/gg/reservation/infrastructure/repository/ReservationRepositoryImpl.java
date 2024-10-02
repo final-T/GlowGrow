@@ -29,7 +29,7 @@ public class ReservationRepositoryImpl implements ReservationRepositoryCustom {
         List<Reservation> reservationList = queryFactory
                 .selectFrom(reservation)
                 .where(
-                        isDeletedByNotNullCondition(), // 삭제되지 않은 것만
+                        isDeletedByNullCondition(), // 삭제되지 않은 것만
                         startDateCondition(startDate),  // 시작 날짜 조건
                         endDateCondition(endDate),     // 종료 날짜 조건
                         reservationStatusCondition(status) // 상태 조건 추가
@@ -43,7 +43,7 @@ public class ReservationRepositoryImpl implements ReservationRepositoryCustom {
                 .from(reservation)
                 .select(reservation.count())
                 .where(
-                        isDeletedByNotNullCondition(),
+                        isDeletedByNullCondition(),
                         startDateCondition(startDate),
                         endDateCondition(endDate),
                         reservationStatusCondition(status)
@@ -81,7 +81,7 @@ public class ReservationRepositoryImpl implements ReservationRepositoryCustom {
     }
 
     //삭제 되지 않은 데이터
-    private BooleanExpression isDeletedByNotNullCondition() {
-        return reservation.deletedBy.isNotNull();
+    private BooleanExpression isDeletedByNullCondition() {
+        return reservation.deletedBy.isNull();
     }
 }

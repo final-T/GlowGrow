@@ -1,7 +1,6 @@
 package com.tk.gg.reservation.application.dto;
 
 import com.tk.gg.reservation.domain.model.Reservation;
-import com.tk.gg.reservation.domain.model.TimeSlot;
 import com.tk.gg.reservation.domain.type.ReservationStatus;
 import lombok.Builder;
 
@@ -12,7 +11,7 @@ import java.util.UUID;
 @Builder
 public record ReservationDto(
         UUID id,
-        TimeSlot timeSlot,
+        TimeSlotDto timeSlotDto,
         Long customerId,
         Long serviceProviderId,
         ReservationStatus reservationStatus,
@@ -29,7 +28,7 @@ public record ReservationDto(
     public static ReservationDto from(Reservation entity) {
         return ReservationDto.builder()
                 .id(entity.getId())
-                .timeSlot(entity.getTimeSlot())
+                .timeSlotDto(TimeSlotDto.from(entity.getTimeSlot()))
                 .customerId(entity.getCustomerId())
                 .serviceProviderId(entity.getServiceProviderId())
                 .reservationStatus(entity.getReservationStatus())

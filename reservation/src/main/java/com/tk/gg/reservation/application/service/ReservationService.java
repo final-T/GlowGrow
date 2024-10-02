@@ -8,7 +8,7 @@ import com.tk.gg.reservation.domain.model.TimeSlot;
 import com.tk.gg.reservation.domain.service.ReservationDomainService;
 import com.tk.gg.reservation.domain.service.TimeSlotDomainService;
 import com.tk.gg.reservation.domain.type.ReservationStatus;
-import com.tk.gg.reservation.presentation.response.ReservationResponse;
+import jakarta.ws.rs.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,14 +34,18 @@ public class ReservationService {
         return ReservationDto.from(reservationDomainService.getOne(reservationId));
     }
 
-    //TODO : 추가적인 검증 필요, 예약 <-> 예약관리 테이블 수정
     @Transactional
     public ReservationDto createReservation(CreateReservationDto dto) {
         TimeSlot timeSlot = timeSlotDomainService.getOne(dto.timeSlotId());
+        if (!dto.reservationDate().equals(timeSlot.getAvailableDate()) &&
+                !dto.reservationTime().equals(timeSlot.getAvailableTime())
+        ){
+            throw new BadRequestException("[예약 생성 실패] timeSlot 의 시간과 맞지 않습니다.");
+        }
+
         return ReservationDto.from(reservationDomainService.create(dto, timeSlot));
     }
 
-    //TODO : 예약 <-> 예약관리테이블 수정
     @Transactional
     public void updateReservation(UUID reservationId, UpdateReservationDto dto) {
         TimeSlot timeSlot  = timeSlotDomainService.getOne(dto.timeSlotId());
