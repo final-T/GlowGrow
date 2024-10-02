@@ -3,7 +3,7 @@ package com.tk.gg.promotion.presentation.controller;
 import com.tk.gg.common.response.ApiUtils;
 import com.tk.gg.common.response.GlobalResponse;
 import com.tk.gg.common.response.ResponseMessage;
-import com.tk.gg.promotion.application.PromotionApplicationService;
+import com.tk.gg.promotion.application.serivce.PromotionApplicationService;
 import com.tk.gg.promotion.application.dto.PromotionRequestDto;
 import com.tk.gg.promotion.application.dto.PromotionResponseDto;
 import com.tk.gg.promotion.application.dto.PromotionSearch;

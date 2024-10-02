@@ -4,7 +4,7 @@ import com.tk.gg.common.response.exception.GlowGlowException;
 import com.tk.gg.promotion.application.dto.PromotionResponseDto;
 import com.tk.gg.promotion.application.dto.PromotionSearch;
 import com.tk.gg.promotion.domain.Promotion;
-import com.tk.gg.promotion.infrastructure.PromotionRepository;
+import com.tk.gg.promotion.infrastructure.repository.PromotionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

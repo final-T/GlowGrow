@@ -1,4 +1,4 @@
-package com.tk.gg.promotion.infrastructure;
+package com.tk.gg.promotion.infrastructure.repository;
 
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -57,7 +57,10 @@ public class PromotionRepositoryImpl implements PromotionRepositoryCustom {
         JPAQuery<Promotion> count = queryFactory.selectFrom(promotion)
                 .where(
                         eqTitle(condition.getTitle()),
-                        eqStatus(condition.getStatus()));
+                        eqStatus(condition.getStatus()),
+                        goeStartDate(condition.getStartDate()),
+                        loeEndDate(condition.getEndDate()));
+
 
         return PageableExecutionUtils.getPage(promotions, pageable, count::fetchCount);
     }
