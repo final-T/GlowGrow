@@ -26,7 +26,7 @@ public class Reservation extends BaseEntity {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @OneToOne(optional = false, fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     private TimeSlot timeSlot;
 
     @Column(nullable = false)
@@ -72,6 +72,7 @@ public class Reservation extends BaseEntity {
     }
 
     public void delete(String deletedBy){
+        this.timeSlot = null; // 연결 끊기
         this.deletedAt = LocalDateTime.now();
         this.deletedBy = deletedBy;
     }
