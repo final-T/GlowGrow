@@ -1,13 +1,13 @@
 package com.tk.gg.promotion.application.serivce;
 
-import com.tk.gg.promotion.application.dto.CouponCreateRequestDto;
-import com.tk.gg.promotion.application.dto.CouponIssueRequestDto;
-import com.tk.gg.promotion.application.dto.CouponIssueResponseDto;
-import com.tk.gg.promotion.application.dto.CouponResponseDto;
+import com.tk.gg.promotion.application.dto.*;
 import com.tk.gg.promotion.domain.Coupon;
+import com.tk.gg.promotion.domain.CouponUser;
 import com.tk.gg.promotion.domain.service.CouponDomainService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,5 +24,15 @@ public class CouponApplicationService {
     // 쿠폰 발급
     public CouponIssueResponseDto issueCoupon(CouponIssueRequestDto requestDto) {
         return couponDomainService.issueCoupoon(requestDto);
+    }
+
+    // 사용자 쿠폰 목록 조회
+    public List<CouponUserResponseDto> getUserCoupons(Long userId) {
+        List<CouponUser> userCoupons = couponDomainService.getUserCoupons(userId);
+
+        return userCoupons.stream()
+                .map(CouponUserResponseDto::from)
+                .toList();
+
     }
 }

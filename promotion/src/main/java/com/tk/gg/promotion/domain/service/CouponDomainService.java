@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class CouponDomainService {
@@ -73,5 +75,11 @@ public class CouponDomainService {
                 .couponDescription(coupon.getDescription())
                 .userId(couponUser.getUserId())
                 .build();
+    }
+
+    // 사용자 쿠폰 목록 조회
+    @Transactional(readOnly = true)
+    public List<CouponUser> getUserCoupons(Long userId) {
+        return couponUserRepository.findByUserId(userId);
     }
 }

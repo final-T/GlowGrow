@@ -24,7 +24,7 @@ spring:
         - id: promotion-service # 프로모션 서비스
           uri: lb://promotion-service
           predicates:
-            - Path=/api/promotions/**, /api/coupons/**
+            - Path=/api/promotions/**, /api/coupons/**, /api/my-coupons/**
         - id: chat-service # 채팅 서비스
           uri: lb://chat-service
           predicates:
