@@ -29,9 +29,9 @@ public class LikeService {
         like.toggleLikeStatus();
         likeRepository.save(like);
 
-        Post updatedPost = postService.updatePostLikeCount(postId, like.getLikeStatus());
+        postService.updatePostLikeCount(postId, like.getLikeStatus());
 
-        return new LikeResponseDto(postId, userId, like.getLikeStatus(), updatedPost.getLikes());
+        return new LikeResponseDto(like.getLikeId(),postId, userId, like.getLikeStatus());
     }
 
 }
