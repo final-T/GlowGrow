@@ -9,6 +9,7 @@ import com.tk.gg.post.application.dto.PostSearchResponseDto;
 import com.tk.gg.post.domain.model.Post;
 import com.tk.gg.post.domain.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PostService {
 
     private final PostRepository postRepository;
@@ -86,4 +88,26 @@ public class PostService {
     public Page<PostSearchResponseDto> searchPosts(Pageable pageable, PostSearchCondition searchDto) {
         return postRepository.findPostsByCondition(searchDto,pageable);
     }
+
+    @Transactional(readOnly = true)
+    public Post getPostById(UUID postId) {
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new GlowGlowException(GlowGlowError.POST_NO_EXIST));
+    }
+
+    @Transactional
+    public Post updatePostLikeCount(UUID postId, boolean likeStatus) {
+        Post post = getPostById(postId);
+
+        int updatedRows = postRepository.updateLikeCount(postId, likeStatus);
+        if (updatedRows == 0) {
+            log.warn("No rows updated for post: {}. Current likes: {}, Trying to {}",
+                    postId, post.getLikes(), likeStatus ? "increment" : "decrement");
+            // 좋아요 수가 이미 0이고 감소하려는 경우, 또는 다른 동시성 문제로 업데이트가 실패한 경우
+            // 현재 상태를 반환하고 예외를 던지지 않음
+            return post;
+        }
+        return getPostById(postId);
+    }
+
 }

@@ -7,6 +7,10 @@ public enum ResponseMessage {
     POST_DELETE_SUCCESS("게시글이 성공적으로 삭제되었습니다."),
     POST_RETRIEVE_SUCCESS("게시글을 성공적으로 조회했습니다."),
 
+    // 좋아요 관련 메시지
+    LIKE_SUCCESS("게시물에 좋아요를 표시했습니다."),
+    UNLIKE_SUCCESS("게시물의 좋아요를 취소했습니다."),
+
     // 프로모션 관련 메시지
     PROMOTION_CREATE_SUCCESS("프로모션을 성공적으로 생성했습니다."),
     PROMOTION_UPDATE_SUCCESS("프로모션을 성공적으로 수정했습니다."),

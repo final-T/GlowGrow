@@ -29,6 +29,7 @@ public class Post extends BaseEntity {
     @Column(name = "views", nullable = false)
     private Integer views;
 
+    @Setter
     @Column(name = "likes", nullable = false)
     private Integer likes;
 
