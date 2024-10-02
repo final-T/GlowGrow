@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -34,5 +35,12 @@ public class CouponApplicationService {
                 .map(CouponUserResponseDto::from)
                 .toList();
 
+    }
+
+    // 사용자 쿠폰 단건 조회
+    public CouponUserResponseDto getUserCoupon(Long userId, UUID couponId) {
+        CouponUser userCoupon = couponDomainService.getUserCoupon(userId, couponId);
+
+        return CouponUserResponseDto.from(userCoupon);
     }
 }

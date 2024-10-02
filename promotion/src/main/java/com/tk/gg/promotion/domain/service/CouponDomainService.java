@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -81,5 +82,12 @@ public class CouponDomainService {
     @Transactional(readOnly = true)
     public List<CouponUser> getUserCoupons(Long userId) {
         return couponUserRepository.findByUserId(userId);
+    }
+
+    @Transactional(readOnly = true)
+    public CouponUser getUserCoupon(Long userId, UUID couponId) {
+
+        return couponUserRepository.findByUserIdAndCouponId(userId, couponId)
+                .orElseThrow(() -> new GlowGlowException(GlowGlowError.COUPON_NO_EXIST));
     }
 }
