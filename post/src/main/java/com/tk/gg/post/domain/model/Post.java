@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -36,11 +38,16 @@ public class Post extends BaseEntity {
     @Column(nullable = false)
     private Boolean isDeleted = false;
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
+
     //소프트 삭제 메서드
     public void softDelete(){
         this.isDeleted = true;
         this.deletedAt = LocalDateTime.now();
         //this.deletedBy = deletedBy;
+        // 모든 댓글에 대해 소프트 삭제 수행
+        this.comments.forEach(Comment::softDelete);
     }
 
 
