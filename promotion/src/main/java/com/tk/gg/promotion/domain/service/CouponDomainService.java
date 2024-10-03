@@ -27,7 +27,7 @@ public class CouponDomainService {
     @Transactional
     public Coupon createCoupon(CouponCreateRequestDto requestDto) {
         Promotion promotion = promotionRepository.findById(requestDto.getPromotionId())
-                .orElseThrow(() -> new GlowGlowException(GlowGlowError.POST_NO_EXIST));
+                .orElseThrow(() -> new GlowGlowException(GlowGlowError.PROMOTION_NO_EXIST));
 
         // 쿠폰 생성 로직을 Promotion 애그리거트에서 처리
         return promotion.createCoupon(
@@ -45,7 +45,7 @@ public class CouponDomainService {
     public CouponIssueResponseDto issueCoupoon(CouponIssueRequestDto requestDto) {
         // 프로모션 조회
         Promotion promotion = promotionRepository.findById(requestDto.getPromotionId())
-                .orElseThrow(() -> new GlowGlowException(GlowGlowError.POST_NO_EXIST));
+                .orElseThrow(() -> new GlowGlowException(GlowGlowError.PROMOTION_NO_EXIST));
 
         // 발급하려는 쿠폰 조회
         Coupon coupon = promotion.getCoupons().stream()
