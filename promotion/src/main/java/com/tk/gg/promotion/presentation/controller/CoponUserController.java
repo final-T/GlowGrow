@@ -7,10 +7,7 @@ import com.tk.gg.promotion.application.dto.CouponUserResponseDto;
 import com.tk.gg.promotion.application.serivce.CouponApplicationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -44,5 +41,19 @@ public class CoponUserController {
         CouponUserResponseDto userCoupon = couponApplicationService.getUserCoupon(userId, couponId);
 
         return ApiUtils.success(ResponseMessage.COUPON_USER_RETRIEVE_SUCCESS.getMessage(), userCoupon);
+    }
+
+    /**
+     * 사용자 쿠폰 사용
+     * @param couponId: 쿠폰 ID
+     * @return: 사용자 쿠폰 사용 응답 DTO
+     */
+    @PatchMapping("{couponId}/use")
+    public GlobalResponse<Void> useCoupon(@PathVariable UUID couponId) {
+        // TODO : 헤더에 있는 사용자 ID로 사용자 쿠폰 사용, 임시 값으로 1로 설정
+        Long userId = 1L;
+        // 쿠폰 사용 처리
+        couponApplicationService.useCoupon(userId, couponId);
+        return ApiUtils.success(ResponseMessage.COUPON_USER_USE_SUCCESS.getMessage(), null);
     }
 }

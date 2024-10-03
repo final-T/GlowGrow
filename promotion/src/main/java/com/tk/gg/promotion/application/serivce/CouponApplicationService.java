@@ -43,4 +43,9 @@ public class CouponApplicationService {
 
         return CouponUserResponseDto.from(userCoupon);
     }
+
+    // 쿠폰 사용 처리
+    public void useCoupon(Long userId, UUID couponId) {
+        couponDomainService.useCoupon(userId, couponId);
+    }
 }

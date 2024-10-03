@@ -8,6 +8,7 @@ import com.tk.gg.promotion.application.dto.CouponIssueResponseDto;
 import com.tk.gg.promotion.domain.Coupon;
 import com.tk.gg.promotion.domain.CouponUser;
 import com.tk.gg.promotion.domain.Promotion;
+import com.tk.gg.promotion.domain.enums.CouponStatus;
 import com.tk.gg.promotion.infrastructure.repository.CouponUserRepository;
 import com.tk.gg.promotion.infrastructure.repository.PromotionRepository;
 import lombok.RequiredArgsConstructor;
@@ -89,5 +90,25 @@ public class CouponDomainService {
 
         return couponUserRepository.findByUserIdAndCouponId(userId, couponId)
                 .orElseThrow(() -> new GlowGlowException(GlowGlowError.COUPON_NO_EXIST));
+    }
+
+    @Transactional
+    public void useCoupon(Long userId, UUID couponId) {
+        // 사용자와 연관된 쿠폰을 조회
+        CouponUser couponUser = couponUserRepository.findByUserIdAndCouponId(userId, couponId)
+                .orElseThrow(() -> new GlowGlowException(GlowGlowError.COUPON_NO_EXIST));
+
+        // 1차 검증은 결제에서 쿠폰 사용 가능 여부 확인, 2차 검증으로 수행
+        if (couponUser.isUsed()) {
+            throw new GlowGlowException(GlowGlowError.COUPON_ALREADY_USED);
+        }
+
+        // 1차 검증은 결제에서 쿠폰 만료 여부 확인, 2차 검증 수행
+        if (couponUser.getCoupon().getStatus().equals(CouponStatus.EXPIRED)) {
+            throw new GlowGlowException(GlowGlowError.COUPON_EXPIRED);
+        }
+
+        // 쿠폰 사용 처리
+        couponUser.useCoupon();
     }
 }
