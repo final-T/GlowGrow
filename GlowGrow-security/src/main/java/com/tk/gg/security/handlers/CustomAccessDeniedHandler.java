@@ -1,6 +1,7 @@
 package com.tk.gg.security.handlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tk.gg.common.response.exception.GlowGlowError;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,6 +24,6 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
         response.setStatus(HttpStatus.FORBIDDEN.value());
         response.setContentType("application/json;charset=UTF-8"); // MediaType.APPLICATION_JSON => 인코딩 문제 존재
-        response.getWriter().write(objectMapper.writeValueAsString("권한 없음")); //TODO : 공통 응답으로 수정해야함
+        response.getWriter().write(objectMapper.writeValueAsString(GlowGlowError.AUTH_UNAUTHORIZED.getMessage()));
     }
 }
