@@ -40,4 +40,9 @@ public class CouponUser extends BaseEntity {
         this.coupon = coupon;
         this.userId = userId;
     }
+
+    // 쿠폰 사용 처리
+    public void useCoupon() {
+        this.isUsed = true;
+    }
 }
