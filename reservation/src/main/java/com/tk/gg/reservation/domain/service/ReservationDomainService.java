@@ -1,5 +1,7 @@
 package com.tk.gg.reservation.domain.service;
 
+import com.tk.gg.common.response.exception.GlowGlowError;
+import com.tk.gg.common.response.exception.GlowGlowException;
 import com.tk.gg.reservation.application.dto.CreateReservationDto;
 import com.tk.gg.reservation.application.dto.UpdateReservationDto;
 import com.tk.gg.reservation.domain.model.Reservation;
@@ -15,6 +17,9 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import static com.tk.gg.common.response.exception.GlowGlowError.RESERVATION_NO_EXIST;
+import static com.tk.gg.common.response.exception.GlowGlowError.RESERVATION_UPDATE_FAILED;
+
 //TODO : 예약 동시성 락 처리 고민
 @RequiredArgsConstructor
 @Service
@@ -28,7 +33,7 @@ public class ReservationDomainService {
 
     public Reservation getOne(UUID id) {
         return reservationRepository.findByReservationId(id).orElseThrow(
-                () -> new IllegalArgumentException("ID 에 해당하는 reservation 정보가 없습니다.")
+                () -> new GlowGlowException(RESERVATION_NO_EXIST)
         );
     }
 
@@ -42,7 +47,7 @@ public class ReservationDomainService {
         Reservation reservation = getOne(id);
         // 예약 시간을 바꿀 때 한번 더 빈 시간대인지 검증
         if(!reservation.getTimeSlot().equals(timeSlot) && timeSlot.getIsReserved().equals(true))
-            throw new BadRequestException("[예약변경실패] 이미 예약되어 있는 시간입니다.");
+            throw new GlowGlowException(RESERVATION_UPDATE_FAILED);
         // 사용자 취소 시 예약 가능시간테이블 정보 상태 수정
         if (dto.reservationStatus().equals(ReservationStatus.CANCEL)){
             reservation.getTimeSlot().updateIsReserved(false);

@@ -2,6 +2,7 @@ package com.tk.gg.reservation.presentation.controller;
 
 import com.tk.gg.common.response.ApiUtils;
 import com.tk.gg.common.response.GlobalResponse;
+import com.tk.gg.common.response.ResponseMessage;
 import com.tk.gg.reservation.presentation.request.ReviewSearchCondition;
 import com.tk.gg.reservation.application.service.ReviewService;
 import com.tk.gg.reservation.presentation.request.CreateReviewRequest;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
+import static com.tk.gg.common.response.ResponseMessage.*;
+
 //TODO : Security, 유저  검증
 @RequiredArgsConstructor
 @RestController
@@ -30,7 +33,7 @@ public class ReviewController {
     public GlobalResponse<ReviewWithReservationResponse> createReview(
             @RequestBody @Valid CreateReviewRequest request
     ){
-        return ApiUtils.success("리뷰 생성 성공",
+        return ApiUtils.success(REVIEW_CREATE_SUCCESS.getMessage(),
                 ReviewWithReservationResponse.from(reviewService.createReview(request.toDto()))
         );
     }
@@ -40,7 +43,7 @@ public class ReviewController {
             ReviewSearchCondition searchCondition,
             @PageableDefault(sort = {"createdAt, updatedAt"}, direction = Sort.Direction.DESC) Pageable pageable
     ){
-        return ApiUtils.success("리뷰 전체 조회 성공",
+        return ApiUtils.success(REVIEW_RETRIEVE_SUCCESS.getMessage(),
                 reviewService.searchReviews(searchCondition, pageable).map(ReviewResponse::from)
         );
     }
@@ -49,7 +52,7 @@ public class ReviewController {
     public GlobalResponse<ReviewWithReservationResponse> getOneReview(
             @PathVariable(value = "reviewId") UUID reviewId
     ){
-        return ApiUtils.success("리뷰 단건 조회 성공",
+        return ApiUtils.success(REVIEW_RETRIEVE_SUCCESS.getMessage(),
                 ReviewWithReservationResponse.from(reviewService.getOneReview(reviewId))
         );
     }
@@ -60,7 +63,7 @@ public class ReviewController {
             @RequestBody @Valid UpdateReviewRequest request
     ){
         reviewService.updateReview(reviewId, request.toDto());
-        return ApiUtils.success("리뷰 수정 성공");
+        return ApiUtils.success(REVIEW_UPDATE_SUCCESS.getMessage());
     }
 
     @DeleteMapping("/{reviewId}")
@@ -69,6 +72,6 @@ public class ReviewController {
     ){
         //TODO : deletedBy 유저 수정
         reviewService.deleteReview(reviewId, "deletedBy");
-        return ApiUtils.success("리뷰 삭제 성공");
+        return ApiUtils.success(REVIEW_DELETE_SUCCESS.getMessage());
     }
 }

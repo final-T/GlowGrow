@@ -1,6 +1,8 @@
 package com.tk.gg.reservation.domain.service;
 
 
+import com.tk.gg.common.response.exception.GlowGlowError;
+import com.tk.gg.common.response.exception.GlowGlowException;
 import com.tk.gg.reservation.application.dto.CreateTimeSlotRequestDto;
 import com.tk.gg.reservation.application.dto.UpdateTimeSlotRequestDto;
 import com.tk.gg.reservation.domain.model.TimeSlot;
@@ -12,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.UUID;
+
+import static com.tk.gg.common.response.exception.GlowGlowError.*;
 
 @RequiredArgsConstructor
 @Service
@@ -26,13 +30,13 @@ public class TimeSlotDomainService {
     // TODO : 커스텀 에러 메시지 Common 모듈에 추가하기
     public TimeSlot getOne(UUID id) {
         return timeSlotRepository.findByReservationId(id).orElseThrow(
-                () -> new IllegalArgumentException("ID 에 해당하는 timeSlot 정보가 없습니다.")
+                () -> new GlowGlowException(TIMESLOT_NO_EXIST)
         );
     }
 
     public TimeSlot create(CreateTimeSlotRequestDto dto) {
         if (checkAlreadyExist(dto)){
-            throw new IllegalArgumentException("이미 존재하는 timeSlot 정보입니다.");
+            throw new GlowGlowException(TIMESLOT_ALREADY_EXIST);
         }
         return timeSlotRepository.save(dto.toEntity());
     }

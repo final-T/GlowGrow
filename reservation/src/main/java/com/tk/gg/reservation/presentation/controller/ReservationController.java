@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import static com.tk.gg.common.response.ResponseMessage.*;
+
 //TODO : Security, 유저  검증
 @RequiredArgsConstructor
 @RestController
@@ -33,7 +35,7 @@ public class ReservationController {
     public GlobalResponse<ReservationResponse> createReservation(
             @RequestBody @Valid CreateReservationRequest request
     ){
-        return ApiUtils.success("예약 생성 성공",
+        return ApiUtils.success(RESERVATION_CREATE_SUCCESS.getMessage(),
                 ReservationResponse.from(reservationService.createReservation(request.toDto()))
         );
     }
@@ -47,7 +49,7 @@ public class ReservationController {
             @RequestParam(value = "status", required = false) ReservationStatus status,
             @PageableDefault(sort = {"reservationDate"}, direction = Sort.Direction.ASC) Pageable pageable
     ){
-        return ApiUtils.success("예약 전체 조회 성공",
+        return ApiUtils.success(RESERVATION_RETRIEVE_SUCCESS.getMessage(),
                 reservationService.searchReservations(startDate, endDate, status, pageable).map(ReservationResponse::from)
         );
     }
@@ -56,7 +58,7 @@ public class ReservationController {
     public GlobalResponse<ReservationResponse> getOneReservation(
             @PathVariable(value = "reservationId") UUID reservationId
     ){
-        return ApiUtils.success("예약 단건 조회 성공",
+        return ApiUtils.success(RESERVATION_RETRIEVE_SUCCESS.getMessage(),
                 ReservationResponse.from(reservationService.getOneReservation(reservationId))
         );
     }
@@ -67,7 +69,7 @@ public class ReservationController {
             @RequestBody @Valid UpdateReservationRequest request
     ){
         reservationService.updateReservation(reservationId, request.toDto());
-        return ApiUtils.success("예약 수정 성공");
+        return ApiUtils.success(RESERVATION_UPDATE_SUCCESS.getMessage());
     }
 
     @PatchMapping("/{reservationId}/status")
@@ -76,7 +78,7 @@ public class ReservationController {
             @RequestBody @Valid UpdateReservationStatusRequest reservationStatus
     ){
         reservationService.updateReservationStatus(reservationId,reservationStatus.getReservationStatus());
-        return ApiUtils.success("예약 상태 수정 성공");
+        return ApiUtils.success(RESERVATION_UPDATE_STATUS_SUCCESS.getMessage());
     }
 
     @DeleteMapping("/{reservationId}")
@@ -85,6 +87,6 @@ public class ReservationController {
     ){
         //TODO : deletedBy 유저 수정
         reservationService.deleteReservation(reservationId, "deletedBy");
-        return ApiUtils.success("예약 삭제 성공");
+        return ApiUtils.success(RESERVATION_DELETE_SUCCESS.getMessage());
     }
 }

@@ -26,10 +26,24 @@ public enum ResponseMessage {
 
     // 인증 관련 메세지
     AUTH_SING_UP_SUCCESS("회원가입을 성공하였습니다."),
-    AUTH_LOGIN_SUCCESS("로그인을 성공하였습니다.")
+    AUTH_LOGIN_SUCCESS("로그인을 성공하였습니다."),
 
-    // 다른 메시지들...
+    // 예약 관련 메시지
+    RESERVATION_CREATE_SUCCESS("예약을 성공적으로 생성했습니다."),
+    RESERVATION_UPDATE_SUCCESS("예약 내용을 성공적으로 수정했습니다."),
+    RESERVATION_UPDATE_STATUS_SUCCESS("예약 상태를 성공적으로 수정했습니다."),
+    RESERVATION_DELETE_SUCCESS("예약을 성공적으로 삭제했습니다."),
+    RESERVATION_RETRIEVE_SUCCESS("예약을 성공적으로 조회했습니다."),
 
+    REVIEW_CREATE_SUCCESS("리뷰를 성공적으로 생성했습니다."),
+    REVIEW_UPDATE_SUCCESS("리뷰 내용을 성공적으로 수정했습니다."),
+    REVIEW_DELETE_SUCCESS("리뷰를 성공적으로 삭제했습니다."),
+    REVIEW_RETRIEVE_SUCCESS("리뷰를 성공적으로 조회했습니다."),
+
+    TIMESLOT_CREATE_SUCCESS("예약타임슬롯을 성공적으로 생성했습니다."),
+    TIMESLOT_UPDATE_SUCCESS("예약타임슬롯 내용을 성공적으로 수정했습니다."),
+    TIMESLOT_DELETE_SUCCESS("예약타임슬롯을 성공적으로 삭제했습니다."),
+    TIMESLOT_RETRIEVE_SUCCESS("예약타임슬롯을 성공적으로 조회했습니다.")
     ;
 
     private final String message;

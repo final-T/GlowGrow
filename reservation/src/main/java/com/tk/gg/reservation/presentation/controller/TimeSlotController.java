@@ -2,6 +2,7 @@ package com.tk.gg.reservation.presentation.controller;
 
 import com.tk.gg.common.response.ApiUtils;
 import com.tk.gg.common.response.GlobalResponse;
+import com.tk.gg.common.response.ResponseMessage;
 import com.tk.gg.reservation.application.service.TimeSlotService;
 import com.tk.gg.reservation.presentation.request.CreateTimeSlotRequest;
 import com.tk.gg.reservation.presentation.request.UpdateTimeSlotRequest;
@@ -19,6 +20,8 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.UUID;
 
+import static com.tk.gg.common.response.ResponseMessage.*;
+
 // TODO : Security 추가 후 권한 처리, 유저 정보 검증(FeignClient)
 // TODO : 응답 메시지 Enum common 에 추가하기
 @RequiredArgsConstructor
@@ -33,7 +36,7 @@ public class TimeSlotController {
             @RequestBody @Valid CreateTimeSlotRequest request
     ) {
         return ApiUtils.success(
-                "예약 가능 테이블 데이터 생성 성공",
+                TIMESLOT_CREATE_SUCCESS.getMessage(),
                 TimeSlotResponse.from(timeSlotService.createTimeSlot(request.toDto()))
         );
     }
@@ -47,7 +50,7 @@ public class TimeSlotController {
             @PageableDefault(sort = {"availableDate"}, direction = Sort.Direction.DESC) Pageable pageable
     ) {
         return ApiUtils.success(
-                "예약 가능 테이블 정보 조회 성공",
+                TIMESLOT_RETRIEVE_SUCCESS.getMessage(),
                 timeSlotService.getAllTimeSlot(startDate, endDate, pageable).map(TimeSlotResponse::from)
         );
     }
@@ -57,7 +60,7 @@ public class TimeSlotController {
             @PathVariable(value = "timeSlotId") UUID timeSlotId
     ) {
         return ApiUtils.success(
-                "예약 가능 테이블 정보 조회 성공",
+                TIMESLOT_RETRIEVE_SUCCESS.getMessage(),
                 TimeSlotResponse.from(timeSlotService.getTimeSlotDetails(timeSlotId))
         );
     }
@@ -68,7 +71,7 @@ public class TimeSlotController {
             @RequestBody @Valid UpdateTimeSlotRequest request
     ) {
         timeSlotService.updateTimeSlot(timeSlotId, request.toDto());
-        return ApiUtils.success("예약 가능 테이블 정보 수정 성공");
+        return ApiUtils.success(TIMESLOT_UPDATE_SUCCESS.getMessage());
     }
 
     @DeleteMapping("/{timeSlotId}")
@@ -77,6 +80,6 @@ public class TimeSlotController {
     ) {
         // TODO : 유저 헤더 추가
         timeSlotService.deleteTimeSlot(timeSlotId, "deletedBy");
-        return ApiUtils.success("예약 가능 테이블 정보 삭제 성공");
+        return ApiUtils.success(TIMESLOT_DELETE_SUCCESS.getMessage());
     }
 }

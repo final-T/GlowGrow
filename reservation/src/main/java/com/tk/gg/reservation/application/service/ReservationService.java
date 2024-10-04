@@ -1,6 +1,7 @@
 package com.tk.gg.reservation.application.service;
 
 
+import com.tk.gg.common.response.exception.GlowGlowException;
 import com.tk.gg.reservation.application.dto.CreateReservationDto;
 import com.tk.gg.reservation.application.dto.ReservationDto;
 import com.tk.gg.reservation.application.dto.UpdateReservationDto;
@@ -8,7 +9,6 @@ import com.tk.gg.reservation.domain.model.TimeSlot;
 import com.tk.gg.reservation.domain.service.ReservationDomainService;
 import com.tk.gg.reservation.domain.service.TimeSlotDomainService;
 import com.tk.gg.reservation.domain.type.ReservationStatus;
-import jakarta.ws.rs.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.UUID;
+
+import static com.tk.gg.common.response.exception.GlowGlowError.*;
 
 @RequiredArgsConstructor
 @Service
@@ -40,7 +42,7 @@ public class ReservationService {
         if (!dto.reservationDate().equals(timeSlot.getAvailableDate()) &&
                 !dto.reservationTime().equals(timeSlot.getAvailableTime())
         ){
-            throw new BadRequestException("[예약 생성 실패] timeSlot 의 시간과 맞지 않습니다.");
+            throw new GlowGlowException(RESERVATION_CREATE_FAILED);
         }
 
         return ReservationDto.from(reservationDomainService.create(dto, timeSlot));

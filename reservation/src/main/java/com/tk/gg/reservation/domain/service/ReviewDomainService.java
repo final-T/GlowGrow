@@ -1,6 +1,7 @@
 package com.tk.gg.reservation.domain.service;
 
 
+import com.tk.gg.common.response.exception.GlowGlowException;
 import com.tk.gg.reservation.application.dto.CreateReviewDto;
 import com.tk.gg.reservation.presentation.request.ReviewSearchCondition;
 import com.tk.gg.reservation.application.dto.UpdateReviewDto;
@@ -13,6 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
+
+import static com.tk.gg.common.response.exception.GlowGlowError.REVIEW_NO_EXIST;
 
 @RequiredArgsConstructor
 @Service
@@ -29,7 +32,7 @@ public class ReviewDomainService {
 
     public Review getOne(UUID reviewId) {
         return reviewRepository.findById(reviewId).orElseThrow(
-                () -> new IllegalArgumentException("ID 에 해당하는 리뷰 정보가 없습니다.")
+                () -> new GlowGlowException(REVIEW_NO_EXIST)
         );
     }
 
