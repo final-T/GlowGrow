@@ -26,7 +26,16 @@ public enum GlowGlowError {
 
     // 프로모션 관련 에러
     PROMOTION_NO_EXIST(404, "PROMOTION_001", "존재하지 않은 프로모션입니다.")
-    ;
+    ,
+
+    // 예약 및 리뷰 관련 에러
+    TIMESLOT_ALREADY_EXIST(404, "TIMESLOT_001","예약타임슬롯 생성에 실패했습니다."),
+    TIMESLOT_NO_EXIST(404, "TIMESLOT_002","존재하지 않는 예약타임슬롯 정보 입니다."),
+    RESERVATION_CREATE_FAILED(404, "RESERVATION_001", "예약을 생성에 실패했습니다."),
+    RESERVATION_NO_EXIST(404, "RESERVATION_002","존재하지 않는 예약 정보입니다."),
+    RESERVATION_UPDATE_FAILED(400, "RESERVATION_003", "예약 내용 수정에 실패했습니다."),
+    REVIEW_CANNOT_FAILED(404, "REVIEW_001", "예약에 대한 리뷰 생성에 실패했습니다."),
+    REVIEW_NO_EXIST(404, "REVIEW_002", "존재하지 않는 리뷰입니다.");
 
     private final int statusCode; // HTTP 상태 코드
     private final String errorCode; // 내부 시스템의 에러 코드
