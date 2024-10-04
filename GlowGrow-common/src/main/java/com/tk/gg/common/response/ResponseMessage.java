@@ -22,8 +22,15 @@ public enum ResponseMessage {
     PROMOTION_CREATE_SUCCESS("프로모션을 성공적으로 생성했습니다."),
     PROMOTION_UPDATE_SUCCESS("프로모션을 성공적으로 수정했습니다."),
     PROMOTION_DELETE_SUCCESS("프로모션을 성공적으로 삭제했습니다."),
-    PROMOTION_RETRIEVE_SUCCESS("프로모션을 성공적으로 조회했습니다.");
+    PROMOTION_RETRIEVE_SUCCESS("프로모션을 성공적으로 조회했습니다."),
+
+    // 인증 관련 메세지
+    AUTH_SING_UP_SUCCESS("회원가입을 성공하였습니다."),
+    AUTH_LOGIN_SUCCESS("로그인을 성공하였습니다.")
+
     // 다른 메시지들...
+
+    ;
 
     private final String message;
 
