@@ -42,7 +42,8 @@ public class PostRepositoryCustomImpl extends QuerydslRepositorySupport implemen
                 .from(post)
                 .where(
                         isNotDeleted(),
-                        keywordContains(condition.getKeyword()),  // 검색 조건 적용
+                        keywordContains(condition.getKeyword()),  // 게시물 내용
+                        titleContains(condition.getTitle()),
                         likesGreaterThanOrEqual(condition.getMinLikes()),
                         viewsGreaterThanOrEqual(condition.getMinViews())
                 )
@@ -83,19 +84,28 @@ public class PostRepositoryCustomImpl extends QuerydslRepositorySupport implemen
         return minViews != null ? post.views.goe(minViews) : null;
     }
 
-    private OrderSpecifier<?> getOrderBy(Pageable pageable) {
-        if (pageable.getSort().isEmpty()) {
-            return null; // 정렬이 없는 경우
-        }
-
-        OrderSpecifier<?> orderSpecifier = null;
-        for (Sort.Order order : pageable.getSort()) {
-            if (order.getProperty().equals("createdAt")) {
-                orderSpecifier = order.isAscending() ? post.createdAt.asc() : post.createdAt.desc();
-            }
-
-        }
-        return orderSpecifier;
+    private BooleanExpression titleContains(String title) {
+        return title != null ? post.title.containsIgnoreCase(title) : null;
     }
 
+    private OrderSpecifier<?> getOrderBy(Pageable pageable) {
+        if (pageable.getSort().isEmpty()) {
+            return post.createdAt.desc(); // 기본 정렬: 생성일 내림차순
+        }
+
+        for (Sort.Order order : pageable.getSort()) {
+            switch (order.getProperty()) {
+                case "createdAt":
+                    return order.isAscending() ? post.createdAt.asc() : post.createdAt.desc();
+                case "likes":
+                    return order.isAscending() ? post.likes.asc() : post.likes.desc();
+                case "views":
+                    return order.isAscending() ? post.views.asc() : post.views.desc();
+                // 다른 정렬 기준들...
+            }
+        }
+
+        return post.createdAt.desc(); // 기본 정렬
+
+    }
 }
