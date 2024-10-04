@@ -6,7 +6,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Getter
 @Builder
@@ -27,5 +29,33 @@ public class PostResponseDto {
                 .views(post.getViews())
                 .likes(post.getLikes())
                 .build();
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Get{
+        private UUID postId;
+        private String title;
+        private String content;
+        private Integer views;
+        private Integer likes;
+        private List<CommentResponseDto> commentList;
+
+        public static Get of(Post post) {
+            return Get.builder()
+                    .postId(post.getPostId())
+                    .title(post.getTitle())
+                    .content(post.getContent())
+                    .views(post.getViews())
+                    .likes(post.getLikes())
+                    .commentList(post.getComments().stream()
+                            .map(CommentResponseDto::of)
+                            .collect(Collectors.toList()))
+                    .build();
+        }
+
+
     }
 }
