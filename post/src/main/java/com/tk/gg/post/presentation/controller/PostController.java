@@ -30,24 +30,28 @@ public class PostController {
         return ApiUtils.success(ResponseMessage.POST_CREATE_SUCCESS.getMessage(),responseDto);
     }
 
+    // 게시글 전체 조회
     @GetMapping
     public  GlobalResponse<List<PostResponseDto>> getAllPosts(){
         List<PostResponseDto> responseDto = postService.getAllPosts();
         return ApiUtils.success(ResponseMessage.POST_RETRIEVE_SUCCESS.getMessage(),responseDto);
     }
 
+    // 게시글 조회
     @GetMapping("/{postId}")
-    public GlobalResponse<PostResponseDto> getPostById(@PathVariable UUID postId){
-        PostResponseDto responseDto = postService.getPost(postId);
+    public GlobalResponse<PostResponseDto.Get> getPostById(@PathVariable UUID postId){
+        PostResponseDto.Get responseDto = postService.getPost(postId);
         return ApiUtils.success(ResponseMessage.POST_RETRIEVE_SUCCESS.getMessage(),responseDto);
     }
 
+    // 게시글 수정
     @PatchMapping("/{postId}")
     public GlobalResponse<PostResponseDto> updatePost(@PathVariable UUID postId, @RequestBody PostRequestDto requestDto) {
         PostResponseDto responseDto = postService.updatePost(postId, requestDto);
         return ApiUtils.success(ResponseMessage.POST_UPDATE_SUCCESS.getMessage(), responseDto);
     }
 
+    // 게시글 삭제
     @DeleteMapping("/{postId}")
     public GlobalResponse<Void> deletePost(@PathVariable UUID postId) {
         postService.deletePost(postId);
