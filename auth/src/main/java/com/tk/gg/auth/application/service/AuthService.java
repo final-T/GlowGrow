@@ -13,7 +13,11 @@ public class AuthService {
 
     private final UserDomainService userDomainService;
 
-    public TokenInfoResponse singUp(UserDto dto) {
-        return userDomainService.saveUser(dto);
+    public void singUp(UserDto dto) {
+        userDomainService.saveUser(dto);
+    }
+
+    public TokenInfoResponse login(UserDto dto) {
+        return userDomainService.login(dto);
     }
 }

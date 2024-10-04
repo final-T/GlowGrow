@@ -6,6 +6,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     testImplementation 'org.springframework.security:spring-security-test'
 
+
+    // lombok - 코드 간소화 (각 서비스 모듈에서도 추가 필요)
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
     compileOnly 'org.springframework.boot:spring-boot-starter-web'
 
     // JWT

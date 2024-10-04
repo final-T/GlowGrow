@@ -1,6 +1,8 @@
 package com.tk.gg.security.handlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tk.gg.common.response.exception.GlowGlowError;
+import com.tk.gg.common.response.exception.GlowGlowException;
 import com.tk.gg.security.jwt.JwtProvider;
 import com.tk.gg.security.jwt.TokenStatus;
 import jakarta.servlet.ServletException;
@@ -40,7 +42,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         } else if (jwtProvider.validateAccessToken(token.get()).equals(TokenStatus.INVALID)) {
             makeTokenResponse(response, HttpStatus.UNAUTHORIZED, false);
         } else {
-            log.error("CustomAuthenticationEntryPoint: 처리하지 못한 케이스의 예외");
+            throw new GlowGlowException(GlowGlowError.AUTH_UNAUTHORIZED);
         }
     }
 

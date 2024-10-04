@@ -3,6 +3,8 @@ package com.tk.gg.auth.application.dto;
 import com.tk.gg.auth.domain.model.User;
 import com.tk.gg.common.enums.Gender;
 import com.tk.gg.common.enums.UserRole;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.Builder;
 
@@ -37,6 +39,13 @@ public record UserDto(
                 .gender(Gender.fromString(gender))
                 .phoneNumber(phoneNumber)
                 .address(address)
+                .build();
+    }
+
+    public static UserDto loginOf(String email, String password) {
+        return UserDto.builder()
+                .email(email)
+                .password(password)
                 .build();
     }
 
