@@ -60,7 +60,7 @@ public class PostService {
 
 
     @Transactional
-    public PostResponseDto getPost(UUID postId) {
+    public PostResponseDto.Get getPost(UUID postId) {
         Post post = postRepository.findByPostId(postId)
                 .orElseThrow(() -> new GlowGlowException(GlowGlowError.POST_NO_EXIST));
 
@@ -71,7 +71,7 @@ public class PostService {
         int updatedViews = postRepository.getViews(postId);
         post.setViews(updatedViews);
 
-        return PostResponseDto.of(post);
+        return PostResponseDto.Get.of(post);
     }
 
 
