@@ -17,6 +17,12 @@ public enum ResponseMessage {
     COMMENTS_UPDATE_SUCCESS("댓글이 성공적으로 수정되었습니다."),
     COMMENTS_DELETE_SUCCESS("댓글이 성공적으로 삭제되었습니다."),
 
+    // 멀티미디어 관련 메시지
+    MULTIMEDIA_UPLOAD_SUCCESS("파일 업로드가 성공적으로 수행되었습니다."), // S3
+    MULTIMEDIA_RETRIEVE_SUCCESS("파일을 성공적으로 조회했습니다."),  // S3
+    MULTIMEDIA_DELETE_SUCCESS("파일을 성공적으로 삭제했습니다."), // S3
+    MULTIMEDIA_UPDATE_SUCCESS("멀티미디어를 성공적으로 수정했습니다."),
+
 
     // 프로모션 관련 메시지
     PROMOTION_CREATE_SUCCESS("프로모션을 성공적으로 생성했습니다."),
