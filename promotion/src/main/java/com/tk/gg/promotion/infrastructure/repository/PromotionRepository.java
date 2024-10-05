@@ -23,4 +23,8 @@ public interface PromotionRepository extends JpaRepository<Promotion, UUID>, Pro
     @Query("UPDATE Coupon c SET c.status = :expiredStatus " +
             "WHERE c.status = :activeStatus AND c.validUntil < CURRENT_DATE")
     void updateCouponStatus(@Param("expiredStatus") CouponStatus expiredStatus, @Param("activeStatus") CouponStatus activeStatus);
+
+    @Modifying
+    @Query("UPDATE Coupon c SET c.totalQuantity = c.totalQuantity - 1 WHERE c.couponId = :couponId AND c.totalQuantity > 0")
+    int decreaseCouponQuantity(@Param("couponId") UUID couponId);
 }
