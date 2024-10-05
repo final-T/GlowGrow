@@ -41,6 +41,9 @@ public class Post extends BaseEntity {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Multimedia> multimediaList = new ArrayList<>();
+
     //소프트 삭제 메서드
     public void softDelete(){
         this.isDeleted = true;
@@ -48,6 +51,8 @@ public class Post extends BaseEntity {
         //this.deletedBy = deletedBy;
         // 모든 댓글에 대해 소프트 삭제 수행
         this.comments.forEach(Comment::softDelete);
+        // TODO
+        //this.multimediaList.forEach(multimedia::softDelete);
     }
 
 
