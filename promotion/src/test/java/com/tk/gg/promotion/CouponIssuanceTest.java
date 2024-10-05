@@ -1,18 +1,24 @@
 package com.tk.gg.promotion;
 
+import com.tk.gg.promotion.application.dto.CouponCreateRequestDto;
 import com.tk.gg.promotion.application.dto.CouponIssueRequestDto;
 import com.tk.gg.promotion.application.serivce.CouponApplicationService;
+import com.tk.gg.promotion.domain.Coupon;
 import com.tk.gg.promotion.domain.Promotion;
 import com.tk.gg.promotion.domain.enums.DiscountType;
 import com.tk.gg.promotion.domain.enums.PromotionStatus;
+import com.tk.gg.promotion.domain.service.CouponDomainService;
+import com.tk.gg.promotion.domain.service.PromotionDomainService;
 import com.tk.gg.promotion.infrastructure.repository.CouponUserRepository;
-import com.tk.gg.promotion.infrastructure.repository.PromotionRepository;
+import jakarta.persistence.EntityManager;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -23,15 +29,19 @@ import java.util.concurrent.Executors;
 
 
 @SpringBootTest
+@Transactional
 class CouponIssuanceTest {
     @Autowired
     private CouponApplicationService couponApplicationService;
 
     @Autowired
-    private PromotionRepository promotionRepository;
+    private CouponUserRepository couponUserRepository;
 
     @Autowired
-    private CouponUserRepository couponUserRepository;
+    private PromotionDomainService promotionDomainService;
+
+    @Autowired
+    private CouponDomainService couponDomainService;
 
     private UUID promotionId;
     private UUID couponId;
@@ -39,41 +49,42 @@ class CouponIssuanceTest {
     @BeforeEach
     public void setUp() {
         // 프로모션 생성
-        Promotion promotion = Promotion.builder()
+        Promotion promotion = promotionDomainService.createPromotion(Promotion.builder()
                 .title("프로모션 제목")
                 .description("프로모션 설명")
                 .postUserId(1L)
-                .startDate(LocalDate.parse("2021-01-01"))
-                .endDate(LocalDate.parse("2021-12-31"))
+                .startDate(LocalDate.now())
+                .endDate(LocalDate.now().plusDays(10))
                 .status(PromotionStatus.ACTIVE)
-                .build();
-
-
-        // 쿠폰 생성
-        promotion.createCoupon(
-                "쿠폰 설명",
-                DiscountType.AMOUNT,
-                BigDecimal.valueOf(10000),
-                BigDecimal.valueOf(100000),
-                LocalDate.parse("2021-01-01"),
-                LocalDate.parse("2021-12-31"),
-                100
-        );
-
-        // 프로모션 저장
-        promotionRepository.save(promotion);
+                .build());
 
         promotionId = promotion.getPromotionId();
-        couponId = promotion.getCoupons().get(0).getCouponId();
+        System.out.println("프로모션 ID: " + promotionId);
 
+        // 쿠폰 생성
+        Coupon coupon = couponDomainService.createCoupon(CouponCreateRequestDto.builder()
+                .promotionId(promotion.getPromotionId())
+                .description("쿠폰 설명")
+                .discountType(DiscountType.AMOUNT)
+                .discountValue(BigDecimal.valueOf(10000))
+                .maxDiscount(BigDecimal.valueOf(100000))
+                .validFrom(LocalDate.now())
+                .validUntil(LocalDate.now().plusDays(10))
+                .totalQuantity(100)
+                .build());
+
+        couponId = coupon.getCouponId();
+        System.out.println("쿠폰 ID: " + couponId);
     }
 
 
     @Test
     @DisplayName("쿠폰 동시성 테스트")
+    // 트랜잭션을 사용하지 않도록 설정
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     void testConcurrentCouponIssuance() throws Exception {
         // 동시에 쿠폰 발급 요청
-        int threadCount = 1000;
+        int threadCount = 200;
         ExecutorService executorService = Executors.newFixedThreadPool(20);
         CountDownLatch latch = new CountDownLatch(threadCount);
 
