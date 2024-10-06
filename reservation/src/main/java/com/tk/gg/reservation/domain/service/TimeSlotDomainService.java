@@ -34,26 +34,24 @@ public class TimeSlotDomainService {
         );
     }
 
-    public TimeSlot create(CreateTimeSlotRequestDto dto) {
-        if (checkAlreadyExist(dto)){
+    public TimeSlot create(TimeSlot timeSlot) {
+        if (checkAlreadyExist(timeSlot)){
             throw new GlowGlowException(TIMESLOT_ALREADY_EXIST);
         }
-        return timeSlotRepository.save(dto.toEntity());
+        return timeSlotRepository.save(timeSlot);
     }
 
-    public Boolean checkAlreadyExist(CreateTimeSlotRequestDto dto) {
+    public Boolean checkAlreadyExist(TimeSlot timeSlot) {
         return timeSlotRepository.findByAvailableDateEqualsAndAvailableTimeEquals(
-                dto.availableDate(), dto.availableTime()
+                timeSlot.getAvailableDate(), timeSlot.getAvailableTime()
         ).isPresent();
     }
 
-    public void updateOne(UUID id, UpdateTimeSlotRequestDto dto) {
-        TimeSlot timeSlot = getOne(id);
+    public void updateOne(TimeSlot timeSlot, UpdateTimeSlotRequestDto dto) {
         timeSlot.update(dto);
     }
 
-    public void deleteOne(UUID id,String deletedBy) {
-        TimeSlot timeSlot = getOne(id);
+    public void deleteOne(TimeSlot timeSlot,String deletedBy) {
         timeSlot.delete(deletedBy);
     }
 }

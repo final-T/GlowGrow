@@ -16,7 +16,6 @@ public record UpdateTimeSlotRequest(
 
         @NotNull(message = "예약 가능 날짜는 필수입니다.")
         @DateTimeFormat(pattern = "yyyy-MM-dd")
-        @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "날짜 형식은 yyyy-MM-dd 이어야 합니다.")
         LocalDate availableDate,
 
         @NotNull(message = "예약 가능 시간은 필수입니다.")
