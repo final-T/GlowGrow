@@ -8,13 +8,11 @@ import java.util.UUID;
 @Data
 public class CouponIssueResponseDto {
     private UUID couponId;
-    private String couponDescription;
     private Long userId;
 
     @Builder
-    public CouponIssueResponseDto(UUID couponId, String couponDescription, Long userId) {
+    public CouponIssueResponseDto(UUID couponId, Long userId) {
         this.couponId = couponId;
-        this.couponDescription = couponDescription;
         this.userId = userId;
     }
 }
