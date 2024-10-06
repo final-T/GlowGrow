@@ -31,8 +31,14 @@ public enum GlowGlowError {
 
 
     // 프로모션 관련 에러
-    PROMOTION_NO_EXIST(404, "PROMOTION_001", "존재하지 않은 프로모션입니다.")
-    ,
+    PROMOTION_NO_EXIST(404, "PROMOTION_001", "존재하지 않은 프로모션입니다."),
+
+    // Coupon (쿠폰 관련 에러)
+    COUPON_NO_EXIST(404, "COUPON_001", "존재하지 않은 쿠폰입니다."),
+    COUPON_ALREADY_ISSUED(409, "COUPON_002", "이미 발급된 쿠폰입니다."),
+    COUPON_ALREADY_USED(409, "COUPON_003", "이미 사용된 쿠폰입니다."),
+    COUPON_EXPIRED(409, "COUPON_004", "만료된 쿠폰입니다."),
+    COUPON_QUANTITY_EXCEEDED(409, "COUPON_005", "쿠폰 발급 수량을 초과했습니다."),
 
     // 예약 및 리뷰 관련 에러
     TIMESLOT_ALREADY_EXIST(404, "TIMESLOT_001","예약타임슬롯 생성에 실패했습니다."),
