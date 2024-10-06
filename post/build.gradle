@@ -19,10 +19,16 @@ repositories {
 
 dependencies {
     implementation project(':GlowGrow-common')
+    //implementation project(':GlowGrow-security')
 
     implementation 'org.springframework.boot:spring-boot-starter'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // S3
+    implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:3.2.0")
+    implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3'
+
 
     // lombok - 코드 간소화 (각 서비스 모듈에서도 추가 필요)
     compileOnly 'org.projectlombok:lombok'

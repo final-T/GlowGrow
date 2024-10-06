@@ -22,6 +22,12 @@ public enum GlowGlowError {
     COMMENT_NO_EXIST(404,"COMMENT_001","존재하지 않은 댓글입니다."),
     COMMENT_DELETED(404,"COMMENT_002","삭제된 댓글에는 답글을 작성할 수 없습니다."),
     COMMENT_DEPTH_EXCEEDED(400,"COMMENT_003","댓글의 깊이 제한을 초과했습니다. 대댓글은 1단계까지만 허용됩니다."),
+    MULTIMEDIA_NO_EXIST(404,"MULTIMEDIA_001","존재하지 않은 파일입니다."),
+    INVALID_FILE_NAME(404, "MULTIMEDIA_002","파일 이름이 유효하지 않습니다."),
+    UNSUPPORTED_FILE_EXTENSION(404,"MULTIMEDIA_003","지원하지 않는 확장자입니다."),
+    IMAGE_FILE_SIZE_EXCEEDED(404,"MULTIMEDIA_004","이미지 파일 크기가 허용된 최대 크기를 초과했습니다."),
+    VIDEO_FILE_SIZE_EXCEEDED(404,"MULTIMEDIA_005","동영상 파일 크기가 허용된 최대 크기를 초과했습니다."),
+
 
 
     // 프로모션 관련 에러

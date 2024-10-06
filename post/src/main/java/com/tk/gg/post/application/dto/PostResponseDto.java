@@ -42,6 +42,7 @@ public class PostResponseDto {
         private Integer views;
         private Integer likes;
         private List<CommentResponseDto> commentList;
+        private List<MultimediaDto.Response> multimediaList;
 
         public static Get of(Post post) {
             return Get.builder()
@@ -51,7 +52,12 @@ public class PostResponseDto {
                     .views(post.getViews())
                     .likes(post.getLikes())
                     .commentList(post.getComments().stream()
+                            .filter(comment -> !comment.getIsDeleted())
                             .map(CommentResponseDto::of)
+                            .collect(Collectors.toList()))
+                    .multimediaList(post.getMultimediaList().stream()
+                            .filter(multimedia -> !multimedia.getIsDeleted())
+                            .map(MultimediaDto.Response::from)
                             .collect(Collectors.toList()))
                     .build();
         }

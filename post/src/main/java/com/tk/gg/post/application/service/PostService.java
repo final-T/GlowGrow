@@ -8,6 +8,7 @@ import com.tk.gg.post.application.dto.PostSearchCondition;
 import com.tk.gg.post.application.dto.PostSearchResponseDto;
 import com.tk.gg.post.domain.model.Post;
 import com.tk.gg.post.domain.repository.PostRepository;
+import com.tk.gg.post.domain.service.PostDomainService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -25,18 +26,16 @@ import java.util.stream.Collectors;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final PostDomainService postDomainService;
 
     @Transactional
     public PostResponseDto createPost(PostRequestDto requestDto) {
-        Post post = Post.createPostBuilder()
-                .postRequestDto(requestDto)
-                .build();
-
+        Post post = postDomainService.createPost(requestDto);
         postRepository.save(post);
-
         return PostResponseDto.of(post);
     }
 
+    @Transactional(readOnly = true)
     public List<PostResponseDto> getAllPosts() {
         return postRepository.findAll()
                 .stream()
@@ -46,47 +45,29 @@ public class PostService {
 
     @Transactional
     public PostResponseDto updatePost(UUID postId, PostRequestDto requestDto) {
-        // TODO : 본인 확인 & 권한 체크 & updatedBy
-        Post post = postRepository.findByPostId(postId)
-                .orElseThrow(() -> new GlowGlowException(GlowGlowError.POST_NO_EXIST));
-        post.updatePostBuilder()
-                .title(requestDto.getTitle())
-                .content(requestDto.getContent())
-                .build();
-
-        postRepository.save(post);
+        Post post = getPostById(postId);
+        postDomainService.updatePost(post, requestDto.getTitle(), requestDto.getContent());
         return PostResponseDto.of(post);
     }
 
-
     @Transactional
     public PostResponseDto.Get getPost(UUID postId) {
-        Post post = postRepository.findByPostId(postId)
-                .orElseThrow(() -> new GlowGlowException(GlowGlowError.POST_NO_EXIST));
-
-        // 조회수 증가
+        Post post = getPostById(postId);
         postRepository.incrementViews(postId);
-
-        // 현재 게시물의 조회수를 다시 조회하여 최신 조회수로 업데이트
         int updatedViews = postRepository.getViews(postId);
         post.setViews(updatedViews);
-
         return PostResponseDto.Get.of(post);
     }
 
-
     @Transactional
     public void deletePost(UUID postId) {
-        // TODO : 본인 확인 & 권한 체크 & deletedBy
-        Post post = postRepository.findByPostId(postId)
-                .orElseThrow(() -> new GlowGlowException(GlowGlowError.POST_NO_EXIST));
-
-        // JPA의 변경 감지(Dirty Checking)로 인해 명시적인 save() 호출이 필요 X
-        post.softDelete();
+        Post post = getPostById(postId);
+        postDomainService.softDeletePost(post);
     }
 
+    @Transactional(readOnly = true)
     public Page<PostSearchResponseDto> searchPosts(Pageable pageable, PostSearchCondition searchDto) {
-        return postRepository.findPostsByCondition(searchDto,pageable);
+        return postRepository.findPostsByCondition(searchDto, pageable);
     }
 
     @Transactional(readOnly = true)
@@ -96,18 +77,15 @@ public class PostService {
     }
 
     @Transactional
-    public Post updatePostLikeCount(UUID postId, boolean likeStatus) {
-        Post post = getPostById(postId);
-
+    public boolean updatePostLikeCount(UUID postId, boolean likeStatus) {
         int updatedRows = postRepository.updateLikeCount(postId, likeStatus);
         if (updatedRows == 0) {
-            log.warn("No rows updated for post: {}. Current likes: {}, Trying to {}",
-                    postId, post.getLikes(), likeStatus ? "increment" : "decrement");
-            // 좋아요 수가 이미 0이고 감소하려는 경우, 또는 다른 동시성 문제로 업데이트가 실패한 경우
-            // 현재 상태를 반환하고 예외를 던지지 않음
-            return post;
+            throw new GlowGlowException(GlowGlowError.POST_LIKE_UPDATE_FAILED);
         }
-        return getPostById(postId);
+        return true;
     }
 
+    private Long getCurrentUserId() {
+        return 1L; // 임시 값, 실제 구현에서는 인증된 사용자의 ID를 반환해야 함
+    }
 }
