@@ -20,21 +20,8 @@ public class PostDomainService {
                 .build();
     }
 
-    public void incrementViews(Post post) {
-        post.setViews(post.getViews() + 1);
-    }
-
     public void softDeletePost(Post post) {
         post.softDelete();
     }
 
-    public void updateLikeCount(Post post, boolean likeStatus) {
-        if (likeStatus) {
-            post.setLikes(post.getLikes() + 1);
-        } else {
-            if (post.getLikes() > 0) {
-                post.setLikes(post.getLikes() - 1);
-            }
-        }
-    }
 }

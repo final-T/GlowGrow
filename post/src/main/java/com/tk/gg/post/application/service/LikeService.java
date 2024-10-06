@@ -26,12 +26,18 @@ public class LikeService {
         Like like = likeRepository.findFirstByPostAndUserId(post, userId)
                 .orElseGet(() -> likeDomainService.createLike(post, userId));
 
-        likeDomainService.toggleLikeStatus(like);
-        likeRepository.save(like);
+        boolean newLikeStatus = !likeDomainService.getLikeStatus(like);
 
-        boolean likeStatus = likeDomainService.getLikeStatus(like);
-        postService.updatePostLikeCount(postId, likeStatus);
+        // 좋아요 증가
+        boolean updateSuccess = postService.updatePostLikeCount(postId, newLikeStatus);
 
-        return new LikeResponseDto(like.getLikeId(), postId, userId, likeStatus);
+        if (updateSuccess) {
+            likeDomainService.toggleLikeStatus(like);
+            likeRepository.save(like);
+        } else {
+            newLikeStatus = likeDomainService.getLikeStatus(like);
+        }
+
+        return new LikeResponseDto(like.getLikeId(), postId, userId, newLikeStatus);
     }
 }

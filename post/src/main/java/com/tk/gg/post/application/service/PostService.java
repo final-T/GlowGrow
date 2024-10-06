@@ -53,8 +53,9 @@ public class PostService {
     @Transactional
     public PostResponseDto.Get getPost(UUID postId) {
         Post post = getPostById(postId);
-        postDomainService.incrementViews(post);
-        postRepository.save(post);
+        postRepository.incrementViews(postId);
+        int updatedViews = postRepository.getViews(postId);
+        post.setViews(updatedViews);
         return PostResponseDto.Get.of(post);
     }
 
@@ -76,10 +77,12 @@ public class PostService {
     }
 
     @Transactional
-    public Post updatePostLikeCount(UUID postId, boolean likeStatus) {
-        Post post = getPostById(postId);
-        postDomainService.updateLikeCount(post, likeStatus);
-        return postRepository.save(post);
+    public boolean updatePostLikeCount(UUID postId, boolean likeStatus) {
+        int updatedRows = postRepository.updateLikeCount(postId, likeStatus);
+        if (updatedRows == 0) {
+            throw new GlowGlowException(GlowGlowError.POST_LIKE_UPDATE_FAILED);
+        }
+        return true;
     }
 
     private Long getCurrentUserId() {
