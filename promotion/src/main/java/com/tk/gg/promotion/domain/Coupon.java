@@ -90,4 +90,8 @@ public class Coupon extends BaseEntity {
         }
         this.totalQuantity--;
     }
+
+    public void updateTotalQuantity(Integer totalQuantity) {
+        this.totalQuantity = totalQuantity;
+    }
 }

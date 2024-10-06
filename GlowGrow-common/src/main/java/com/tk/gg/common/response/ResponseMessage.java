@@ -30,6 +30,15 @@ public enum ResponseMessage {
     PROMOTION_DELETE_SUCCESS("프로모션을 성공적으로 삭제했습니다."),
     PROMOTION_RETRIEVE_SUCCESS("프로모션을 성공적으로 조회했습니다."),
 
+    // 쿠폰 관련 메시지
+    COUPON_CREATE_SUCCESS("쿠폰을 성공적으로 생성했습니다."),
+    COUPON_UPDATE_SUCCESS("쿠폰을 성공적으로 수정했습니다."),
+    COUPON_DELETE_SUCCESS("쿠폰을 성공적으로 삭제했습니다."),
+    COUPON_RETRIEVE_SUCCESS("쿠폰을 성공적으로 조회했습니다."),
+    COUPON_USER_CREATE_SUCCESS("사용자 쿠폰을 성공적으로 발급했습니다."),
+    COUPON_USER_RETRIEVE_SUCCESS("사용자 쿠폰을 성공적으로 조회했습니다."),
+    COUPON_USER_USE_SUCCESS("사용자 쿠폰을 성공적으로 사용했습니다."),
+
     // 인증 관련 메세지
     AUTH_SING_UP_SUCCESS("회원가입을 성공하였습니다."),
     AUTH_LOGIN_SUCCESS("로그인을 성공하였습니다."),
@@ -50,6 +59,7 @@ public enum ResponseMessage {
     TIMESLOT_UPDATE_SUCCESS("예약타임슬롯 내용을 성공적으로 수정했습니다."),
     TIMESLOT_DELETE_SUCCESS("예약타임슬롯을 성공적으로 삭제했습니다."),
     TIMESLOT_RETRIEVE_SUCCESS("예약타임슬롯을 성공적으로 조회했습니다.")
+    // 다른 메시지들...
     ;
 
     private final String message;

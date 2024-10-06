@@ -19,4 +19,7 @@ public interface CouponUserRepository extends JpaRepository<CouponUser, UUID> {
 
     @Query("SELECT cu FROM CouponUser cu WHERE cu.userId = :userId AND cu.coupon.couponId = :couponId")
     Optional<CouponUser> findByUserIdAndCouponId(Long userId, UUID couponId);
+
+    @Query("SELECT COUNT(cu) FROM CouponUser cu WHERE cu.coupon.couponId = :couponId")
+    int countByCouponId(UUID couponId);
 }

@@ -1,6 +1,7 @@
 package com.tk.gg.promotion.application.dto;
 
 import com.tk.gg.promotion.domain.enums.DiscountType;
+import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -8,6 +9,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @Data
+@Builder
 public class CouponCreateRequestDto {
     private UUID promotionId;
     private String description;
