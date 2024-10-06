@@ -71,21 +71,30 @@ public class CouponDomainService {
         String stockKey = COUPON_STOCK_KEY_PREFIX + requestDto.getCouponId().toString();
         String issuedSetKey = COUPON_ISSUED_SET_KEY_PREFIX + requestDto.getCouponId().toString();
 
-        // 사용자 중복 발급 확인
-        Boolean isAlreadyIssued = redisRepository.sIsMember(issuedSetKey, requestDto.getUserId().toString());
-        if (Boolean.TRUE.equals(isAlreadyIssued)) {
+        // Lua Script: 중복 발급 확인, 쿠폰 재고 확인, 쿠폰 재고 감소, 사용자 ID를 발급된 쿠폰 Set에 추가
+        String script =
+                "local stockKey = KEYS[1];" +
+                "local issuedSetKey = KEYS[2];" +
+                "local userId = ARGV[1];" +
+                "local stock = tonumber(redis.call('get', stockKey));" +
+                "if stock == nil or stock <= 0 then return -1; end;" + // 재고 부족 시 -1 반환
+                "local isMember = redis.call('SISMEMBER', issuedSetKey, userId);" +
+                "if isMember == 1 then return -2; end;" + // 중복 발급 시 -2 반환
+                "redis.call('decr', stockKey);" + // 재고 감소
+                "redis.call('sadd', issuedSetKey, userId);" + // 발급된 쿠폰 Set에 사용자 ID 추가
+                "return 1;"; // 성공 시 1 반환
+
+        // Redis Lua Script 실행
+        Long result = redisRepository.executeLuaScript(script,
+                List.of(stockKey, issuedSetKey),  // keys로 Redis 키를 전달
+                List.of(requestDto.getUserId().toString())  // args로 인자를 전달
+        );
+
+        if (result == -1) {
+            throw new GlowGlowException(GlowGlowError.COUPON_QUANTITY_EXCEEDED);
+        } else if (result == -2) {
             throw new GlowGlowException(GlowGlowError.COUPON_ALREADY_ISSUED);
         }
-
-        // 쿠폰 재고 감소 처리 (Redis)
-        Long remainingStock = redisRepository.decrement(stockKey);
-        if (remainingStock < 0) {
-            // 쿠폰 재고 부족 예외 처리
-            throw new GlowGlowException(GlowGlowError.COUPON_QUANTITY_EXCEEDED);
-        }
-
-        // 사용자 ID를 발급된 쿠폰 Set에 추가
-        redisRepository.sAdd(issuedSetKey, String.valueOf(requestDto.getUserId()));
 
         // TODO: 카프카를 이용하여 비동기적으로 쿠폰 사용자에게 쿠폰 발급 이벤트 전달
         // 발급하려는 쿠폰 조회
