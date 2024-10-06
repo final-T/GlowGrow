@@ -1,17 +1,18 @@
 package com.tk.gg.reservation.presentation.response;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.tk.gg.reservation.application.dto.TimeSlotDto;
 import lombok.Builder;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.UUID;
 
 @Builder
 public record TimeSlotResponse(
         UUID id,
         Long serviceProviderId,
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         LocalDate availableDate,
         Integer availableTime,
         Boolean isReserved

@@ -2,11 +2,12 @@ package com.tk.gg.reservation.presentation.controller;
 
 import com.tk.gg.common.response.ApiUtils;
 import com.tk.gg.common.response.GlobalResponse;
-import com.tk.gg.common.response.ResponseMessage;
 import com.tk.gg.reservation.application.service.TimeSlotService;
 import com.tk.gg.reservation.presentation.request.CreateTimeSlotRequest;
 import com.tk.gg.reservation.presentation.request.UpdateTimeSlotRequest;
 import com.tk.gg.reservation.presentation.response.TimeSlotResponse;
+import com.tk.gg.security.user.AuthUser;
+import com.tk.gg.security.user.AuthUserInfo;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,13 +18,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.UUID;
 
 import static com.tk.gg.common.response.ResponseMessage.*;
 
-// TODO : Security 추가 후 권한 처리, 유저 정보 검증(FeignClient)
-// TODO : 응답 메시지 Enum common 에 추가하기
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/time-slots")
@@ -33,11 +31,12 @@ public class TimeSlotController {
 
     @PostMapping
     public GlobalResponse<TimeSlotResponse> create(
-            @RequestBody @Valid CreateTimeSlotRequest request
-    ) {
+            @RequestBody @Valid CreateTimeSlotRequest request,
+            @AuthUser AuthUserInfo userInfo
+            ) {
         return ApiUtils.success(
                 TIMESLOT_CREATE_SUCCESS.getMessage(),
-                TimeSlotResponse.from(timeSlotService.createTimeSlot(request.toDto()))
+                TimeSlotResponse.from(timeSlotService.createTimeSlot(request.toDto(), userInfo))
         );
     }
 
@@ -68,18 +67,19 @@ public class TimeSlotController {
     @PutMapping("/{timeSlotId}")
     public GlobalResponse<String> updateOne(
             @PathVariable(value = "timeSlotId") UUID timeSlotId,
-            @RequestBody @Valid UpdateTimeSlotRequest request
+            @RequestBody @Valid UpdateTimeSlotRequest request,
+            @AuthUser AuthUserInfo userInfo
     ) {
-        timeSlotService.updateTimeSlot(timeSlotId, request.toDto());
+        timeSlotService.updateTimeSlot(timeSlotId, request.toDto(), userInfo);
         return ApiUtils.success(TIMESLOT_UPDATE_SUCCESS.getMessage());
     }
 
     @DeleteMapping("/{timeSlotId}")
     public GlobalResponse<String> deleteOne(
-            @PathVariable(value = "timeSlotId") UUID timeSlotId
+            @PathVariable(value = "timeSlotId") UUID timeSlotId,
+            @AuthUser AuthUserInfo userInfo
     ) {
-        // TODO : 유저 헤더 추가
-        timeSlotService.deleteTimeSlot(timeSlotId, "deletedBy");
+        timeSlotService.deleteTimeSlot(timeSlotId, userInfo);
         return ApiUtils.success(TIMESLOT_DELETE_SUCCESS.getMessage());
     }
 }
