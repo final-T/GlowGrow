@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 public enum GlowGlowError {
     //공통
     NO_SEARCH_RESULTS(404,"SEARCH_001","검색 결과가 없습니다."),
+    USER_NO_EXIST(404,"USER_001","존재하지 않은 사용자입니다."),
 
 
     // Auth (인증 관련 에러)
@@ -18,10 +19,18 @@ public enum GlowGlowError {
 
     // Post (게시판 관련 에러)
     POST_NO_EXIST(404,"POST_001","존재하지 않은 게시물입니다."),
+    POST_NO_AUTH_PERMISSION_DENIED(403,"POST_002","게시물에 대한 권한이 없습니다."),
+
+    // Like (좋아요 관련 에러)
     POST_LIKE_UPDATE_FAILED(404, "LIKE_001", "게시물 좋아요 업데이트에 실패했습니다."),
+
+    // Comment (댓글 관련 에러)
     COMMENT_NO_EXIST(404,"COMMENT_001","존재하지 않은 댓글입니다."),
     COMMENT_DELETED(404,"COMMENT_002","삭제된 댓글에는 답글을 작성할 수 없습니다."),
     COMMENT_DEPTH_EXCEEDED(400,"COMMENT_003","댓글의 깊이 제한을 초과했습니다. 대댓글은 1단계까지만 허용됩니다."),
+    COMMENT_NO_AUTH_PERMISSION_DENIED(403,"COMMENT_004","댓글에 대한 권한이 없습니다."),
+
+    // Multimedia (멀티미디어 관련 에러)
     MULTIMEDIA_NO_EXIST(404,"MULTIMEDIA_001","존재하지 않은 파일입니다."),
     INVALID_FILE_NAME(404, "MULTIMEDIA_002","파일 이름이 유효하지 않습니다."),
     UNSUPPORTED_FILE_EXTENSION(404,"MULTIMEDIA_003","지원하지 않는 확장자입니다."),
