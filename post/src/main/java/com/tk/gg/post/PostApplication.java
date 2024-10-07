@@ -10,7 +10,7 @@ import org.springframework.data.web.config.EnableSpringDataWebSupport;
 @SpringBootApplication
 @EnableFeignClients
 @EnableSpringDataWebSupport(pageSerializationMode = EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO)
-@ComponentScan(basePackages = {"com.tk.gg", "com.tk.gg.common"})
+@ComponentScan(basePackages = {"com.tk.gg", "com.tk.gg.common","com.tk.gg.security"})
 public class PostApplication {
 
     public static void main(String[] args) {
