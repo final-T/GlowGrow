@@ -58,7 +58,14 @@ public enum ResponseMessage {
     TIMESLOT_CREATE_SUCCESS("예약타임슬롯을 성공적으로 생성했습니다."),
     TIMESLOT_UPDATE_SUCCESS("예약타임슬롯 내용을 성공적으로 수정했습니다."),
     TIMESLOT_DELETE_SUCCESS("예약타임슬롯을 성공적으로 삭제했습니다."),
-    TIMESLOT_RETRIEVE_SUCCESS("예약타임슬롯을 성공적으로 조회했습니다.")
+    TIMESLOT_RETRIEVE_SUCCESS("예약타임슬롯을 성공적으로 조회했습니다."),
+
+    // 프로필 관련 메세지
+    PROFILE_CREATE_SUCCESS("프로필을 성공적으로 생성했습니다."),
+    PROFILE_UPDATE_SUCCESS("프로필을 내용을 성공적으로 수정했습니다."),
+    PROFILE_DELETE_SUCCESS("프로필을 성공적으로 삭제했습니다."),
+    PROFILE_RETRIEVE_SUCCESS("프로필을 성공적으로 조회했습니다."),
+
     // 다른 메시지들...
     ;
 
