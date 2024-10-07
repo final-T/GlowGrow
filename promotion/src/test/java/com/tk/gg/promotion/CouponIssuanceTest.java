@@ -84,7 +84,7 @@ class CouponIssuanceTest {
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     void testConcurrentCouponIssuance() throws Exception {
         // 동시에 쿠폰 발급 요청
-        int threadCount = 200;
+        int threadCount = 1000;
         ExecutorService executorService = Executors.newFixedThreadPool(20);
         CountDownLatch latch = new CountDownLatch(threadCount);
 
@@ -118,6 +118,10 @@ class CouponIssuanceTest {
 
         // 총 수행 시간 출력
         System.out.println("총 수행 시간: " + (end - start) + "ms");
+
+
+        // 비동기로 처리 되기 때문에 발급된 쿠폰 수량을 확인하기 위해 3초 대기
+        Thread.sleep(3000);
 
         int issuedCouponCount = couponUserRepository.countByCouponId(couponId);
         System.out.println("발급된 쿠폰 수량: " + issuedCouponCount);

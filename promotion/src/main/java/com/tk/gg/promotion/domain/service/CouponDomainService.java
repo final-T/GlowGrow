@@ -9,6 +9,8 @@ import com.tk.gg.promotion.domain.Coupon;
 import com.tk.gg.promotion.domain.CouponUser;
 import com.tk.gg.promotion.domain.Promotion;
 import com.tk.gg.promotion.domain.enums.CouponStatus;
+import com.tk.gg.promotion.infrastructure.messaging.CouponIssueEvent;
+import com.tk.gg.promotion.infrastructure.messaging.CouponKafkaProducer;
 import com.tk.gg.promotion.infrastructure.repository.CouponRepository;
 import com.tk.gg.promotion.infrastructure.repository.CouponUserRepository;
 import com.tk.gg.promotion.infrastructure.repository.PromotionRepository;
@@ -29,6 +31,7 @@ public class CouponDomainService {
     private final CouponRepository couponRepository;
     private final CouponUserRepository couponUserRepository;
     private final RedisRepository redisRepository;
+    private final CouponKafkaProducer couponKafkaProducer;
 
     private static final String COUPON_STOCK_KEY_PREFIX = "coupon:stock:";
     private static final String COUPON_ISSUED_SET_KEY_PREFIX = "coupon:issued:set:";
@@ -97,22 +100,14 @@ public class CouponDomainService {
         }
 
         // TODO: 카프카를 이용하여 비동기적으로 쿠폰 사용자에게 쿠폰 발급 이벤트 전달
-        // 발급하려는 쿠폰 조회
-        Coupon coupon = couponRepository.findById(requestDto.getCouponId())
-                .orElseThrow(() -> new GlowGlowException(GlowGlowError.COUPON_NO_EXIST));
 
-        // 쿠폰 사용자 생성
-        CouponUser couponUser = CouponUser.builder()
-                .coupon(coupon)
-                .userId(requestDto.getUserId())
-                .build();
-
-        couponUserRepository.save(couponUser);
+        log.info("사용자 쿠폰 발급 이벤트 전송 : {}", requestDto);
+        CouponIssueEvent couponIssueEvent = new CouponIssueEvent(requestDto.getCouponId(), requestDto.getUserId());
+        couponKafkaProducer.sendCouponIssueEvent(couponIssueEvent);
 
         return CouponIssueResponseDto.builder()
-                .couponId(coupon.getCouponId())
-                .couponDescription(coupon.getDescription())
-                .userId(couponUser.getUserId())
+                .couponId(requestDto.getCouponId())
+                .userId(requestDto.getUserId())
                 .build();
     }
 
