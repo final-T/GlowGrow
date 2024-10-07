@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class PostResponseDto {
     private UUID postId;
+    private Long userId;
     private String title;
     private String content;
     private Integer views;
@@ -23,6 +24,7 @@ public class PostResponseDto {
 
     public static PostResponseDto of(Post post) {
         return PostResponseDto.builder()
+                .userId(post.getUserId())
                 .postId(post.getPostId())
                 .title(post.getTitle())
                 .content(post.getContent())
@@ -37,6 +39,7 @@ public class PostResponseDto {
     @NoArgsConstructor
     public static class Get{
         private UUID postId;
+        private Long userId;
         private String title;
         private String content;
         private Integer views;
@@ -46,6 +49,7 @@ public class PostResponseDto {
 
         public static Get of(Post post) {
             return Get.builder()
+                    .userId(post.getUserId())
                     .postId(post.getPostId())
                     .title(post.getTitle())
                     .content(post.getContent())
