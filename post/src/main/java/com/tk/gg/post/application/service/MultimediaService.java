@@ -1,7 +1,9 @@
 package com.tk.gg.post.application.service;
 
+import com.tk.gg.common.enums.UserRole;
 import com.tk.gg.common.response.exception.GlowGlowError;
 import com.tk.gg.common.response.exception.GlowGlowException;
+import com.tk.gg.post.application.client.UploadService;
 import com.tk.gg.post.application.dto.MultiMediaSearchDto;
 import com.tk.gg.post.application.dto.MultimediaDto;
 import com.tk.gg.post.domain.model.Multimedia;
@@ -9,7 +11,9 @@ import com.tk.gg.post.domain.model.Post;
 import com.tk.gg.post.domain.repository.MultimediaRepository;
 import com.tk.gg.post.domain.service.MultimediaDomainService;
 import com.tk.gg.post.domain.type.FileType;
+import com.tk.gg.post.infrastructure.client.UserFeignClient;
 import com.tk.gg.post.lib.FileUtil;
+import com.tk.gg.security.user.AuthUserInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,6 +37,7 @@ public class MultimediaService {
     private final UploadService uploadService;
     private final MultimediaRepository multimediaRepository;
     private final MultimediaDomainService multimediaDomainService;
+    private final UserFeignClient userFeignClient;
 
     @Value("${app.upload.max-image-size}")
     private long maxImageSize;
@@ -41,7 +46,7 @@ public class MultimediaService {
     private long maxVideoSize;
 
     @Transactional
-    public MultimediaDto.Response uploadMultimedia(MultipartFile file, UUID postId) {
+    public MultimediaDto.Response uploadMultimedia(MultipartFile file, UUID postId, AuthUserInfo authUserInfo) {
         Post post = postService.getPostById(postId);
         String originalName = file.getOriginalFilename();
         if(originalName == null) {
@@ -57,7 +62,7 @@ public class MultimediaService {
         String uploadFileName = getFileNamePrefix() + "." + fileType.getKey();
         uploadService.uploadMultimedia(uploadFileName, file);
 
-        Multimedia multimedia = multimediaDomainService.createMultimedia(post, uploadFileName, file.getOriginalFilename(), file.getSize(), fileType);
+        Multimedia multimedia = multimediaDomainService.createMultimedia(post, uploadFileName, file.getOriginalFilename(), file.getSize(), fileType, authUserInfo);
         multimediaRepository.save(multimedia);
 
         return MultimediaDto.Response.from(multimedia);
@@ -78,12 +83,21 @@ public class MultimediaService {
     }
 
     @Transactional
-    public void deleteMultimedia(UUID multiMediaId) {
+    public void deleteMultimedia(UUID multiMediaId, AuthUserInfo authUserInfo) {
         Multimedia multimedia = multimediaRepository.findByMultiMediaId(multiMediaId)
                 .orElseThrow(() -> new GlowGlowException(GlowGlowError.MULTIMEDIA_NO_EXIST));
 
+        // Feign Client 사용하여 사용자 존재 여부 확인
+        boolean userExists = userFeignClient.findByEmail(authUserInfo.getEmail()).getData();
+        if(!userExists) {
+            throw new GlowGlowException(GlowGlowError.USER_NO_EXIST);
+        }
+
+        // 권한 체크 (Provider,Customer)본인의 파일만 삭제 가능
+        checkPermission(multimedia, authUserInfo);
+
         uploadService.deleteFile(multimedia.getMultiMediaUrl());
-        multimediaDomainService.softDeleteMultimedia(multimedia, 1L);
+        multimediaDomainService.softDeleteMultimedia(multimedia, authUserInfo);
     }
 
     private String getFileNamePrefix() {
@@ -108,4 +122,25 @@ public class MultimediaService {
         }
         return result;
     }
+
+    // 권한 체크 메서드
+    private void checkPermission(Multimedia multimedia, AuthUserInfo authUserInfo) {
+        UserRole userRole = authUserInfo.getUserRole();
+
+        if (UserRole.MASTER.equals(userRole)) {
+            return; // MASTER 권한은 모든 작업 허용
+        }
+
+        // 사용자 권한 확인
+        if (UserRole.CUSTOMER.equals(userRole) || UserRole.PROVIDER.equals(userRole)) {
+            // 멀티미디어 ID와 현재 사용자 ID가 다르면 권한 없음 예외 발생
+            if (!multimedia.getUserId().equals(authUserInfo.getId())) {
+                log.warn("Permission denied on multimedia {} by user {} with role {}",
+                        multimedia.getMultiMediaId(), authUserInfo.getId(), userRole);
+                throw new GlowGlowException(GlowGlowError.POST_NO_AUTH_PERMISSION_DENIED);
+            }
+        }
+    }
+
+
 }
