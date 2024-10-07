@@ -3,6 +3,7 @@ package com.tk.gg.post.domain.model;
 import com.tk.gg.common.jpa.BaseEntity;
 import com.tk.gg.common.response.exception.GlowGlowError;
 import com.tk.gg.common.response.exception.GlowGlowException;
+import com.tk.gg.security.user.AuthUserInfo;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -47,10 +48,12 @@ public class Comment extends BaseEntity {
 
 
     @Builder(builderClassName = "CreateCommentBuilder", builderMethodName = "CreateCommentBuilder")
-    public Comment(Post post , Comment parentComment , String content) {
+    public Comment(Post post , Comment parentComment , String content, AuthUserInfo authUserInfo) {
         this.post = post;
         this.parentComment = parentComment;
         this.content = content;
+        this.createdBy = String.valueOf(authUserInfo.getId());
+        this.userId = authUserInfo.getId();
 
         // 대댓글 깊이 제한 -> 댓글 - 답글
         if (parentComment != null && parentComment.getParentComment() != null) {
@@ -58,23 +61,19 @@ public class Comment extends BaseEntity {
         }
     }
 
-    // userId를 설정하는 메서드
-    public void assignUserId(Long userId) {
-        this.userId = userId;
-    }
-
     // content를 업데이트하는 메서드
-    public void updateContent(String content) {
+    public void updateContent(String content, AuthUserInfo authUserInfo) {
         this.content = content;
+        this.updatedBy = String.valueOf(authUserInfo.getId());
     }
 
     //소프트 삭제 메서드
-    public void softDelete(){
+    public void softDelete(AuthUserInfo authUserInfo){
         this.isDeleted = true;
         this.deletedAt = LocalDateTime.now();
-        // 모든 자식 댓글에 대해 재귀적으로 softDelete 호출
-        this.childComments.forEach(Comment::softDelete);
-        //this.deletedBy = deletedBy;
+        this.deletedBy = String.valueOf(authUserInfo.getId());
+        // 모든 자식 댓글(답글)에 대해 재귀적으로 softDelete 호출
+        this.childComments.forEach(comment -> comment.softDelete(authUserInfo));
     }
 
 }
