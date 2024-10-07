@@ -46,6 +46,8 @@ public enum GlowGlowError {
     RESERVATION_CREATE_FAILED(404, "RESERVATION_001", "예약을 생성에 실패했습니다."),
     RESERVATION_NO_EXIST(404, "RESERVATION_002","존재하지 않는 예약 정보입니다."),
     RESERVATION_UPDATE_FAILED(400, "RESERVATION_003", "예약 내용 수정에 실패했습니다."),
+    RESERVATION_DELETE_FAILED(400, "RESERVATION_004", "예약 내용 삭제에 실패했습니다."),
+    RESERVATION_NOT_OWNER(400, "RESERVATION_005", "해당 예약에 대한 권한이 없습니다."),
     REVIEW_CANNOT_FAILED(404, "REVIEW_001", "예약에 대한 리뷰 생성에 실패했습니다."),
     REVIEW_NO_EXIST(404, "REVIEW_002", "존재하지 않는 리뷰입니다.");
 

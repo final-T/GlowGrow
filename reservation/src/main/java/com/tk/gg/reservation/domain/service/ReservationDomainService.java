@@ -43,8 +43,7 @@ public class ReservationDomainService {
     }
 
     //TODO : 예약 취소, 거절 가능 날짜 검증 추가
-    public void updateOne(UUID id, UpdateReservationDto dto, TimeSlot timeSlot) {
-        Reservation reservation = getOne(id);
+    public void updateOne(Reservation reservation, UpdateReservationDto dto, TimeSlot timeSlot) {
         // 예약 시간을 바꿀 때 한번 더 빈 시간대인지 검증
         if(!reservation.getTimeSlot().equals(timeSlot) && timeSlot.getIsReserved().equals(true))
             throw new GlowGlowException(RESERVATION_UPDATE_FAILED);
@@ -56,8 +55,7 @@ public class ReservationDomainService {
     }
 
     //TODO : 예약 취소, 거절 가능 날짜 검증 추가
-    public void updateStatus(UUID id ,ReservationStatus status){
-        Reservation reservation = getOne(id);
+    public void updateStatus(Reservation reservation  ,ReservationStatus status){
         // 제공자 취소,거절 시 예약 가능시간테이블 정보 상태 수정
         if (status.equals(ReservationStatus.CANCEL) || status.equals(ReservationStatus.REFUSED)){
             reservation.getTimeSlot().updateIsReserved(false);
@@ -65,8 +63,7 @@ public class ReservationDomainService {
         reservation.updateStatus(status);
     }
 
-    public void deleteOne(UUID id,String deletedBy) {
-        Reservation reservation = getOne(id);
+    public void deleteOne(Reservation reservation,String deletedBy) {
         reservation.getTimeSlot().updateIsReserved(false);
         reservation.delete(deletedBy);
     }

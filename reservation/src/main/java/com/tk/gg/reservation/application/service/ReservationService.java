@@ -1,14 +1,18 @@
 package com.tk.gg.reservation.application.service;
 
 
+import com.tk.gg.common.enums.UserRole;
+import com.tk.gg.common.response.exception.GlowGlowError;
 import com.tk.gg.common.response.exception.GlowGlowException;
 import com.tk.gg.reservation.application.dto.CreateReservationDto;
 import com.tk.gg.reservation.application.dto.ReservationDto;
 import com.tk.gg.reservation.application.dto.UpdateReservationDto;
+import com.tk.gg.reservation.domain.model.Reservation;
 import com.tk.gg.reservation.domain.model.TimeSlot;
 import com.tk.gg.reservation.domain.service.ReservationDomainService;
 import com.tk.gg.reservation.domain.service.TimeSlotDomainService;
 import com.tk.gg.reservation.domain.type.ReservationStatus;
+import com.tk.gg.security.user.AuthUserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -49,18 +53,39 @@ public class ReservationService {
     }
 
     @Transactional
-    public void updateReservation(UUID reservationId, UpdateReservationDto dto) {
+    public void updateReservation(UUID reservationId, UpdateReservationDto dto, AuthUserInfo userInfo) {
         TimeSlot timeSlot  = timeSlotDomainService.getOne(dto.timeSlotId());
-        reservationDomainService.updateOne(reservationId, dto, timeSlot);
+        Reservation reservation = reservationDomainService.getOne(reservationId);
+        if(!canHandleReservation(reservation, userInfo)){
+            throw new GlowGlowException(RESERVATION_NOT_OWNER);
+        }
+        reservationDomainService.updateOne(reservation, dto, timeSlot);
     }
 
     @Transactional
-    public void updateReservationStatus(UUID reservationId ,ReservationStatus status) {
-        reservationDomainService.updateStatus(reservationId, status);
+    public void updateReservationStatus(UUID reservationId ,ReservationStatus status, AuthUserInfo userInfo) {
+        Reservation reservation = reservationDomainService.getOne(reservationId);
+        if(!canHandleReservation(reservation, userInfo)){
+            throw new GlowGlowException(RESERVATION_NOT_OWNER);
+        }
+        reservationDomainService.updateStatus(reservation, status);
     }
 
     @Transactional
-    public void deleteReservation(UUID reservationId, String deletedBy) {
-        reservationDomainService.deleteOne(reservationId,deletedBy);
+    public void deleteReservation(UUID reservationId, AuthUserInfo userInfo) {
+        Reservation reservation = reservationDomainService.getOne(reservationId);
+        if (!canHandleReservation(reservation, userInfo)){
+            throw new GlowGlowException(RESERVATION_NOT_OWNER);
+        }
+        reservationDomainService.deleteOne(reservation, userInfo.getEmail());
+    }
+
+    private boolean canHandleReservation(Reservation reservation, AuthUserInfo userInfo) {
+        if (userInfo.getUserRole().equals(UserRole.CUSTOMER)) {
+            return reservation.getCustomerId().equals(userInfo.getId());
+        } else if (userInfo.getUserRole().equals(UserRole.PROVIDER)) {
+            return reservation.getServiceProviderId().equals(userInfo.getId());
+        }
+        return false;
     }
 }
