@@ -33,4 +33,14 @@ public class WorkExperience {
     @Setter
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted = false;
+
+    public static WorkExperience create(Profile profile, String companyName, String position, Integer experience) {
+        return WorkExperience.builder()
+                .profile(profile)
+                .companyName(companyName)
+                .position(position)
+                .experience(experience)
+                .isDeleted(false)
+                .build();
+    }
 }

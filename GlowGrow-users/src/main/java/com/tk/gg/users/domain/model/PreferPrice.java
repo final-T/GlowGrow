@@ -28,4 +28,12 @@ public class PreferPrice extends BaseEntity {
     @Setter
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted = false;
+
+    public static PreferPrice create(Profile profile, UUID priceId) {
+        return PreferPrice.builder()
+                .profile(profile)
+                .priceId(priceId)
+                .isDeleted(false)
+                .build();
+    }
 }

@@ -27,4 +27,12 @@ public class PreferStyle {
     @Setter
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted = false;
+
+    public static PreferStyle create(Profile profile, UUID styleId) {
+        return PreferStyle.builder()
+                .profile(profile)
+                .styleId(styleId)
+                .isDeleted(false)
+                .build();
+    }
 }

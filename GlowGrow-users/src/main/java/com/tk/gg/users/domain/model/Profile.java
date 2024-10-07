@@ -33,4 +33,15 @@ public class Profile extends BaseEntity {
     @Setter
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted = false;
+
+
+    public static Profile create(User user, String profileImageUrl, String specialization, String bio) {
+        return Profile.builder()
+                .user(user)
+                .profileImageUrl(profileImageUrl)
+                .specialization(specialization)
+                .bio(bio)
+                .isDeleted(false)
+                .build();
+    }
 }

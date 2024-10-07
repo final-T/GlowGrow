@@ -28,4 +28,12 @@ public class PreferLocation extends BaseEntity {
     @Setter
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted = false;
+
+    public static PreferLocation create(Profile profile, UUID locationId) {
+        return PreferLocation.builder()
+                .profile(profile)
+                .locationId(locationId)
+                .isDeleted(false)
+                .build();
+    }
 }

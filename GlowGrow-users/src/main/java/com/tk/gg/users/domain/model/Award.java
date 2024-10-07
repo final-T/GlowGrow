@@ -37,5 +37,16 @@ public class Award extends BaseEntity {
     @Setter
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted = false;
+
+    public static Award create(Profile profile, String awardName, String awardLevel, String awardDate, String organization) {
+        return Award.builder()
+                .profile(profile)
+                .awardName(awardName)
+                .awardLevel(awardLevel)
+                .awardDate(awardDate)
+                .organization(organization)
+                .isDeleted(false)
+                .build();
+    }
 }
 
