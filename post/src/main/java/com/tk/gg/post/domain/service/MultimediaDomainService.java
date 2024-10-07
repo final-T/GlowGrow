@@ -6,6 +6,7 @@ import com.tk.gg.common.response.exception.GlowGlowException;
 import com.tk.gg.post.domain.model.Multimedia;
 import com.tk.gg.post.domain.model.Post;
 import com.tk.gg.post.domain.type.FileType;
+import com.tk.gg.security.user.AuthUserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +14,10 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MultimediaDomainService {
 
-    public Multimedia createMultimedia(Post post, String multiMediaUrl, String fileName, Long fileSize, FileType fileType) {
+    public Multimedia createMultimedia(Post post, String multiMediaUrl, String fileName, Long fileSize, FileType fileType, AuthUserInfo authUserInfo) {
         return Multimedia.createMultimediaBuilder()
                 .post(post)
+                .authUserInfo(authUserInfo)
                 .multiMediaUrl(multiMediaUrl)
                 .fileName(fileName)
                 .fileSize(fileSize)
@@ -23,8 +25,8 @@ public class MultimediaDomainService {
                 .build();
     }
 
-    public void softDeleteMultimedia(Multimedia multimedia, Long userId) {
-        multimedia.softDelete(userId);
+    public void softDeleteMultimedia(Multimedia multimedia, AuthUserInfo authUserInfo) {
+        multimedia.softDelete(authUserInfo);
     }
 
     public void checkFileSizeLimit(long fileSize, FileType fileType, long maxImageSize, long maxVideoSize) {
