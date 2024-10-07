@@ -4,6 +4,7 @@ import com.tk.gg.common.enums.UserRole;
 import com.tk.gg.common.response.exception.GlowGlowError;
 import com.tk.gg.common.response.exception.GlowGlowException;
 import com.tk.gg.post.application.client.UploadService;
+import com.tk.gg.post.application.client.UserService;
 import com.tk.gg.post.application.dto.MultiMediaSearchDto;
 import com.tk.gg.post.application.dto.MultimediaDto;
 import com.tk.gg.post.domain.model.Multimedia;
@@ -37,7 +38,7 @@ public class MultimediaService {
     private final UploadService uploadService;
     private final MultimediaRepository multimediaRepository;
     private final MultimediaDomainService multimediaDomainService;
-    private final UserFeignClient userFeignClient;
+    private final UserService userService;
 
     @Value("${app.upload.max-image-size}")
     private long maxImageSize;
@@ -88,7 +89,7 @@ public class MultimediaService {
                 .orElseThrow(() -> new GlowGlowException(GlowGlowError.MULTIMEDIA_NO_EXIST));
 
         // Feign Client 사용하여 사용자 존재 여부 확인
-        boolean userExists = userFeignClient.findByEmail(authUserInfo.getEmail()).getData();
+        boolean userExists = userService.isUserExistsByEmail(authUserInfo.getEmail());
         if(!userExists) {
             throw new GlowGlowException(GlowGlowError.USER_NO_EXIST);
         }

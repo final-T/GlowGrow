@@ -3,6 +3,7 @@ package com.tk.gg.post.application.service;
 import com.tk.gg.common.enums.UserRole;
 import com.tk.gg.common.response.exception.GlowGlowError;
 import com.tk.gg.common.response.exception.GlowGlowException;
+import com.tk.gg.post.application.client.UserService;
 import com.tk.gg.post.application.dto.CommentRequestDto;
 import com.tk.gg.post.application.dto.CommentResponseDto;
 import com.tk.gg.post.application.dto.CommentSearchCondition;
@@ -30,7 +31,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostService postService;
     private final CommentDomainService commentDomainService;
-    private final UserFeignClient userFeignClient;
+    private final UserService userService;
 
     @Transactional
     public CommentResponseDto writeComment(UUID postId, CommentRequestDto commentRequestDto, AuthUserInfo authUserInfo) {
@@ -100,7 +101,7 @@ public class CommentService {
     // 사용자 존재 여부 확인 메서드
     private void checkUserExists(AuthUserInfo authUserInfo) {
         // Feign Client 사용하여 사용자 존재 여부 확인
-        boolean userExists = userFeignClient.findByEmail(authUserInfo.getEmail()).getData();
+        boolean userExists = userService.isUserExistsByEmail(authUserInfo.getEmail());
         if (!userExists) {
             throw new GlowGlowException(GlowGlowError.USER_NO_EXIST);
         }
