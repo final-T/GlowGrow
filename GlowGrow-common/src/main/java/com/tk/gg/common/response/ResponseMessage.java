@@ -62,7 +62,13 @@ public enum ResponseMessage {
 
     REPORT_CREATE_SUCCESS("신고를 성공적으로 생성했습니다."),
     REPORT_RETRIEVE_SUCCESS("신고를 성공적으로 생성했습니다."),
-    REPORT_DELETE_SUCCESS("신고를 성공적으로 생성했습니다.")
+    REPORT_DELETE_SUCCESS("신고를 성공적으로 생성했습니다."),
+
+    // 프로필 관련 메세지
+    PROFILE_CREATE_SUCCESS("프로필을 성공적으로 생성했습니다."),
+    PROFILE_UPDATE_SUCCESS("프로필을 내용을 성공적으로 수정했습니다."),
+    PROFILE_DELETE_SUCCESS("프로필을 성공적으로 삭제했습니다."),
+    PROFILE_RETRIEVE_SUCCESS("프로필을 성공적으로 조회했습니다."),
 
     // 다른 메시지들...
     ;
