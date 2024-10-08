@@ -34,6 +34,7 @@ public class Report extends BaseEntity {
     private Long targetUserId;
 
     @Column(name = "reporter_type")
+    @Enumerated(EnumType.STRING)
     private UserRole reporterType;
 
     private String reason;

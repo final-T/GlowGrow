@@ -70,6 +70,9 @@ public enum ResponseMessage {
     PROFILE_DELETE_SUCCESS("프로필을 성공적으로 삭제했습니다."),
     PROFILE_RETRIEVE_SUCCESS("프로필을 성공적으로 조회했습니다."),
 
+    // 평가 항목 관련 메시지
+    GRADE_RETRIEVE_SUCCESS("평가정보를 성공적으로 조회했습니다.")
+
     // 다른 메시지들...
     ;
 
