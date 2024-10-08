@@ -3,6 +3,7 @@ package com.tk.gg.users.domain.model;
 import com.tk.gg.common.enums.Gender;
 import com.tk.gg.common.enums.UserRole;
 import com.tk.gg.common.jpa.BaseEntity;
+import com.tk.gg.users.application.dto.UserDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -48,6 +49,29 @@ public class User extends BaseEntity {
     @Setter
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted = false;
+
+    public static User of(UserDto dto){
+        return User.builder()
+                .userId(dto.userId())
+                .email(dto.email())
+                .username(dto.username())
+                .password(dto.password())
+                .role(dto.role())
+                .gender(dto.gender())
+                .phoneNumber(dto.phoneNumber())
+                .address(dto.address())
+                .isDeleted(dto.isDeleted())
+                .build();
+    }
+
+    public static User test() {
+        return User.builder()
+                .userId(1L)
+                .email("test")
+                .username("test")
+                .password("test")
+                .build();
+    }
 
     public void delete() {
         this.isDeleted = true;

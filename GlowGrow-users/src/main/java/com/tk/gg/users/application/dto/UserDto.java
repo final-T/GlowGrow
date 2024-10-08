@@ -2,6 +2,7 @@ package com.tk.gg.users.application.dto;
 
 import com.tk.gg.common.enums.Gender;
 import com.tk.gg.common.enums.UserRole;
+import com.tk.gg.users.domain.model.User;
 import lombok.AccessLevel;
 import lombok.Builder;
 
@@ -17,6 +18,7 @@ public record UserDto(
         Gender gender,
         String phoneNumber,
         String address,
+        Boolean isDeleted,
         LocalDateTime createdAt,
         String createdBy,
         LocalDateTime updatedAt,
@@ -25,4 +27,23 @@ public record UserDto(
         String deletedBy
 ) {
 
+    public static UserDto from(User user) {
+        return UserDto.builder()
+                .userId(user.getUserId())
+                .email(user.getEmail())
+                .username(user.getUsername())
+                .password(user.getPassword())
+                .role(user.getRole())
+                .gender(user.getGender())
+                .phoneNumber(user.getPhoneNumber())
+                .address(user.getAddress())
+                .isDeleted(user.getIsDeleted())
+                .createdAt(user.getCreatedAt())
+                .createdBy(user.getCreatedBy())
+                .updatedAt(user.getUpdatedAt())
+                .updatedBy(user.getUpdatedBy())
+                .deletedAt(user.getDeletedAt())
+                .deletedBy(user.getDeletedBy())
+                .build();
+    }
 }

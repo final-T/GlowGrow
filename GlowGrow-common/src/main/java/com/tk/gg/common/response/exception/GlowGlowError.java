@@ -65,6 +65,19 @@ public enum GlowGlowError {
     REPORT_NO_EXIST(404, "REPORT_002","존재하지 않는 신고 정보 입니다."),
     REPORT_ALREADY_EXIST(404, "REPORT_003", "이미 신고된 예약입니다."),
 
+    // 프로필 관련 에러
+    PROFILE_NO_EXIST(404, "PROFILE_001", "존재하지 않는 프로필입니다."),
+    AWARD_NO_EXIST(404, "PROFILE_002", "존재하지 않는 수상경력입니다.."),
+    PREFER_PRICE_NO_EXIST(404, "PROFILE_003", "존재하지 않는 선호 가격입니다."),
+    PREFER_LOCATION_NO_EXIST(404, "PROFILE_004", "존재하지 않는 선호 지역입니다."),
+    PREFER_STYLE_NO_EXIST(404, "PROFILE_005", "존재하지 않는 선호 스타일입니다."),
+    WORK_EXPERIENCE_NO_EXIST(404, "PROFILE_006", "존재하지 않는 경력입니다."),
+    AWARD_ALREADY_EXIST(409, "PROFILE_007", "이미 존재하는 수상 경력입니다."),
+    PREFER_LOCATION_ALREADY_EXIST(409, "PROFILE_008", "이미 존재하는 선호 지역입니다."),
+    PREFER_PRICE_ALREADY_EXIST(409, "PROFILE_009", "이미 존재하는 선호 가격입니다."),
+    PREFER_STYLE_ALREADY_EXIST(409, "PROFILE_010", "이미 존재하는 선호 스타일입니다."),
+    WORK_EXPERIENCE_ALREADY_EXIST(409, "PROFILE_011", "이미 존재하는 경력입니다."),
+
     //평가항목 관련 에러
     GRADE_NO_EXIST(404, "GRADE_001", "존재하지 않는 평가정보 입니다."),
     GRADE_INVALID_ROLES(401, "GRADE_002","해당 평가정보에 대한 권한이 업습니다.")
