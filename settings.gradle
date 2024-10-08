@@ -15,3 +15,5 @@ include 'promotion'
 include 'post'
 include 'payment'
 include 'notification'
+include 'chat'
+
