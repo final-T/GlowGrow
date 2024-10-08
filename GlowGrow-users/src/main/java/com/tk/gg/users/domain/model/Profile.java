@@ -1,9 +1,11 @@
 package com.tk.gg.users.domain.model;
 
 import com.tk.gg.common.jpa.BaseEntity;
+import com.tk.gg.users.application.dto.UserDto;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Getter
@@ -57,5 +59,18 @@ public class Profile extends BaseEntity {
                 .bio(bio)
                 .isDeleted(false)
                 .build();
+    }
+
+    public void delete(UserDto user){
+        this.isDeleted = true;
+        this.deletedAt = LocalDateTime.now();
+        this.deletedBy = user.username();
+
+        // Soft delete associated lists
+        this.preferLocations.forEach(PreferLocation::delete);
+        this.preferPrices.forEach(PreferPrice::delete);
+        this.preferStyles.forEach(PreferStyle::delete);
+        this.awards.forEach(Award::delete);
+        this.workExperiences.forEach(WorkExperience::delete);
     }
 }

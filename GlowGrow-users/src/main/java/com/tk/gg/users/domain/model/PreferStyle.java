@@ -36,4 +36,8 @@ public class PreferStyle extends BaseEntity {
                 .isDeleted(false)
                 .build();
     }
+
+    public void delete() {
+        this.isDeleted = true;
+    }
 }

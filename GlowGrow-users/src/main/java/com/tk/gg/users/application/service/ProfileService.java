@@ -5,14 +5,12 @@ import com.tk.gg.common.response.exception.GlowGlowException;
 import com.tk.gg.security.user.AuthUserInfo;
 import com.tk.gg.users.application.dto.ProfileDto;
 import com.tk.gg.users.application.dto.UserDto;
-import com.tk.gg.users.domain.model.Profile;
 import com.tk.gg.users.domain.model.User;
 import com.tk.gg.users.domain.service.ProfileDomainService;
 import com.tk.gg.users.domain.service.UserDomainService;
 import com.tk.gg.users.presenation.request.CreateProfileRequest;
 import com.tk.gg.users.presenation.request.ProfileSearch;
 import com.tk.gg.users.presenation.response.ProfilePageResponse;
-import com.tk.gg.users.presenation.response.ProfileResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,10 +28,7 @@ public class ProfileService {
 
     @Transactional
     public void createProfile(AuthUserInfo userInfo, CreateProfileRequest request) {
-        UserDto userDto = userDomainService.findById(userInfo.getId());
-        if(userDto == null) {
-            throw new GlowGlowException(GlowGlowError.AUTH_UNAUTHORIZED);
-        }
+        UserDto userDto = checkUser(userInfo);
 
         ProfileDto profileDto = profileDomainService.saveProfile(request.toProfileDto(userDto));
 
@@ -54,8 +49,49 @@ public class ProfileService {
     }
 
     @Transactional(readOnly = true)
-    public ProfileDto getMyProfile(Long userId) {
-        UserDto userDto = userDomainService.findById(userId);
+    public ProfileDto getMyProfile(AuthUserInfo userInfo) {
+        UserDto userDto = checkUser(userInfo);
         return profileDomainService.getMyProfile(User.of(userDto));
     }
+
+    public void deleteProfile(AuthUserInfo userInfo, UUID profileId) {
+        UserDto userDto = checkUser(userInfo);
+
+        profileDomainService.deleteProfile(userDto, profileId);
+    }
+
+    public void deleteAward(AuthUserInfo userInfo, UUID profileId, UUID awardId) {
+        UserDto userDto = checkUser(userInfo);
+        profileDomainService.deleteAward(userDto, profileId, awardId);
+    }
+
+    public void deletePrice(AuthUserInfo userInfo, UUID profileId, UUID priceId) {
+        UserDto userDto = checkUser(userInfo);
+        profileDomainService.deletePrice(userDto, profileId, priceId);
+    }
+
+    public void deleteLocation(AuthUserInfo userInfo, UUID profileId, UUID locationId) {
+        UserDto userDto = checkUser(userInfo);
+        profileDomainService.deleteLocation(userDto, profileId, locationId);
+    }
+
+    public void deleteStyle(AuthUserInfo userInfo, UUID profileId, UUID styleId) {
+        UserDto userDto = checkUser(userInfo);
+        profileDomainService.deleteStyle(userDto, profileId, styleId);
+    }
+
+    public void deleteWorkExperience(AuthUserInfo userInfo, UUID profileId, UUID workExperienceId) {
+        UserDto userDto = checkUser(userInfo);
+        profileDomainService.deleteWorkExperience(userDto, profileId, workExperienceId);
+    }
+
+    private UserDto checkUser(AuthUserInfo userInfo) {
+        UserDto userDto = userDomainService.findById(userInfo.getId());
+        if(userDto == null) {
+            throw new GlowGlowException(GlowGlowError.AUTH_UNAUTHORIZED);
+        }
+
+        return userDto;
+    }
+
 }

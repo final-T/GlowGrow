@@ -11,4 +11,5 @@ import java.util.UUID;
 public interface ProfileRepository extends JpaRepository<Profile, UUID>, ProfileQueryDslRepository {
     Optional<Profile> findByProfileIdAndIsDeletedFalse(UUID profileId);
     Optional<Profile> findByUserUserIdAndIsDeletedFalse(Long UserId);
+    Optional<Profile> findByProfileIdAndUserUserIdAndIsDeletedFalse(UUID profileId, Long UserId);
 }

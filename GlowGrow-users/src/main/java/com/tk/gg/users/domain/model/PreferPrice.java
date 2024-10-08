@@ -36,4 +36,8 @@ public class PreferPrice extends BaseEntity {
                 .isDeleted(false)
                 .build();
     }
+
+    public void delete() {
+        this.isDeleted = true;
+    }
 }

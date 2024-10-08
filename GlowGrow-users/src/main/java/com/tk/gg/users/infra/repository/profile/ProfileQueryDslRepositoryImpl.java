@@ -2,6 +2,9 @@ package com.tk.gg.users.infra.repository.profile;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.NumberPath;
+import com.querydsl.core.types.dsl.StringPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.tk.gg.users.domain.model.*;
 import com.tk.gg.users.presenation.request.ProfileSearch;
@@ -17,6 +20,8 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
+import static com.tk.gg.users.domain.model.QPreferLocation.preferLocation;
+import static com.tk.gg.users.domain.model.QPreferPrice.preferPrice;
 import static com.tk.gg.users.domain.model.QPreferStyle.preferStyle;
 import static com.tk.gg.users.domain.model.QProfile.profile;
 import static com.tk.gg.users.domain.model.QUser.user;
@@ -24,6 +29,7 @@ import static com.tk.gg.users.domain.model.QUser.user;
 @RequiredArgsConstructor
 public class ProfileQueryDslRepositoryImpl implements ProfileQueryDslRepository {
     private final JPAQueryFactory queryFactory;
+
 
     @Override
     public Page<ProfilePageResponse> searchProfiles(ProfileSearch profileSearch, Pageable pageable) {
@@ -33,20 +39,7 @@ public class ProfileQueryDslRepositoryImpl implements ProfileQueryDslRepository 
         QPreferPrice preferPrice = QPreferPrice.preferPrice;
         QPreferLocation preferLocation = QPreferLocation.preferLocation;
 
-        // Build the search conditions
-        BooleanBuilder conditions = new BooleanBuilder();
-        if (profileSearch.role() != null) {
-            conditions.and(user.role.eq(profileSearch.role()));
-        }
-        if (profileSearch.styleList() != null && !profileSearch.styleList().isEmpty()) {
-            conditions.and(preferStyle.styleName.in(profileSearch.styleList()));
-        }
-        if (profileSearch.priceList() != null && !profileSearch.priceList().isEmpty()) {
-            conditions.and(preferPrice.price.in(profileSearch.priceList()));
-        }
-        if (profileSearch.locationList() != null && !profileSearch.locationList().isEmpty()) {
-            conditions.and(preferLocation.locationName.in(profileSearch.locationList()));
-        }
+        BooleanBuilder conditions = getBooleanBuilder(profileSearch);
 
         List<ProfilePageResponse> profilePageResponses = queryFactory
                 .select(Projections.constructor(
@@ -81,6 +74,7 @@ public class ProfileQueryDslRepositoryImpl implements ProfileQueryDslRepository 
                 .leftJoin(profile.preferPrices, preferPrice)
                 .leftJoin(profile.preferLocations, preferLocation)
                 .where(conditions.and(profile.isDeleted.eq(false)))
+                .orderBy(profile.createdAt.desc())
                 .offset(pageable.getOffset())   // Pagination offset
                 .limit(pageable.getPageSize())  // Page size
                 .fetch();  // fetch the paginated results
@@ -97,4 +91,38 @@ public class ProfileQueryDslRepositoryImpl implements ProfileQueryDslRepository 
 
         return new PageImpl<>(profilePageResponses, pageable, total);
     }
+
+    private static BooleanBuilder getBooleanBuilder(ProfileSearch profileSearch) {
+        BooleanBuilder conditions = new BooleanBuilder();
+
+        if (profileSearch.role() != null) {
+            conditions.and(user.role.eq(profileSearch.role()));
+        }
+
+        addConditionsForList(conditions, profileSearch.styleList(), preferStyle.styleName, preferStyle.isDeleted);
+        addConditionsForLongList(conditions, profileSearch.priceList(), preferPrice.price, preferPrice.isDeleted);
+        addConditionsForList(conditions, profileSearch.locationList(), preferLocation.locationName, preferLocation.isDeleted);
+
+        return conditions;
+    }
+
+    private static <T> void addConditionsForList(BooleanBuilder conditions, List<String> list,
+                                                 StringPath fieldName, BooleanExpression isDeleted) {
+        if (list != null && !list.isEmpty()) {
+            conditions.and(fieldName.in(list)).and(isDeleted.eq(false));
+        } else {
+            conditions.and(isDeleted.eq(false));
+        }
+    }
+
+    private static void addConditionsForLongList(BooleanBuilder conditions, List<Long> list,
+                                                 NumberPath<Long> fieldName, BooleanExpression isDeleted) {
+        if (list != null && !list.isEmpty()) {
+            conditions.and(fieldName.in(list)).and(isDeleted.eq(false));
+        } else {
+            conditions.and(isDeleted.eq(false));
+        }
+    }
+
+
 }

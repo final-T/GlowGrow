@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
-import static com.tk.gg.common.response.exception.GlowGlowError.PROFILE_NO_EXIST;
+import static com.tk.gg.common.response.exception.GlowGlowError.*;
 
 @Service
 @RequiredArgsConstructor
@@ -84,5 +84,64 @@ public class ProfileDomainService {
         Profile profile = profileRepository.findByUserUserIdAndIsDeletedFalse(user.getUserId())
                 .orElseThrow(() -> new GlowGlowException(PROFILE_NO_EXIST));
         return ProfileDto.from(profile);
+    }
+
+    @Transactional
+    public void deleteProfile(UserDto userDto, UUID profileId) {
+        Profile profile = profileRepository.findByProfileIdAndUserUserIdAndIsDeletedFalse(profileId, userDto.userId())
+                .orElseThrow(() -> new GlowGlowException(PROFILE_NO_EXIST));
+
+        profile.delete(userDto);
+    }
+
+    @Transactional
+    public void deleteAward(UserDto userDto, UUID profileId, UUID awardId) {
+        Profile profile = profileRepository.findByProfileIdAndUserUserIdAndIsDeletedFalse(profileId, userDto.userId())
+                .orElseThrow(() -> new GlowGlowException(PROFILE_NO_EXIST));
+
+        Award award = awardRepository.findByAwardIdAndProfileProfileId(awardId, profile.getProfileId())
+                .orElseThrow(() -> new GlowGlowException(AWARD_NO_EXIST));
+
+        award.delete();
+    }
+
+    public void deletePrice(UserDto userDto, UUID profileId, UUID priceId) {
+        Profile profile = profileRepository.findByProfileIdAndUserUserIdAndIsDeletedFalse(profileId, userDto.userId())
+                .orElseThrow(() -> new GlowGlowException(PROFILE_NO_EXIST));
+
+        PreferPrice price = preferPriceRepository.findByPreferPriceIdAndProfileProfileIdAndIsDeletedFalse(priceId, profile.getProfileId())
+                .orElseThrow(() -> new GlowGlowException(PREFER_PRICE_NO_EXIST));
+
+        price.delete();
+    }
+
+    public void deleteLocation(UserDto userDto, UUID profileId, UUID locationId) {
+        Profile profile = profileRepository.findByProfileIdAndUserUserIdAndIsDeletedFalse(profileId, userDto.userId())
+                .orElseThrow(() -> new GlowGlowException(PROFILE_NO_EXIST));
+
+        PreferLocation location = preferLocationRepository.findByPreferLocationIdAndProfileProfileIdAndIsDeletedFalse(locationId, profile.getProfileId())
+                .orElseThrow(() -> new GlowGlowException(PREFER_LOCATION_NO_EXIST));
+
+        location.delete();
+    }
+
+    public void deleteStyle(UserDto userDto, UUID profileId, UUID styleId) {
+        Profile profile = profileRepository.findByProfileIdAndUserUserIdAndIsDeletedFalse(profileId, userDto.userId())
+                .orElseThrow(() -> new GlowGlowException(PROFILE_NO_EXIST));
+
+        PreferStyle preferStyle = preferStyleRepository.findByPreferStyleIdAndProfileProfileIdAndIsDeletedFalse(styleId, profile.getProfileId())
+                .orElseThrow(() -> new GlowGlowException(PREFER_STYLE_NO_EXIST));
+
+        preferStyle.delete();
+    }
+
+    public void deleteWorkExperience(UserDto userDto, UUID profileId, UUID workExperienceId) {
+        Profile profile = profileRepository.findByProfileIdAndUserUserIdAndIsDeletedFalse(profileId, userDto.userId())
+                .orElseThrow(() -> new GlowGlowException(PROFILE_NO_EXIST));
+
+        WorkExperience workExperience = workExperienceRepository.findByWorkExperienceIdAndProfileProfileIdAndIsDeletedFalse(workExperienceId, profile.getProfileId())
+                .orElseThrow(() -> new GlowGlowException(WORK_EXPERIENCE_NO_EXIST));
+
+        workExperience.delete();
     }
 }
