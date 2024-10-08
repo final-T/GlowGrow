@@ -8,7 +8,6 @@ import com.tk.gg.reservation.application.dto.ResultGradeDto;
 import com.tk.gg.reservation.application.service.GradeService;
 import com.tk.gg.reservation.presentation.response.GradeResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -16,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-import static com.tk.gg.common.response.ResponseMessage.*;
+import static com.tk.gg.common.response.ResponseMessage.GRADE_RETRIEVE_SUCCESS;
 
 @RequiredArgsConstructor
 @RestController
@@ -35,12 +34,24 @@ public class GradeController {
                 gradeService.getUserGradeSummary(userId, userType, pageable));
     }
 
-    @GetMapping("/users/{userId}")
+
+    @GetMapping("/users/{userId}/reservations/{reservationId}")
     public GlobalResponse<GradeResponse> getGradeForUserAndReservation(
-            @PathVariable(value = "userId") Long userId
+            @PathVariable(value = "userId") Long userId,
+            @PathVariable(value = "reservationId") UUID reservationId
     ) {
         return ApiUtils.success(GRADE_RETRIEVE_SUCCESS.getMessage(),
-                GradeResponse.from(gradeService.getGradeByUserId(userId))
+                GradeResponse.from(gradeService.getGradeForUserAndReservation(userId, reservationId))
+        );
+    }
+
+    @GetMapping("/users/{userId}/reviews/{reviewId}")
+    public GlobalResponse<GradeResponse> getGradeForUserAndReview(
+            @PathVariable(value = "userId") Long userId,
+            @PathVariable(value = "reviewId") UUID reviewId
+    ) {
+        return ApiUtils.success(GRADE_RETRIEVE_SUCCESS.getMessage(),
+                GradeResponse.from(gradeService.getGradeForUserAndReview(userId, reviewId))
         );
     }
 }

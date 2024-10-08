@@ -17,6 +17,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j(topic = "GRADE-UP-CONSUMER")
 @RequiredArgsConstructor
@@ -59,9 +60,13 @@ public class GradeService {
         }
     }
 
-    public GradeDto getGradeByUserId(Long userId) {
-        return GradeDto.from(gradeDomainService.getGradeByUserId(userId));
+    public GradeDto getGradeForUserAndReservation(Long userId, UUID reservationId) {
+        return GradeDto.from(gradeDomainService.getGradeForUserAndReservation(userId, reservationId));
     }
+    public GradeDto getGradeForUserAndReview(Long userId, UUID reviewId) {
+        return GradeDto.from(gradeDomainService.getGradeForUserAndReview(userId, reviewId));
+    }
+
 
     public ResultGradeDto getUserGradeSummary(Long userId, UserRole userType, Pageable pageable) {
         List<GradeDto> grades = getGradesByUserInfo(userId, userType, pageable).getContent();

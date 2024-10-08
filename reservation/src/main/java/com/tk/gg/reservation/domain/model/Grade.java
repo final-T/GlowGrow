@@ -23,7 +23,7 @@ public class Grade extends BaseEntity {
 
     @Column(name = "review_id")
     private UUID reviewId;
-    @Column(name = "reservation_id")
+    @Column(name = "reservation_id", nullable = false)
     private UUID reservationId;
 
     @Column(name = "user_id", nullable = false)

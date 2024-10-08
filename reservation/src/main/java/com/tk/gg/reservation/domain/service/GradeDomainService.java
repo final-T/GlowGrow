@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 
 @RequiredArgsConstructor
@@ -41,12 +42,17 @@ public class GradeDomainService {
         gradeRepository.saveAll(List.of(customerGrade, providerGrade));
     }
 
-    public Grade getGradeByUserId(Long userId){
-        return gradeRepository.findByUserId(userId).orElseThrow(
-                () -> new GlowGlowException(GlowGlowError.GRADE_NO_EXIST)
-        );
+    public Grade getGradeForUserAndReservation(Long userId, UUID reservationId) {
+        return gradeRepository.findByUserIdAndReservationId(userId, reservationId)
+                .orElseThrow(
+                        () -> new GlowGlowException(GlowGlowError.GRADE_NO_EXIST));
     }
 
+    public Grade getGradeForUserAndReview(Long userId, UUID reviewId) {
+        return gradeRepository.findByUserIdAndReviewId(userId, reviewId)
+                .orElseThrow(
+                        () -> new GlowGlowException(GlowGlowError.GRADE_NO_EXIST));
+    }
 
     //TODO : 리뷰에 평가 기능 추가 후 구현
     public void updateGradeForReview() {
