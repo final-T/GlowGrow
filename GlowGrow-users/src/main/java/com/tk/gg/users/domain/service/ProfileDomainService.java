@@ -3,12 +3,17 @@ package com.tk.gg.users.domain.service;
 import com.tk.gg.common.response.exception.GlowGlowException;
 import com.tk.gg.users.application.dto.*;
 import com.tk.gg.users.domain.model.*;
-import com.tk.gg.users.domain.repository.*;
+import com.tk.gg.users.domain.repository.profile.*;
+import com.tk.gg.users.presenation.request.ProfileSearch;
+import com.tk.gg.users.presenation.response.ProfilePageResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 import static com.tk.gg.common.response.exception.GlowGlowError.PROFILE_NO_EXIST;
 
@@ -64,5 +69,20 @@ public class ProfileDomainService {
                 .map(workExperienceDto -> workExperienceDto.toEntity(profile))
                 .toList();
         workExperienceRepository.saveAll(workExperienceList);
+    }
+
+    public Page<ProfilePageResponse> searchProfiles(ProfileSearch profileSearch, Pageable pageable) {
+        return profileRepository.searchProfiles(profileSearch, pageable);
+    }
+
+    public ProfileDto getProfile(UUID profileId) {
+        Profile profile = profileRepository.findByProfileIdAndIsDeletedFalse(profileId).orElseThrow(() -> new GlowGlowException(PROFILE_NO_EXIST));
+        return ProfileDto.from(profile);
+    }
+
+    public ProfileDto getMyProfile(User user) {
+        Profile profile = profileRepository.findByUserUserIdAndIsDeletedFalse(user.getUserId())
+                .orElseThrow(() -> new GlowGlowException(PROFILE_NO_EXIST));
+        return ProfileDto.from(profile);
     }
 }

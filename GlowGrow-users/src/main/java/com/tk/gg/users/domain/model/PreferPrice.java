@@ -22,17 +22,17 @@ public class PreferPrice extends BaseEntity {
     @JoinColumn(name = "profile_id")
     private Profile profile;
 
-    @Column(name = "price_id", nullable = false)
-    private UUID priceId;
+    @Column(name = "price", nullable = false)
+    private Long price;
 
     @Setter
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted = false;
 
-    public static PreferPrice create(Profile profile, UUID priceId) {
+    public static PreferPrice create(Profile profile, Long price) {
         return PreferPrice.builder()
                 .profile(profile)
-                .priceId(priceId)
+                .price(price)
                 .isDeleted(false)
                 .build();
     }

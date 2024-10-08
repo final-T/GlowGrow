@@ -1,5 +1,6 @@
 package com.tk.gg.users.domain.model;
 
+import com.tk.gg.common.jpa.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,11 +12,11 @@ import java.util.UUID;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor
 @Table(name = "p_work_experiences")
-public class WorkExperience {
+public class WorkExperience extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "work_experience_id", nullable = false, updatable = false)
-    private UUID work_experience_id;
+    private UUID workExperienceId;
 
     @ManyToOne
     @JoinColumn(name = "profile_id")

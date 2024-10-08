@@ -37,4 +37,21 @@ public record AwardDto(
     public Award toEntity(Profile profile){
         return Award.create(profile, awardName, awardLevel, awardDate, organization);
     }
+
+    public static AwardDto from(Award award) {
+        return AwardDto.builder()
+                .awardId(award.getAwardId())
+                .awardName(award.getAwardName())
+                .awardLevel(award.getAwardLevel())
+                .awardDate(award.getAwardDate())
+                .organization(award.getOrganization())
+                .isDeleted(award.getIsDeleted())
+                .createdAt(award.getCreatedAt())
+                .createdBy(award.getCreatedBy())
+                .updatedAt(award.getUpdatedAt())
+                .updatedBy(award.getUpdatedBy())
+                .deletedAt(award.getDeletedAt())
+                .deletedBy(award.getDeletedBy())
+                .build();
+    }
 }

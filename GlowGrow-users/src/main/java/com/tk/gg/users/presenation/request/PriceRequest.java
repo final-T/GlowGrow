@@ -5,9 +5,9 @@ import com.tk.gg.users.application.dto.PreferPriceDto;
 import java.util.UUID;
 
 public record PriceRequest(
-        UUID priceId
+        Long price
 ) {
     public PreferPriceDto toDto() {
-        return PreferPriceDto.of(priceId);
+        return PreferPriceDto.of(price);
     }
 }

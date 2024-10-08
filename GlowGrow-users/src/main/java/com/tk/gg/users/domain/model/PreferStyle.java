@@ -1,5 +1,6 @@
 package com.tk.gg.users.domain.model;
 
+import com.tk.gg.common.jpa.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,14 +12,14 @@ import java.util.UUID;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor
 @Table(name = "p_prefer_styles")
-public class PreferStyle {
+public class PreferStyle extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "prefer_style_id", nullable = false, updatable = false)
     private UUID preferStyleId;
 
-    @Column(name = "sytle_id", nullable = false)
-    private UUID styleId;
+    @Column(name = "sytle_name", nullable = false)
+    private String styleName;
 
     @ManyToOne
     @JoinColumn(name = "profile_id")
@@ -28,10 +29,10 @@ public class PreferStyle {
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted = false;
 
-    public static PreferStyle create(Profile profile, UUID styleId) {
+    public static PreferStyle create(Profile profile, String styleName) {
         return PreferStyle.builder()
                 .profile(profile)
-                .styleId(styleId)
+                .styleName(styleName)
                 .isDeleted(false)
                 .build();
     }

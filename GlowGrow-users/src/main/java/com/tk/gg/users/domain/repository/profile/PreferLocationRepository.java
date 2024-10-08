@@ -1,6 +1,5 @@
-package com.tk.gg.users.domain.repository;
+package com.tk.gg.users.domain.repository.profile;
 
-import com.tk.gg.users.domain.model.Award;
 import com.tk.gg.users.domain.model.PreferLocation;
 import org.springframework.data.jpa.repository.JpaRepository;
 

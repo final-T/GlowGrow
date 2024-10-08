@@ -34,4 +34,20 @@ public record WorkExperienceDto(
     public WorkExperience toEntity(Profile profile) {
         return WorkExperience.create(profile, companyName, position, experience);
     }
+
+    public static WorkExperienceDto from(WorkExperience workExperience) {
+        return WorkExperienceDto.builder()
+                .workExperienceId(workExperience.getWorkExperienceId())
+                .companyName(workExperience.getCompanyName())
+                .position(workExperience.getPosition())
+                .experience(workExperience.getExperience())
+                .isDeleted(workExperience.getIsDeleted())
+                .createdAt(workExperience.getCreatedAt())
+                .createdBy(workExperience.getCreatedBy())
+                .updatedAt(workExperience.getUpdatedAt())
+                .updatedBy(workExperience.getUpdatedBy())
+                .deletedAt(workExperience.getDeletedAt())
+                .deletedBy(workExperience.getDeletedBy())
+                .build();
+    }
 }

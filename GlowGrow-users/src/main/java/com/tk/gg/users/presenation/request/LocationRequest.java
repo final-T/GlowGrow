@@ -5,9 +5,9 @@ import com.tk.gg.users.application.dto.PreferLocationDto;
 import java.util.UUID;
 
 public record LocationRequest(
-        UUID locationId
+        String locationName
 ) {
     public PreferLocationDto toDto() {
-        return PreferLocationDto.of(locationId);
+        return PreferLocationDto.of(locationName);
     }
 }

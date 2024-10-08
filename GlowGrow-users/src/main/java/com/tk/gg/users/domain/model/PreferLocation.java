@@ -22,17 +22,17 @@ public class PreferLocation extends BaseEntity {
     @JoinColumn(name = "profile_id")
     private Profile profile;
 
-    @Column(name = "location_id", nullable = false)
-    private UUID locationId;
+    @Column(name = "location_name", nullable = false)
+    private String locationName;
 
     @Setter
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted = false;
 
-    public static PreferLocation create(Profile profile, UUID locationId) {
+    public static PreferLocation create(Profile profile, String locationName) {
         return PreferLocation.builder()
                 .profile(profile)
-                .locationId(locationId)
+                .locationName(locationName)
                 .isDeleted(false)
                 .build();
     }

@@ -10,9 +10,9 @@ import java.util.UUID;
 
 @Builder(access = AccessLevel.PRIVATE)
 public record PreferPriceDto(
-        UUID preferLocationId,
+        UUID preferPriceId,
         ProfileDto profileDto,
-        UUID priceId,
+        Long price,
         Boolean isDeleted,
         LocalDateTime createdAt,
         String createdBy,
@@ -21,11 +21,26 @@ public record PreferPriceDto(
         LocalDateTime deletedAt,
         String deletedBy
 ) {
-    public static PreferPriceDto of(UUID priceId) {
-        return PreferPriceDto.builder().priceId(priceId).build();
+    public static PreferPriceDto of(Long price) {
+        return PreferPriceDto.builder().price(price).build();
     }
 
     public PreferPrice toEntity(Profile profile) {
-        return PreferPrice.create(profile, priceId);
+        return PreferPrice.create(profile, price);
+    }
+
+    public static PreferPriceDto from(PreferPrice preferPrice) {
+        return PreferPriceDto.builder()
+                .preferPriceId(preferPrice.getPreferPriceId())
+                .price(preferPrice.getPrice())
+                .isDeleted(preferPrice.getIsDeleted())
+                .createdAt(preferPrice.getCreatedAt())
+                .createdBy(preferPrice.getCreatedBy())
+                .updatedAt(preferPrice.getUpdatedAt())
+                .updatedBy(preferPrice.getUpdatedBy())
+                .deletedAt(preferPrice.getDeletedAt())
+                .deletedBy(preferPrice.getDeletedBy())
+                .build();
+
     }
 }

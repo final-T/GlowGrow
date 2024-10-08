@@ -5,9 +5,9 @@ import com.tk.gg.users.application.dto.PreferStyleDto;
 import java.util.UUID;
 
 public record StyleRequest(
-        UUID styleId
+        String styleName
 ) {
     public PreferStyleDto toDto() {
-        return PreferStyleDto.of(styleId);
+        return PreferStyleDto.of(styleName);
     }
 }

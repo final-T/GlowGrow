@@ -1,4 +1,4 @@
-package com.tk.gg.users.domain.repository;
+package com.tk.gg.users.domain.repository.user;
 
 import com.tk.gg.users.domain.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -12,7 +12,7 @@ import java.util.UUID;
 public record PreferStyleDto(
         UUID preferStyleId,
         ProfileDto profileDto,
-        UUID styleId,
+        String styleName,
         Boolean isDeleted,
         LocalDateTime createdAt,
         String createdBy,
@@ -21,13 +21,27 @@ public record PreferStyleDto(
         LocalDateTime deletedAt,
         String deletedBy
 ) {
-    public static PreferStyleDto of(UUID styleId) {
+    public static PreferStyleDto of(String styleName) {
         return PreferStyleDto.builder()
-                .styleId(styleId)
+                .styleName(styleName)
                 .build();
     }
 
     public PreferStyle toEntity(Profile profile) {
-        return PreferStyle.create(profile, styleId);
+        return PreferStyle.create(profile, styleName);
+    }
+
+    public static PreferStyleDto from(PreferStyle preferStyle) {
+        return PreferStyleDto.builder()
+                .preferStyleId(preferStyle.getPreferStyleId())
+                .styleName(preferStyle.getStyleName())
+                .isDeleted(preferStyle.getIsDeleted())
+                .createdAt(preferStyle.getCreatedAt())
+                .createdBy(preferStyle.getCreatedBy())
+                .updatedAt(preferStyle.getUpdatedAt())
+                .updatedBy(preferStyle.getUpdatedBy())
+                .deletedAt(preferStyle.getDeletedAt())
+                .deletedBy(preferStyle.getDeletedBy())
+                .build();
     }
 }

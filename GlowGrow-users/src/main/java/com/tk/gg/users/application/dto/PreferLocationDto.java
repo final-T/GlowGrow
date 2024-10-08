@@ -12,7 +12,7 @@ import java.util.UUID;
 public record PreferLocationDto(
         UUID preferLocationId,
         ProfileDto profileDto,
-        UUID locationId,
+        String locationName,
         Boolean isDeleted,
         LocalDateTime createdAt,
         String createdBy,
@@ -21,13 +21,27 @@ public record PreferLocationDto(
         LocalDateTime deletedAt,
         String deletedBy
 ) {
-    public static PreferLocationDto of(UUID locationId){
+    public static PreferLocationDto of(String locationName){
         return PreferLocationDto.builder()
-                .locationId(locationId)
+                .locationName(locationName)
                 .build();
     }
 
     public PreferLocation toEntity(Profile profile) {
-        return PreferLocation.create(profile, locationId);
+        return PreferLocation.create(profile, locationName);
+    }
+
+    public static PreferLocationDto from(PreferLocation preferLocation) {
+        return PreferLocationDto.builder()
+                .preferLocationId(preferLocation.getPreferLocationId())
+                .locationName(preferLocation.getLocationName())
+                .isDeleted(preferLocation.getIsDeleted())
+                .createdAt(preferLocation.getCreatedAt())
+                .createdBy(preferLocation.getCreatedBy())
+                .updatedAt(preferLocation.getUpdatedAt())
+                .updatedBy(preferLocation.getUpdatedBy())
+                .deletedAt(preferLocation.getDeletedAt())
+                .deletedBy(preferLocation.getDeletedBy())
+                .build();
     }
 }

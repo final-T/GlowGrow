@@ -1,4 +1,4 @@
-package com.tk.gg.users.domain.repository;
+package com.tk.gg.users.domain.repository.profile;
 
 import com.tk.gg.users.domain.model.PreferPrice;
 import org.springframework.data.jpa.repository.JpaRepository;
