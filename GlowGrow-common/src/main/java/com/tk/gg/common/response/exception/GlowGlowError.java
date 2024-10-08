@@ -71,7 +71,12 @@ public enum GlowGlowError {
     PREFER_PRICE_NO_EXIST(404, "PROFILE_003", "존재하지 않는 선호 가격입니다."),
     PREFER_LOCATION_NO_EXIST(404, "PROFILE_004", "존재하지 않는 선호 지역입니다."),
     PREFER_STYLE_NO_EXIST(404, "PROFILE_005", "존재하지 않는 선호 스타일입니다."),
-    WORK_EXPERIENCE_NO_EXIST(404, "PROFILE_006", "존재하지 않는 경력일입니다."),
+    WORK_EXPERIENCE_NO_EXIST(404, "PROFILE_006", "존재하지 않는 경력입니다."),
+    AWARD_ALREADY_EXIST(409, "PROFILE_007", "이미 존재하는 수상 경력입니다."),
+    PREFER_LOCATION_ALREADY_EXIST(409, "PROFILE_008", "이미 존재하는 선호 지역입니다."),
+    PREFER_PRICE_ALREADY_EXIST(409, "PROFILE_009", "이미 존재하는 선호 가격입니다."),
+    PREFER_STYLE_ALREADY_EXIST(409, "PROFILE_010", "이미 존재하는 선호 스타일입니다."),
+    WORK_EXPERIENCE_ALREADY_EXIST(409, "PROFILE_011", "이미 존재하는 경력입니다."),
     ;
     private final int statusCode; // HTTP 상태 코드
     private final String errorCode; // 내부 시스템의 에러 코드

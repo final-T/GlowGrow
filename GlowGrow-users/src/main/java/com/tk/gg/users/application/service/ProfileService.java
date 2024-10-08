@@ -3,13 +3,11 @@ package com.tk.gg.users.application.service;
 import com.tk.gg.common.response.exception.GlowGlowError;
 import com.tk.gg.common.response.exception.GlowGlowException;
 import com.tk.gg.security.user.AuthUserInfo;
-import com.tk.gg.users.application.dto.ProfileDto;
-import com.tk.gg.users.application.dto.UserDto;
+import com.tk.gg.users.application.dto.*;
 import com.tk.gg.users.domain.model.User;
 import com.tk.gg.users.domain.service.ProfileDomainService;
 import com.tk.gg.users.domain.service.UserDomainService;
-import com.tk.gg.users.presenation.request.CreateProfileRequest;
-import com.tk.gg.users.presenation.request.ProfileSearch;
+import com.tk.gg.users.presenation.request.*;
 import com.tk.gg.users.presenation.response.ProfilePageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,6 +15,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -85,13 +85,48 @@ public class ProfileService {
         profileDomainService.deleteWorkExperience(userDto, profileId, workExperienceId);
     }
 
+    public ProfileDto updateProfile(AuthUserInfo userInfo, UUID profileId, UpdateProfileRequest request) {
+        UserDto userDto = checkUser(userInfo);
+
+        return profileDomainService.updateProfile(userDto, profileId, request);
+    }
+
+    public List<PreferLocationDto> addLocation(AuthUserInfo userInfo, UUID profileId, LocationRequest request) {
+        UserDto userDto = checkUser(userInfo);
+
+        return profileDomainService.addLocation(userDto, profileId, request.toDto());
+    }
+
+    public List<PreferPriceDto> addPrice(AuthUserInfo userInfo, UUID profileId, PriceRequest request) {
+        UserDto userDto = checkUser(userInfo);
+
+        return profileDomainService.addPrice(userDto, profileId, request.toDto());
+    }
+
+    public List<PreferStyleDto> addStyle(AuthUserInfo userInfo, UUID profileId, StyleRequest request) {
+        UserDto userDto = checkUser(userInfo);
+
+        return profileDomainService.addStyle(userDto, profileId, request.toDto());
+    }
+
+    public List<AwardDto> addAward(AuthUserInfo userInfo, UUID profileId, AwardRequest request) {
+        UserDto userDto = checkUser(userInfo);
+
+        return profileDomainService.addAward(userDto, profileId, request.toDto());
+    }
+
+    public List<WorkExperienceDto> addWorkExperience(AuthUserInfo userInfo, UUID profileId, WorkExperienceRequest request) {
+        UserDto userDto = checkUser(userInfo);
+
+        return profileDomainService.addWorkExperience(userDto, profileId, request.toDto());
+    }
+
     private UserDto checkUser(AuthUserInfo userInfo) {
         UserDto userDto = userDomainService.findById(userInfo.getId());
-        if(userDto == null) {
+        if (userDto == null) {
             throw new GlowGlowException(GlowGlowError.AUTH_UNAUTHORIZED);
         }
 
         return userDto;
     }
-
 }

@@ -2,6 +2,7 @@ package com.tk.gg.users.domain.model;
 
 import com.tk.gg.common.jpa.BaseEntity;
 import com.tk.gg.users.application.dto.UserDto;
+import com.tk.gg.users.presenation.request.UpdateProfileRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,12 +24,15 @@ public class Profile extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY)
     private User user;
 
+    @Setter
     @Column(name = "profile_image_url")
     private String profileImageUrl;
 
+    @Setter
     @Column(name = "specialization")
     private String specialization;
 
+    @Setter
     @Column(name = "bio", columnDefinition = "TEXT")
     private String bio;
 
@@ -72,5 +76,13 @@ public class Profile extends BaseEntity {
         this.preferStyles.forEach(PreferStyle::delete);
         this.awards.forEach(Award::delete);
         this.workExperiences.forEach(WorkExperience::delete);
+    }
+
+    public void update(UserDto user, UpdateProfileRequest request) {
+        Optional.ofNullable(request.profileImageUrl()).ifPresent(url -> this.profileImageUrl = url);
+        Optional.ofNullable(request.specialization()).ifPresent(spec -> this.specialization = spec);
+        Optional.ofNullable(request.bio()).ifPresent(bio -> this.bio = bio);
+        this.updatedBy = user.username();
+        this.updatedAt = LocalDateTime.now();
     }
 }

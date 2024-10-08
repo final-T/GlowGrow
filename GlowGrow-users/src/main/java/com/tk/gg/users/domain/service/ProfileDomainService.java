@@ -4,7 +4,9 @@ import com.tk.gg.common.response.exception.GlowGlowException;
 import com.tk.gg.users.application.dto.*;
 import com.tk.gg.users.domain.model.*;
 import com.tk.gg.users.domain.repository.profile.*;
+import com.tk.gg.users.presenation.request.AwardRequest;
 import com.tk.gg.users.presenation.request.ProfileSearch;
+import com.tk.gg.users.presenation.request.UpdateProfileRequest;
 import com.tk.gg.users.presenation.response.ProfilePageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -143,5 +145,86 @@ public class ProfileDomainService {
                 .orElseThrow(() -> new GlowGlowException(WORK_EXPERIENCE_NO_EXIST));
 
         workExperience.delete();
+    }
+
+    public ProfileDto updateProfile(UserDto userDto, UUID profileId, UpdateProfileRequest request) {
+        Profile profile = profileRepository.findByProfileIdAndUserUserIdAndIsDeletedFalse(profileId, userDto.userId())
+                .orElseThrow(() -> new GlowGlowException(PROFILE_NO_EXIST));
+
+        profile.update(userDto, request);
+
+        return getProfile(profile.getProfileId());
+    }
+
+    public List<PreferLocationDto> addLocation(UserDto userDto, UUID profileId, PreferLocationDto dto) {
+        Profile profile = profileRepository.findByProfileIdAndUserUserIdAndIsDeletedFalse(profileId, userDto.userId())
+                .orElseThrow(() -> new GlowGlowException(PROFILE_NO_EXIST));
+
+        if(preferLocationRepository.existsByProfileProfileIdAndIsDeletedFalseAndLocationName(profile.getProfileId(), dto.locationName())){
+            throw new GlowGlowException(PREFER_LOCATION_ALREADY_EXIST);
+        }
+
+        preferLocationRepository.save(dto.toEntity(profile));
+
+        return preferLocationRepository.findAllByProfileProfileIdAndIsDeletedFalse(profile.getProfileId())
+                .stream().map(PreferLocationDto::from).toList();
+    }
+
+    public List<PreferPriceDto> addPrice(UserDto userDto, UUID profileId, PreferPriceDto dto) {
+        Profile profile = profileRepository.findByProfileIdAndUserUserIdAndIsDeletedFalse(profileId, userDto.userId())
+                .orElseThrow(() -> new GlowGlowException(PROFILE_NO_EXIST));
+        if(preferPriceRepository.existsByProfileProfileIdAndIsDeletedFalseAndPrice(profile.getProfileId(), dto.price())){
+            throw new GlowGlowException(PREFER_PRICE_ALREADY_EXIST);
+        }
+        preferPriceRepository.save(dto.toEntity(profile));
+
+        return preferPriceRepository.findAllByProfileProfileIdAndIsDeletedFalse(profile.getProfileId())
+                .stream().map(PreferPriceDto::from).toList() ;
+    }
+
+    public List<PreferStyleDto> addStyle(UserDto userDto, UUID profileId, PreferStyleDto dto) {
+        Profile profile = profileRepository.findByProfileIdAndUserUserIdAndIsDeletedFalse(profileId, userDto.userId())
+                .orElseThrow(() -> new GlowGlowException(PROFILE_NO_EXIST));
+        if(preferStyleRepository.existsByProfileProfileIdAndIsDeletedFalseAndStyleName(profile.getProfileId(), dto.styleName())){
+            throw new GlowGlowException(PREFER_STYLE_ALREADY_EXIST);
+        }
+        preferStyleRepository.save(dto.toEntity(profile));
+
+        return preferStyleRepository.findAllByProfileProfileIdAndIsDeletedFalse(profile.getProfileId())
+                .stream().map(PreferStyleDto::from).toList();
+    }
+
+    public List<AwardDto> addAward(UserDto userDto, UUID profileId, AwardDto dto) {
+        Profile profile = profileRepository.findByProfileIdAndUserUserIdAndIsDeletedFalse(profileId, userDto.userId())
+                .orElseThrow(() -> new GlowGlowException(PROFILE_NO_EXIST));
+
+        boolean exists = awardRepository.existsByAwardNameAndAwardLevelAndAwardDateAndOrganization(
+                dto.awardName(),
+                dto.awardLevel(),
+                dto.awardDate(),
+                dto.organization()
+        );
+
+        if(exists) {
+            throw new GlowGlowException(AWARD_ALREADY_EXIST);
+        }
+
+        awardRepository.save(dto.toEntity(profile));
+
+        return awardRepository.findAllByProfileProfileIdAndIsDeletedFalse(profile.getProfileId())
+                .stream().map(AwardDto::from).toList();
+    }
+
+    public List<WorkExperienceDto> addWorkExperience(UserDto userDto, UUID profileId, WorkExperienceDto dto) {
+        Profile profile = profileRepository.findByProfileIdAndUserUserIdAndIsDeletedFalse(profileId, userDto.userId())
+                .orElseThrow(() -> new GlowGlowException(PROFILE_NO_EXIST));
+        if(workExperienceRepository.existsByProfileProfileIdAndIsDeletedFalseAndCompanyName(profile.getProfileId(), dto.companyName())){
+            throw new GlowGlowException(WORK_EXPERIENCE_ALREADY_EXIST);
+        }
+
+        workExperienceRepository.save(dto.toEntity(profile));
+
+        return workExperienceRepository.findAllByProfileProfileIdAndIsDeletedFalse(profile.getProfileId())
+                .stream().map(WorkExperienceDto::from).toList();
     }
 }
