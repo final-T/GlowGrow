@@ -62,7 +62,10 @@ public enum ResponseMessage {
 
     REPORT_CREATE_SUCCESS("신고를 성공적으로 생성했습니다."),
     REPORT_RETRIEVE_SUCCESS("신고를 성공적으로 생성했습니다."),
-    REPORT_DELETE_SUCCESS("신고를 성공적으로 생성했습니다.")
+    REPORT_DELETE_SUCCESS("신고를 성공적으로 생성했습니다."),
+
+    // 평가 항목 관련 메시지
+    GRADE_RETRIEVE_SUCCESS("평가정보를 성공적으로 조회했습니다.")
 
     // 다른 메시지들...
     ;

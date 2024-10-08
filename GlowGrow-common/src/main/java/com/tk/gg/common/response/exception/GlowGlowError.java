@@ -63,7 +63,11 @@ public enum GlowGlowError {
     // 신고 관련 에러
     REPORT_NOT_OWNER(404, "REPORT_001", "해당 신고에 대한 권한이 없습니다."),
     REPORT_NO_EXIST(404, "REPORT_002","존재하지 않는 신고 정보 입니다."),
-    REPORT_ALREADY_EXIST(404, "REPORT_003", "이미 신고된 예약입니다.")
+    REPORT_ALREADY_EXIST(404, "REPORT_003", "이미 신고된 예약입니다."),
+
+    //평가항목 관련 에러
+    GRADE_NO_EXIST(404, "GRADE_001", "존재하지 않는 평가정보 입니다."),
+    GRADE_INVALID_ROLES(401, "GRADE_002","해당 평가정보에 대한 권한이 업습니다.")
     ;
     private final int statusCode; // HTTP 상태 코드
     private final String errorCode; // 내부 시스템의 에러 코드
