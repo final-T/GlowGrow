@@ -1,7 +1,9 @@
 dependencies {
 	implementation project(':GlowGrow-common')
 	implementation project(':GlowGrow-security')
+	implementation project(':GlowGrow-kafka')
 
+	implementation 'org.springframework.kafka:spring-kafka'
 	// lombok - 코드 간소화 (각 서비스 모듈에서도 추가 필요)
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
