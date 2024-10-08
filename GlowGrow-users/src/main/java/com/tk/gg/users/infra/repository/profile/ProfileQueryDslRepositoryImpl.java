@@ -23,7 +23,6 @@ import java.util.Optional;
 import static com.tk.gg.users.domain.model.QPreferLocation.preferLocation;
 import static com.tk.gg.users.domain.model.QPreferPrice.preferPrice;
 import static com.tk.gg.users.domain.model.QPreferStyle.preferStyle;
-import static com.tk.gg.users.domain.model.QProfile.profile;
 import static com.tk.gg.users.domain.model.QUser.user;
 
 @RequiredArgsConstructor

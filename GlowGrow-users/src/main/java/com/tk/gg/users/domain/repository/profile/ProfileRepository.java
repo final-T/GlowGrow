@@ -1,7 +1,6 @@
 package com.tk.gg.users.domain.repository.profile;
 
 import com.tk.gg.users.domain.model.Profile;
-import com.tk.gg.users.domain.model.User;
 import com.tk.gg.users.infra.repository.profile.ProfileQueryDslRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 

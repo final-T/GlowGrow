@@ -60,9 +60,10 @@ public class ProfileController {
     }
 
     /**
-     * 프로필 업데이트
-     *
+     * 프로필 관련 업데이트
+     * @param userInfo
      * @param profileId
+     * @param request
      * @return
      */
     @PutMapping("/{profileId}")

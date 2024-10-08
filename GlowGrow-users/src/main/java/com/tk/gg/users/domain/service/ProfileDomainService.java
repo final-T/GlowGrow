@@ -4,7 +4,6 @@ import com.tk.gg.common.response.exception.GlowGlowException;
 import com.tk.gg.users.application.dto.*;
 import com.tk.gg.users.domain.model.*;
 import com.tk.gg.users.domain.repository.profile.*;
-import com.tk.gg.users.presenation.request.AwardRequest;
 import com.tk.gg.users.presenation.request.ProfileSearch;
 import com.tk.gg.users.presenation.request.UpdateProfileRequest;
 import com.tk.gg.users.presenation.response.ProfilePageResponse;
