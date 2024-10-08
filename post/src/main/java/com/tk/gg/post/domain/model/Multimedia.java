@@ -2,6 +2,7 @@ package com.tk.gg.post.domain.model;
 
 import com.tk.gg.common.jpa.BaseEntity;
 import com.tk.gg.post.domain.type.FileType;
+import com.tk.gg.security.user.AuthUserInfo;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -32,6 +33,9 @@ public class Multimedia extends BaseEntity {
     @Column(name = "file_name", nullable = false)
     private String fileName;
 
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
+
     @Column(name = "file_size", nullable = false)
     private Long fileSize;
 
@@ -43,24 +47,20 @@ public class Multimedia extends BaseEntity {
     private Boolean isDeleted = false;
 
     //소프트 삭제 메서드
-    public void softDelete(Long userId){
+    public void softDelete(AuthUserInfo authUserInfo){
         this.isDeleted = true;
         this.deletedAt = LocalDateTime.now();
-        this.deletedBy = String.valueOf(userId);
+        this.deletedBy = String.valueOf(authUserInfo.getId());
     }
 
     @Builder(builderClassName = "CreateMultimediaBuilder", builderMethodName = "createMultimediaBuilder")
-    public Multimedia(Post post, String multiMediaUrl, String fileName, Long fileSize, FileType fileType) {
+    public Multimedia(Post post, String multiMediaUrl, String fileName, Long fileSize, FileType fileType, AuthUserInfo authUserInfo) {
         this.post = post;
+        this.userId = authUserInfo.getId();
         this.multiMediaUrl = multiMediaUrl;
         this.fileName = fileName;
         this.fileSize = fileSize;
         this.fileType = fileType;
     }
-
-    public void updateFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
 
 }

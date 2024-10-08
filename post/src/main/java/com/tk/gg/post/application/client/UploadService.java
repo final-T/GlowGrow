@@ -1,4 +1,4 @@
-package com.tk.gg.post.application.service;
+package com.tk.gg.post.application.client;
 
 import org.springframework.web.multipart.MultipartFile;
 

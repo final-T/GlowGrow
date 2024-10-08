@@ -1,12 +1,14 @@
 package com.tk.gg.post.domain.model;
 
 import com.tk.gg.common.jpa.BaseEntity;
+import com.tk.gg.security.user.AuthUserInfo;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -30,15 +32,27 @@ public class Like extends BaseEntity {
     @Column(name = "like_status", nullable = false)
     private Boolean likeStatus = false;
 
+    @Column(nullable = false)
+    private Boolean isDeleted = false;
+
+
     @Builder
-    public Like(Post post, Long userId) {
+    public Like(Post post, AuthUserInfo authUserInfo) {
         this.post = post;
-        this.userId = userId;
+        this.userId = authUserInfo.getId();
         this.likeStatus = false;
+        this.createdBy = String.valueOf(authUserInfo.getId());
     }
 
-    public void toggleLikeStatus() {
+    public void toggleLikeStatus(AuthUserInfo authUserInfo) {
         this.likeStatus = !this.likeStatus;
+        this.updatedBy = String.valueOf(authUserInfo.getId());
+    }
+
+    public void softDelete(AuthUserInfo authUserInfo) {
+        isDeleted = true;
+        deletedAt = LocalDateTime.now();
+        deletedBy = String.valueOf(authUserInfo.getId());
     }
 
 }

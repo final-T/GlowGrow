@@ -6,6 +6,8 @@ import com.tk.gg.common.response.ResponseMessage;
 import com.tk.gg.post.application.dto.MultiMediaSearchDto;
 import com.tk.gg.post.application.dto.MultimediaDto;
 import com.tk.gg.post.application.service.MultimediaService;
+import com.tk.gg.security.user.AuthUser;
+import com.tk.gg.security.user.AuthUserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
@@ -29,9 +31,10 @@ public class MultimediaController {
     @PostMapping
     public GlobalResponse<MultimediaDto.Response> uploadMultimedia(
             @RequestParam("file") MultipartFile file,
-            @RequestParam("postId") UUID postId
-    ){
-        MultimediaDto.Response responseDto = multimediaService.uploadMultimedia(file,postId);
+            @RequestParam("postId") UUID postId,
+            @AuthUser AuthUserInfo authUserInfo
+            ){
+        MultimediaDto.Response responseDto = multimediaService.uploadMultimedia(file,postId,authUserInfo);
         return ApiUtils.success(ResponseMessage.MULTIMEDIA_UPLOAD_SUCCESS.getMessage(),responseDto);
     }
 
@@ -52,8 +55,11 @@ public class MultimediaController {
 
     // S3 멀티미디어 삭제 api
     @DeleteMapping
-    GlobalResponse<Void> deleteMultimedia(@RequestParam("multiMediaId") UUID multiMediaId) {
-        multimediaService.deleteMultimedia(multiMediaId);
+    GlobalResponse<Void> deleteMultimedia(
+            @RequestParam("multiMediaId") UUID multiMediaId,
+            @AuthUser AuthUserInfo authUserInfo
+            ) {
+        multimediaService.deleteMultimedia(multiMediaId,authUserInfo);
         return ApiUtils.success(ResponseMessage.MULTIMEDIA_DELETE_SUCCESS.getMessage(),null);
     }
 
