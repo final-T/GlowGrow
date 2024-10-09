@@ -37,6 +37,11 @@ public enum GlowGlowError {
     IMAGE_FILE_SIZE_EXCEEDED(404,"MULTIMEDIA_004","이미지 파일 크기가 허용된 최대 크기를 초과했습니다."),
     VIDEO_FILE_SIZE_EXCEEDED(404,"MULTIMEDIA_005","동영상 파일 크기가 허용된 최대 크기를 초과했습니다."),
 
+    // Payment (결제 관련 에러)
+    PAYMENT_NO_EXIST(404,"PAYMENT_001","존재하지 않은 결제정보입니다."),
+    PAYMENT_AMOUNT_MISMATCH(404,"PAYMENT_002","결제 금액이 일치하지 않습니다."),
+    ALREADY_APPROVED(404,"PAYMENT_003","이미 승인된 결제입니다."),
+
 
 
     // 프로모션 관련 에러
