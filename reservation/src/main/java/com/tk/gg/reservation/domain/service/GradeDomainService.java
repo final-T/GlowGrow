@@ -5,6 +5,7 @@ import com.tk.gg.common.enums.UserRole;
 import com.tk.gg.common.response.exception.GlowGlowError;
 import com.tk.gg.common.response.exception.GlowGlowException;
 import com.tk.gg.reservation.application.dto.CustomerGradeDto;
+import com.tk.gg.reservation.application.dto.GradeDto;
 import com.tk.gg.reservation.application.dto.ProviderGradeDto;
 import com.tk.gg.reservation.domain.model.Grade;
 import com.tk.gg.reservation.infrastructure.messaging.GradeForReservationEventDto;
@@ -54,7 +55,10 @@ public class GradeDomainService {
                         () -> new GlowGlowException(GlowGlowError.GRADE_NO_EXIST));
     }
 
-    //TODO : 리뷰에 평가 기능 추가 후 구현
-    public void updateGradeForReview() {
+    public void updateGradeForReview(GradeDto dtoByUserType) {
+        Grade grade = gradeRepository.findByUserId(dtoByUserType.userId()).orElseThrow(
+                        () -> new GlowGlowException(GlowGlowError.GRADE_NO_EXIST)
+        );
+        grade.update(dtoByUserType);
     }
 }

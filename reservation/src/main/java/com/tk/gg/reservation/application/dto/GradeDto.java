@@ -7,12 +7,13 @@ import lombok.Builder;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-
 @Builder
 public record GradeDto(
         UUID id,
         Long userId,
         UserRole userType, // PROVIDER 또는 CUSTOMER
+        UUID reviewId,
+        UUID reservationId,
         // 제공자 (디자이너) 평가 항목들
         Integer providerServiceQuality,  // 서비스 품질
         Integer providerProfessionalism, // 전문성
@@ -32,6 +33,8 @@ public record GradeDto(
                 .id(entity.getId())
                 .userId(entity.getUserId())
                 .userType(entity.getUserType())
+                .reviewId(entity.getReviewId())
+                .reservationId(entity.getReservationId())
                 .providerServiceQuality(entity.getProviderServiceQuality() != null ? entity.getProviderServiceQuality() : 0)
                 .providerProfessionalism(entity.getProviderProfessionalism() != null ? entity.getProviderProfessionalism() : 0)
                 .providerCommunication(entity.getProviderCommunication() != null ? entity.getProviderCommunication() : 0)
@@ -51,6 +54,8 @@ public record GradeDto(
                 .id(dto.id())
                 .userId(dto.userId())
                 .userType(dto.userType())
+                .reviewId(dto.reviewId())
+                .reservationId(dto.reservationId())
                 .customerCommunication(dto.customerCommunication())
                 .customerPunctuality(dto.customerPunctuality())
                 .customerManners(dto.customerManners())
@@ -65,6 +70,8 @@ public record GradeDto(
                 .id(dto.id())
                 .userId(dto.userId())
                 .userType(dto.userType())
+                .reviewId(dto.reviewId())
+                .reservationId(dto.reservationId())
                 .providerServiceQuality(dto.providerServiceQuality())
                 .providerProfessionalism(dto.providerProfessionalism())
                 .providerCommunication(dto.providerCommunication())
