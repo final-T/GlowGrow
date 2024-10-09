@@ -9,6 +9,8 @@ import com.tk.gg.reservation.presentation.request.CreateReviewRequest;
 import com.tk.gg.reservation.presentation.request.UpdateReviewRequest;
 import com.tk.gg.reservation.presentation.response.ReviewResponse;
 import com.tk.gg.reservation.presentation.response.ReviewWithReservationResponse;
+import com.tk.gg.security.user.AuthUser;
+import com.tk.gg.security.user.AuthUserInfo;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,7 +23,6 @@ import java.util.UUID;
 
 import static com.tk.gg.common.response.ResponseMessage.*;
 
-//TODO : Security, 유저  검증
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/reviews")
@@ -31,10 +32,11 @@ public class ReviewController {
 
     @PostMapping
     public GlobalResponse<ReviewWithReservationResponse> createReview(
-            @RequestBody @Valid CreateReviewRequest request
-    ){
+            @RequestBody @Valid CreateReviewRequest request,
+            @AuthUser AuthUserInfo userInfo
+            ){
         return ApiUtils.success(REVIEW_CREATE_SUCCESS.getMessage(),
-                ReviewWithReservationResponse.from(reviewService.createReview(request.toDto()))
+                ReviewWithReservationResponse.from(reviewService.createReview(request.toDto(), userInfo))
         );
     }
 
@@ -60,18 +62,19 @@ public class ReviewController {
     @PutMapping("/{reviewId}")
     public GlobalResponse<String> updateReview(
             @PathVariable(value = "reviewId") UUID reviewId,
-            @RequestBody @Valid UpdateReviewRequest request
+            @RequestBody @Valid UpdateReviewRequest request,
+            @AuthUser AuthUserInfo userInfo
     ){
-        reviewService.updateReview(reviewId, request.toDto());
+        reviewService.updateReview(reviewId, request.toDto(), userInfo);
         return ApiUtils.success(REVIEW_UPDATE_SUCCESS.getMessage());
     }
 
     @DeleteMapping("/{reviewId}")
     public GlobalResponse<String> deleteReview(
-            @PathVariable(value = "reviewId") UUID reviewId
+            @PathVariable(value = "reviewId") UUID reviewId,
+            @AuthUser AuthUserInfo userInfo
     ){
-        //TODO : deletedBy 유저 수정
-        reviewService.deleteReview(reviewId, "deletedBy");
+        reviewService.deleteReview(reviewId, userInfo);
         return ApiUtils.success(REVIEW_DELETE_SUCCESS.getMessage());
     }
 }

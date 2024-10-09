@@ -12,10 +12,13 @@ import com.tk.gg.reservation.domain.model.TimeSlot;
 import com.tk.gg.reservation.domain.service.ReservationDomainService;
 import com.tk.gg.reservation.domain.service.TimeSlotDomainService;
 import com.tk.gg.reservation.domain.type.ReservationStatus;
+import com.tk.gg.reservation.infrastructure.messaging.GradeForReservationEventDto;
+import com.tk.gg.reservation.infrastructure.messaging.GradeKafkaProducer;
 import com.tk.gg.security.user.AuthUserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +32,7 @@ import static com.tk.gg.common.response.exception.GlowGlowError.*;
 public class ReservationService {
     private final ReservationDomainService reservationDomainService;
     private final TimeSlotDomainService timeSlotDomainService;
+    private final GradeKafkaProducer gradeKafkaProducer;
 
     @Transactional(readOnly = true)
     public Page<ReservationDto> searchReservations(LocalDate startDate, LocalDate endDate, ReservationStatus status, Pageable pageable) {
@@ -68,7 +72,16 @@ public class ReservationService {
         if(!canHandleReservation(reservation, userInfo)){
             throw new GlowGlowException(RESERVATION_NOT_OWNER);
         }
+        // 예약 상태 변경
         reservationDomainService.updateStatus(reservation, status);
+        // 만약 예약 상태가 성공적으로 DONE 이 된다면, Grade 생성
+        if (status.equals(ReservationStatus.DONE)){
+            gradeKafkaProducer.sendReservationDoneEventForGrade(GradeForReservationEventDto.builder()
+                    .reservationId(reservationId).customerId(reservation.getCustomerId())
+                    .providerId(reservation.getServiceProviderId())
+                    .build()
+            );
+        }
     }
 
     @Transactional

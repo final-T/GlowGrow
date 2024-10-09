@@ -1,8 +1,10 @@
 package com.tk.gg.reservation.application.service;
 
+import com.tk.gg.common.enums.UserRole;
 import com.tk.gg.common.response.exception.GlowGlowError;
 import com.tk.gg.common.response.exception.GlowGlowException;
 import com.tk.gg.reservation.application.dto.CreateReviewDto;
+import com.tk.gg.reservation.application.dto.GradeDto;
 import com.tk.gg.reservation.application.dto.ReviewWithReservationDto;
 import com.tk.gg.reservation.domain.model.Reservation;
 import com.tk.gg.reservation.domain.model.Review;
@@ -10,6 +12,8 @@ import com.tk.gg.reservation.domain.model.TimeSlot;
 import com.tk.gg.reservation.domain.service.ReservationDomainService;
 import com.tk.gg.reservation.domain.service.ReviewDomainService;
 import com.tk.gg.reservation.domain.type.ReservationStatus;
+import com.tk.gg.reservation.infrastructure.messaging.GradeKafkaProducer;
+import com.tk.gg.security.user.AuthUserInfoImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,6 +30,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,6 +44,9 @@ class ReviewServiceTest {
 
     @Mock
     private ReservationDomainService reservationDomainService;
+
+    @Mock
+    private GradeKafkaProducer kafkaProducer;
 
     private CreateReviewDto validCreateReviewDto;
     private Reservation validReservation;
@@ -78,12 +86,16 @@ class ReviewServiceTest {
         when(reservationDomainService.getOne(any(UUID.class))).thenReturn(validReservation);
         when(reviewDomainService.create(any(CreateReviewDto.class), any(Reservation.class)))
                 .thenReturn(review);
+        willDoNothing().given(kafkaProducer).sendReviewEventForGrade(any(GradeDto.class));
 
         // When
-        ReviewWithReservationDto result = reviewService.createReview(validCreateReviewDto);
+        ReviewWithReservationDto result = reviewService.createReview(validCreateReviewDto,
+                AuthUserInfoImpl.builder().id(1L).email("testuser@email.com").token("test-token")
+                        .username("testuser").userRole(UserRole.CUSTOMER).build()
+        );
 
         // Then
-
+        then(kafkaProducer).should().sendReviewEventForGrade(any(GradeDto.class));
         verify(reservationDomainService, times(1)).getOne(any(UUID.class));
         verify(reviewDomainService, times(1)).
                 create(any(CreateReviewDto.class), any(Reservation.class));
@@ -98,9 +110,13 @@ class ReviewServiceTest {
         when(reservationDomainService.getOne(any())).thenReturn(validReservation);
 
         // Then
-        assertThatThrownBy(() -> reviewService.createReview(validCreateReviewDto))
+        assertThatThrownBy(() -> reviewService.createReview(validCreateReviewDto,
+                AuthUserInfoImpl.builder().id(1L).email("testuser@email.com").token("test-token")
+                        .username("testuser").userRole(UserRole.CUSTOMER).build()
+                )
+        )
                 .isInstanceOf(GlowGlowException.class)
-                .hasMessage(GlowGlowError.REVIEW_CANNOT_FAILED.getMessage());
+                .hasMessage(GlowGlowError.REVIEW_CREATE_FAILED.getMessage());
     }
 
 }

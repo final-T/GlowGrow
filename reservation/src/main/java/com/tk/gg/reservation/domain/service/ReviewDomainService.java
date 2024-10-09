@@ -36,13 +36,11 @@ public class ReviewDomainService {
         );
     }
 
-    public void update(UUID reviewId, UpdateReviewDto dto) {
-        Review review = getOne(reviewId);
+    public void update(Review review, UpdateReviewDto dto) {
         review.update(dto);
     }
 
-    public void delete(UUID reviewId, String deletedBy) {
-        Review review = getOne(reviewId);
+    public void delete(Review review, String deletedBy) {
         review.delete(deletedBy);
     }
 }
