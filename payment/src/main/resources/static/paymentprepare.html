@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <title>결제하기</title>
+    <script src="https://js.tosspayments.com/v1/payment"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h2 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        .payment-form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #34495e;
+        }
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+<section class="payment-form">
+    <h2>결제하기</h2>
+    <div class="form-group">
+        <label for="token">인증 토큰:</label>
+        <input type="text" id="token" placeholder="Bearer 토큰을 입력하세요" required />
+    </div>
+    <div class="form-group">
+        <label for="payType">결제 타입:</label>
+        <select id="payType" required>
+            <option value="">선택하세요</option>
+            <option value="CARD">카드</option>
+            <option value="CASH">현금</option>
+            <option value="POINT">포인트</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="amount">결제 금액:</label>
+        <input type="number" id="amount" placeholder="금액을 입력하세요" required />
+    </div>
+    <div class="form-group">
+        <label for="orderName">상품명:</label>
+        <input type="text" id="orderName" placeholder="상품명을 입력하세요" required />
+    </div>
+    <div class="form-group">
+        <label for="reservationId">예약 ID:</label>
+        <input type="text" id="reservationId" placeholder="예약 ID를 입력하세요" required />
+    </div>
+    <div class="form-group">
+        <label for="couponId">쿠폰 ID (선택):</label>
+        <input type="text" id="couponId" placeholder="쿠폰 ID를 입력하세요" />
+    </div>
+    <button id="payment-button">결제하기</button>
+</section>
+
+<script>
+    var button = document.getElementById('payment-button');
+    button.addEventListener('click', function () {
+        var token = document.getElementById('token').value;
+        var payType = document.getElementById('payType').value;
+        var amount = parseInt(document.getElementById('amount').value, 10);
+        var orderName = document.getElementById('orderName').value;
+        var reservationId = document.getElementById('reservationId').value;
+        var couponId = document.getElementById('couponId').value || null;
+
+        // 입력 유효성 검사
+        if (!token || !payType || isNaN(amount) || amount <= 0 || !orderName || !reservationId) {
+            alert('모든 필수 필드를 올바르게 입력해주세요.');
+            return;
+        }
+
+        // 서버에 결제 요청 전송
+        fetch('/api/payments/toss', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': token.startsWith('Bearer ') ? token : 'Bearer ' + token
+            },
+            body: JSON.stringify({
+                payType: payType,
+                amount: amount,
+                orderName: orderName,
+                reservationId: reservationId,
+                couponId: couponId
+            })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(text || '서버 응답이 올바르지 않습니다.');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                var clientKey = 'test_ck_6bJXmgo28eE5Y2gdPLJj8LAnGKWx';
+                var tossPayments = TossPayments(clientKey);
+
+                var paymentAmount = parseInt(data.amount, 10);
+                if (isNaN(paymentAmount) || paymentAmount <= 0) {
+                    throw new Error('올바르지 않은 결제 금액입니다.');
+                }
+
+
+
+                tossPayments.requestPayment(data.payType, {
+                    amount: paymentAmount, // 결제 금액
+                    orderId: data.paymentId, // 주문 번호
+                    orderName: orderName, // 결제 상품
+                    //customerName: data.customerName,
+                    //customerEmail: data.customerEmail,
+                    successUrl: "http://localhost:19096/api/payments/toss/success",
+                    failUrl: "http://localhost:19096/api/payments/toss/fail",
+                });
+
+                console.log("@@@"+data.customerName, amount, data.paymentId, orderName);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('결제 요청 중 오류가 발생했습니다: ' + error.message);
+            });
+    });
+</script>
+</body>
+</html>
