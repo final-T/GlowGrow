@@ -11,7 +11,9 @@ import java.util.UUID;
 public record GradeResponse(
         UUID id,
         Long userId,
-        UserRole userType, // PROVIDER 또는 CUSTOMER
+        UserRole userType, // PROVIDER 또는 CUSTOMER,
+        UUID reviewId,
+        UUID reservationId,
         // 제공자 (디자이너) 평가 항목들
         Integer providerServiceQuality,  // 서비스 품질
         Integer providerProfessionalism, // 전문성
@@ -31,6 +33,8 @@ public record GradeResponse(
                 .id(dto.id())
                 .userId(dto.userId())
                 .userType(dto.userType())
+                .reviewId(dto.reviewId())
+                .reservationId(dto.reservationId())
                 .providerServiceQuality(dto.providerServiceQuality())
                 .providerProfessionalism(dto.providerProfessionalism())
                 .providerCommunication(dto.providerCommunication())
