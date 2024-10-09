@@ -8,7 +8,7 @@ import com.tk.gg.reservation.application.dto.CustomerGradeDto;
 import com.tk.gg.reservation.application.dto.GradeDto;
 import com.tk.gg.reservation.application.dto.ProviderGradeDto;
 import com.tk.gg.reservation.domain.model.Grade;
-import com.tk.gg.reservation.infrastructure.messaging.GradeForReservationEventDto;
+import com.tk.gg.common.kafka.grade.GradeForReservationEventDto;
 import com.tk.gg.reservation.infrastructure.repository.GradeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

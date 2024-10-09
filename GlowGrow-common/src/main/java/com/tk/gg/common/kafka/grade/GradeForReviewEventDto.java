@@ -1,4 +1,4 @@
-package com.tk.gg.reservation.infrastructure.messaging;
+package com.tk.gg.common.kafka.grade;
 
 
 import com.tk.gg.common.enums.UserRole;

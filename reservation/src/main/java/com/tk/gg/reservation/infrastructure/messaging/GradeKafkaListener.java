@@ -1,6 +1,8 @@
 package com.tk.gg.reservation.infrastructure.messaging;
 
 
+import com.tk.gg.common.kafka.grade.GradeForReservationEventDto;
+import com.tk.gg.common.kafka.grade.GradeForReviewEventDto;
 import com.tk.gg.reservation.application.dto.GradeDto;
 import com.tk.gg.reservation.domain.model.Review;
 import com.tk.gg.reservation.domain.service.GradeDomainService;
