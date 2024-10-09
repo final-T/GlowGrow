@@ -17,6 +17,7 @@ public record ReservationDto(
         ReservationStatus reservationStatus,
         LocalDate reservationDate,
         Integer reservationTime,
+        Integer price,
         String createdBy,
         LocalDateTime createdAt,
         String updatedBy,
@@ -34,6 +35,7 @@ public record ReservationDto(
                 .reservationStatus(entity.getReservationStatus())
                 .reservationDate(entity.getReservationDate())
                 .reservationTime(entity.getReservationTime())
+                .price(entity.getPrice())
                 .createdBy(entity.getCreatedBy())
                 .createdAt(entity.getCreatedAt())
                 .updatedBy(entity.getUpdatedBy())

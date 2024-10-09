@@ -14,7 +14,8 @@ public record CreateReservationDto(
         Long customerId,
         Long serviceProviderId,
         LocalDate reservationDate,
-        Integer reservationTime
+        Integer reservationTime,
+        Integer price
 ) {
 
     public Reservation toEntity(TimeSlot timeSlot){
@@ -25,6 +26,7 @@ public record CreateReservationDto(
                 .reservationDate(reservationDate)
                 .reservationTime(reservationTime)
                 .reservationStatus(ReservationStatus.CHECK)
+                .price(price)
                 .build();
     }
 }

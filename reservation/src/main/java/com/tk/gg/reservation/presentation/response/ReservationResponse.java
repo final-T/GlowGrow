@@ -17,7 +17,8 @@ public record ReservationResponse(
         ReservationStatus reservationStatus,
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         LocalDate reservationDate,
-        Integer reservationTime
+        Integer reservationTime,
+        Integer price
 ) {
     public static ReservationResponse from(ReservationDto dto) {
         return ReservationResponse.builder()
@@ -28,6 +29,7 @@ public record ReservationResponse(
                 .reservationStatus(dto.reservationStatus())
                 .reservationDate(dto.reservationDate())
                 .reservationTime(dto.reservationTime())
+                .price(dto.price())
                 .build();
     }
 }

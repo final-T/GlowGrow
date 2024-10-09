@@ -69,6 +69,7 @@ class ReviewServiceTest {
                 .reservationDate(LocalDate.parse("2024-10-04", DateTimeFormatter.ofPattern("yyyy-MM-dd")))
                 .reservationTime(20)
                 .reservationStatus(ReservationStatus.CHECK)
+                .price(0)
                 .build();
 
         validCreateReviewDto = CreateReviewDto.builder().reservationId(validReservation.getId())

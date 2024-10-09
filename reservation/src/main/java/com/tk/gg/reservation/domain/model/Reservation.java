@@ -45,6 +45,9 @@ public class Reservation extends BaseEntity {
     @Column(nullable = false)
     private Integer reservationTime;
 
+    @Column(nullable = false)
+    private Integer price;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -65,6 +68,7 @@ public class Reservation extends BaseEntity {
         this.reservationStatus = dto.reservationStatus();
         this.reservationDate = dto.reservationDate();
         this.reservationTime = dto.reservationTime();
+        this.price = dto.price();
     }
 
     public void updateStatus(ReservationStatus status){
