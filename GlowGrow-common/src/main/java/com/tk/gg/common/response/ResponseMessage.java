@@ -71,7 +71,13 @@ public enum ResponseMessage {
     PROFILE_RETRIEVE_SUCCESS("프로필을 성공적으로 조회했습니다."),
 
     // 평가 항목 관련 메시지
-    GRADE_RETRIEVE_SUCCESS("평가정보를 성공적으로 조회했습니다.")
+    GRADE_RETRIEVE_SUCCESS("평가정보를 성공적으로 조회했습니다."),
+
+    // 유저 관련 메세지
+    USER_CREATE_SUCCESS("사용자 정보를 성공적으로 생성했습니다."),
+    USER_UPDATE_SUCCESS("사용자 정보를 성공적으로 수정했습니다."),
+    USER_DELETE_SUCCESS("사용자 정보를 성공적으로 삭제했습니다."),
+    USER_RETRIEVE_SUCCESS("사용자 정보를 성공적으로 조회했습니다."),
 
     // 다른 메시지들...
     ;

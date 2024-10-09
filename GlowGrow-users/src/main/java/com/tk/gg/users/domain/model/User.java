@@ -4,8 +4,11 @@ import com.tk.gg.common.enums.Gender;
 import com.tk.gg.common.enums.UserRole;
 import com.tk.gg.common.jpa.BaseEntity;
 import com.tk.gg.users.application.dto.UserDto;
+import com.tk.gg.users.presenation.request.UpdateUserInfoRequest;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -75,5 +78,13 @@ public class User extends BaseEntity {
 
     public void delete() {
         this.isDeleted = true;
+    }
+
+    public void updateInfo(UpdateUserInfoRequest request) {
+        this.username = request.username() != null ? request.username() : this.username;
+        this.address = request.address() != null ? request.address() : this.address;
+        this.phoneNumber = request.phoneNumber() != null ? request.phoneNumber() : this.phoneNumber;
+        this.updatedAt = LocalDateTime.now();
+        this.updatedBy = this.username;
     }
 }
