@@ -2,10 +2,11 @@ package com.tk.gg.users;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-//@EnableFeignClients
+@EnableFeignClients
 @ComponentScan(basePackages = {"com.tk.gg", "com.tk.gg.common"})
 public class GlowGrowUsersApplication {
 
