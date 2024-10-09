@@ -46,4 +46,12 @@ public record UserDto(
                 .deletedBy(user.getDeletedBy())
                 .build();
     }
+
+    public static UserDto of(String username, String phoneNumber, String address) {
+        return UserDto.builder()
+                .username(username)
+                .phoneNumber(phoneNumber)
+                .address(address)
+                .build();
+    }
 }
