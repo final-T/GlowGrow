@@ -9,7 +9,9 @@ import java.util.UUID;
 public record ProviderGradeDto(
         UUID id,
         Long userId,
-        UserRole userType, // PROVIDER 또는 CUSTOMER
+        UserRole userType, // PROVIDER 또는 CUSTOMER,
+        UUID reviewId,
+        UUID reservationId,
         // 제공자 (디자이너) 평가 항목들
         Integer providerServiceQuality,  // 서비스 품질
         Integer providerProfessionalism, // 전문성
@@ -25,6 +27,8 @@ public record ProviderGradeDto(
             UUID id,
             Long userId,
             UserRole userType,
+            UUID reviewId,
+            UUID reservationId,
             Integer providerServiceQuality,
             Integer providerProfessionalism,
             Integer providerCommunication,
@@ -36,6 +40,8 @@ public record ProviderGradeDto(
         this.id = id;
         this.userId = userId;
         this.userType = userType;
+        this.reviewId = reviewId;
+        this.reservationId = reservationId;
         this.providerServiceQuality = providerServiceQuality;
         this.providerProfessionalism = providerProfessionalism;
         this.providerCommunication = providerCommunication;

@@ -6,14 +6,10 @@ import com.tk.gg.common.response.exception.GlowGlowException;
 import com.tk.gg.reservation.application.dto.GradeDto;
 import com.tk.gg.reservation.application.dto.ResultGradeDto;
 import com.tk.gg.reservation.domain.service.GradeDomainService;
-import com.tk.gg.reservation.infrastructure.messaging.GradeForReservationEventDto;
-import com.tk.gg.reservation.infrastructure.messaging.GradeForReviewEventDto;
-import com.tk.gg.reservation.infrastructure.messaging.ToUserKafkaProducer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,30 +21,6 @@ import java.util.UUID;
 public class GradeService {
 
     private final GradeDomainService gradeDomainService;
-//    private final ReviewDomainService reviewDomainService;
-    private final ToUserKafkaProducer userKafkaProducer;
-
-    // 예약 완료 -> 평가정보 반영 리스너 -> 이벤트 발행
-    @KafkaListener(topics = "grade-reservation", groupId = "grade-group")
-    public void handleGradeForReservation(GradeForReservationEventDto event) {
-        log.info("예약에 대한 평가반영 이벤트 수신 및 저장: {}", event);
-        //TODO : 예약 검증?
-        gradeDomainService.createGradeForReservation(event);
-        log.info("예약 -> 평가정보 저장 완료");
-        userKafkaProducer.sendGradeForReservationEventToUser(event);
-        log.info("유저에게 평가정보 업데이트 송신 완료");
-    }
-
-    // 리뷰 및 평점 작성 -> 평가정보 반영 리스너 -> 이벤트 발행
-    @KafkaListener(topics = "grade-review", groupId = "grade-group")
-    public void handleGradeForReview(GradeForReviewEventDto event) {
-        log.info("예약에 대한 평가반영 이벤트 수신: {}", event);
-        //TODO :  review 를 받을 때, 평가정보에 대한 내용도 받게 함
-//        gradeDomainService.updateGradeForReview();
-        log.info("예약 -> 평가정보 저장 완료");
-        userKafkaProducer.sendGradeForReviewEventToUser(event);
-        log.info("유저에게 평가정보 업데이트 송신 완료");
-    }
 
     public Page<GradeDto> getGradesByUserInfo(Long userId, UserRole userType, Pageable pageable) {
         if (userType == UserRole.CUSTOMER) {

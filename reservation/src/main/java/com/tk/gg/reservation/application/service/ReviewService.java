@@ -2,15 +2,16 @@ package com.tk.gg.reservation.application.service;
 
 
 import com.tk.gg.common.response.exception.GlowGlowException;
-import com.tk.gg.reservation.application.dto.CreateReviewDto;
-import com.tk.gg.reservation.application.dto.ReviewDto;
-import com.tk.gg.reservation.application.dto.ReviewWithReservationDto;
+import com.tk.gg.reservation.application.client.UserServiceImpl;
+import com.tk.gg.reservation.application.dto.*;
+import com.tk.gg.reservation.domain.model.Review;
 import com.tk.gg.reservation.domain.type.ReservationStatus;
+import com.tk.gg.reservation.infrastructure.messaging.GradeKafkaProducer;
 import com.tk.gg.reservation.presentation.request.ReviewSearchCondition;
-import com.tk.gg.reservation.application.dto.UpdateReviewDto;
 import com.tk.gg.reservation.domain.model.Reservation;
 import com.tk.gg.reservation.domain.service.ReservationDomainService;
 import com.tk.gg.reservation.domain.service.ReviewDomainService;
+import com.tk.gg.security.user.AuthUserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,25 +22,32 @@ import java.util.UUID;
 
 import static com.tk.gg.common.response.exception.GlowGlowError.*;
 
-//TODO : 유저 Role 에 따른 데이터 검증 필요
-//-> ex) 리뷰 남기는 사람이 제공자인지 사용자였는지 체크(양방향 리뷰이기 때문)
 @RequiredArgsConstructor
 @Service
 public class ReviewService {
     private final ReviewDomainService reviewDomainService;
     private final ReservationDomainService reservationDomainService;
+    private final UserServiceImpl userClient;
+    private final GradeKafkaProducer gradeKafkaProducer;
 
     @Transactional
-    public ReviewWithReservationDto createReview(CreateReviewDto dto) {
+    public ReviewWithReservationDto createReview(CreateReviewDto dto, AuthUserInfo userInfo) {
         Reservation reservation = reservationDomainService.getOne(dto.reservationId());
         // 예약 상태 검증 -> 예약 체크, 거절, 취소인 경우에는 리뷰 불가
         if (reservation.getReservationStatus().equals(ReservationStatus.CHECK) ||
                 reservation.getReservationStatus().equals(ReservationStatus.REFUSED) ||
                 reservation.getReservationStatus().equals(ReservationStatus.CANCEL)
-        ){
-            throw new GlowGlowException(REVIEW_CANNOT_FAILED);
+        ) {
+            throw new GlowGlowException(REVIEW_CREATE_FAILED);
         }
-        return ReviewWithReservationDto.from(reviewDomainService.create(dto, reservation));
+        if (!dto.reviewerId().equals(userInfo.getId())){
+            throw new GlowGlowException(REVIEW_WRONG_REVIEWER_ID);
+        }
+        //리뷰 생성 및 저장
+        Review review = reviewDomainService.create(dto, reservation);
+        // GradeDto 로 변환 후 review 에 대한 평가정보 반영
+        gradeKafkaProducer.sendReviewEventForGrade(dto.toGradeDto(userInfo.getUserRole(), review.getId()));
+        return ReviewWithReservationDto.from(review);
     }
 
     @Transactional(readOnly = true)
@@ -53,12 +61,23 @@ public class ReviewService {
     }
 
     @Transactional
-    public void updateReview(UUID reviewId, UpdateReviewDto dto) {
-        reviewDomainService.update(reviewId, dto);
+    public void updateReview(UUID reviewId, UpdateReviewDto dto, AuthUserInfo userInfo) {
+        Review review = checkIsUserExistAndReviewOwner(reviewId, userInfo);
+        reviewDomainService.update(review, dto);
     }
 
     @Transactional
-    public void deleteReview(UUID reviewId, String deletedBy) {
-        reviewDomainService.delete(reviewId, deletedBy);
+    public void deleteReview(UUID reviewId, AuthUserInfo userInfo) {
+        Review review = checkIsUserExistAndReviewOwner(reviewId, userInfo);
+        reviewDomainService.delete(review, userInfo.getEmail());
+    }
+
+    private Review checkIsUserExistAndReviewOwner(UUID reviewId, AuthUserInfo userInfo){
+        Review review = reviewDomainService.getOne(reviewId);
+        if (!userClient.isUserExistsByEmail(userInfo.getEmail()))
+            throw new GlowGlowException(AUTH_INVALID_CREDENTIALS);
+        if (!review.getReviewerId().equals(userInfo.getId()))
+            throw new GlowGlowException(REVIEW_NOT_OWNER);
+        return review;
     }
 }

@@ -2,12 +2,14 @@ package com.tk.gg.reservation.domain.model;
 
 import com.tk.gg.common.enums.UserRole;
 import com.tk.gg.common.jpa.BaseEntity;
+import com.tk.gg.reservation.application.dto.GradeDto;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Objects;
 import java.util.UUID;
 
+//TODO : 엔티티 필드 이름 수정 필요
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
@@ -73,5 +75,22 @@ public class Grade extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+
+    public void update(GradeDto dto) {
+        this.reviewId = dto.reviewId();
+        this.reservationId = dto.reservationId();
+        this.userId = dto.userId();
+        this.userType = dto.userType();
+        this.providerServiceQuality = dto.providerServiceQuality();
+        this.providerProfessionalism = dto.providerProfessionalism();
+        this.providerCommunication = dto.providerCommunication();
+        this.providerPunctuality = dto.providerPunctuality();
+        this.providerPriceSatisfaction = dto.providerPriceSatisfaction();
+        this.customerCommunication = dto.customerCommunication();
+        this.customerPunctuality = dto.customerPunctuality();
+        this.customerManners = dto.customerManners();
+        this.customerPaymentPromptness = dto.customerPaymentPromptness();
     }
 }

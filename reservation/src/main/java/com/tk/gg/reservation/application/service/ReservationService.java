@@ -2,7 +2,6 @@ package com.tk.gg.reservation.application.service;
 
 
 import com.tk.gg.common.enums.UserRole;
-import com.tk.gg.common.response.exception.GlowGlowError;
 import com.tk.gg.common.response.exception.GlowGlowException;
 import com.tk.gg.reservation.application.dto.CreateReservationDto;
 import com.tk.gg.reservation.application.dto.ReservationDto;
@@ -12,6 +11,8 @@ import com.tk.gg.reservation.domain.model.TimeSlot;
 import com.tk.gg.reservation.domain.service.ReservationDomainService;
 import com.tk.gg.reservation.domain.service.TimeSlotDomainService;
 import com.tk.gg.reservation.domain.type.ReservationStatus;
+import com.tk.gg.common.kafka.grade.GradeForReservationEventDto;
+import com.tk.gg.reservation.infrastructure.messaging.GradeKafkaProducer;
 import com.tk.gg.security.user.AuthUserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,6 +30,7 @@ import static com.tk.gg.common.response.exception.GlowGlowError.*;
 public class ReservationService {
     private final ReservationDomainService reservationDomainService;
     private final TimeSlotDomainService timeSlotDomainService;
+    private final GradeKafkaProducer gradeKafkaProducer;
 
     @Transactional(readOnly = true)
     public Page<ReservationDto> searchReservations(LocalDate startDate, LocalDate endDate, ReservationStatus status, Pageable pageable) {
@@ -68,7 +70,16 @@ public class ReservationService {
         if(!canHandleReservation(reservation, userInfo)){
             throw new GlowGlowException(RESERVATION_NOT_OWNER);
         }
+        // 예약 상태 변경
         reservationDomainService.updateStatus(reservation, status);
+        // 만약 예약 상태가 성공적으로 DONE 이 된다면, Grade 생성
+        if (status.equals(ReservationStatus.DONE)){
+            gradeKafkaProducer.sendReservationDoneEventForGrade(GradeForReservationEventDto.builder()
+                    .reservationId(reservationId).customerId(reservation.getCustomerId())
+                    .providerId(reservation.getServiceProviderId())
+                    .build()
+            );
+        }
     }
 
     @Transactional
