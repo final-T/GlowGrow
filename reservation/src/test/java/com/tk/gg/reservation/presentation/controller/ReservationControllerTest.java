@@ -60,7 +60,7 @@ class ReservationControllerTest {
     void 예약_생성_성공() throws Exception {
         LocalDate localDate = LocalDate.parse("2024-10-07");
         CreateReservationRequest request = new CreateReservationRequest(
-                UUID.randomUUID(),1L, 2L, localDate, 20);
+                UUID.randomUUID(),1L, 2L, localDate, 20,0);
         TimeSlotDto timeSlotDto = createTimeSlotDto();
         ReservationDto reservationDto = createReservationDto(timeSlotDto);
         given(reservationService.createReservation(any(CreateReservationDto.class)))
@@ -138,7 +138,7 @@ class ReservationControllerTest {
         UUID reservationId = UUID.randomUUID();
         LocalDate localDate = LocalDate.parse("2024-10-07");
         UpdateReservationRequest request = new UpdateReservationRequest(
-                UUID.randomUUID(), 1L, 2L, ReservationStatus.CHECK, localDate,20);
+                UUID.randomUUID(), 1L, 2L, ReservationStatus.CHECK, localDate,20,0);
         willDoNothing().given(reservationService)
                 .updateReservation(eq(reservationId), any(UpdateReservationDto.class), any());
 
@@ -185,6 +185,7 @@ class ReservationControllerTest {
                 .customerId(1L)
                 .serviceProviderId(2L)
                 .reservationStatus(ReservationStatus.CHECK)
+                .price(0)
                 .build();
     }
 

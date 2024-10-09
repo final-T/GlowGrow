@@ -54,15 +54,18 @@ public class ReservationRepositoryImpl implements ReservationRepositoryCustom {
     }
 
     private OrderSpecifier<?>[] getOrderSpecifiers(Sort sort) {
-        return sort.stream()
-                .map(order -> {
-                    if ("reservationDate".equals(order.getProperty())) {
-                        return order.isAscending() ? reservation.reservationDate.asc() : reservation.reservationDate.desc();
-                    }
-                    return null;
-                })
-                .filter(Objects::nonNull)
-                .toArray(OrderSpecifier[]::new);
+        return sort.stream().map(order -> {
+            String property = order.getProperty();
+            boolean isAscending = order.isAscending();
+
+            return switch (property) {
+                case "createdAt" -> isAscending ? this.reservation.createdAt.asc() : this.reservation.createdAt.desc();
+                case "updatedAt" -> isAscending ? this.reservation.updatedAt.asc() : this.reservation.updatedAt.desc();
+                case "reservationDate" ->
+                        isAscending ? this.reservation.reservationDate.asc() : this.reservation.reservationDate.desc();
+                default -> null;
+            };
+        }).filter(Objects::nonNull).toArray(OrderSpecifier[]::new);
     }
 
     // 시작 날짜 조건

@@ -30,7 +30,12 @@ public record UpdateReservationRequest(
         @NotNull(message = "예약 시간은 필수입니다.")
         @Min(value = 1, message = "예약 가능 시간은 1~24 입니다.")
         @Max(value = 24, message = "예약 가능 시간은 1~24 입니다.")
-        Integer reservationTime
+        Integer reservationTime,
+
+        @NotNull(message = "예약 시간은 필수입니다.")
+        @Min(value = 0, message = "가격은 0이상 입니다.")
+        Integer price
+
 ) {
 
     public UpdateReservationDto toDto() {
@@ -41,6 +46,7 @@ public record UpdateReservationRequest(
                 .reservationStatus(reservationStatus)
                 .reservationDate(reservationDate)
                 .reservationTime(reservationTime)
+                .price(price)
                 .build();
     }
 }

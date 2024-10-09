@@ -13,6 +13,7 @@ public record UpdateReservationDto(
         Long serviceProviderId,
         ReservationStatus reservationStatus,
         LocalDate reservationDate,
-        Integer reservationTime
+        Integer reservationTime,
+        Integer price
 ) {
 }

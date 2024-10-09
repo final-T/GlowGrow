@@ -59,12 +59,12 @@ class ReservationServiceTest {
         CreateReservationDto createReservationDto = CreateReservationDto.builder()
                 .timeSlotId(timeSlot.getId()).serviceProviderId(serviceProviderId)
                 .reservationDate(LocalDate.parse("2024-10-02", DateTimeFormatter.ofPattern("yyyy-MM-dd")))
-                .reservationTime(20).customerId(customerId)
+                .reservationTime(20).customerId(customerId).price(0)
                 .build();
         Reservation reservation = Reservation.builder().id(UUID.randomUUID()).timeSlot(timeSlot)
                 .serviceProviderId(serviceProviderId).customerId(customerId)
                 .reservationDate(LocalDate.parse("2024-10-02", DateTimeFormatter.ofPattern("yyyy-MM-dd")))
-                .reservationTime(20).reservationStatus(ReservationStatus.CHECK).build();
+                .reservationTime(20).reservationStatus(ReservationStatus.CHECK).price(0).build();
         when(timeSlotDomainService.getOne(any(UUID.class))).thenReturn(timeSlot);
         when(reservationDomainService.create(any(CreateReservationDto.class),
                 any(TimeSlot.class))).thenAnswer(invocation -> {
