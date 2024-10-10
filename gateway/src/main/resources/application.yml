@@ -37,6 +37,10 @@ spring:
           uri: lb://notification-service
           predicates:
             - Path=/api/notifications/**
+        - id: auth-service # 알림 서비스
+          uri: lb://auth-service
+          predicates:
+            - Path=/api/auth/**
 
       discovery:
         locator:
@@ -61,19 +65,18 @@ springdoc:
       name: notification service
       url: http://localhost:19094/v3/api-docs
     urls[3]:
-      name: notification service
-      url: http://localhost:19094/v3/api-docs
-    urls[4]:
       name: post service
       url: http://localhost:19095/v3/api-docs
-    urls[5]:
+    urls[4]:
       name: payment service
       url: http://localhost:19096/v3/api-docs
-    urls[6]:
+    urls[5]:
       name: chat service
       url: http://localhost:19097/v3/api-docs
-    urls[7]:
+    urls[6]:
       name: promotion service
       url: http://localhost:19098/v3/api-docs
-
+    urls[7]:
+      name: auth service
+      url: http://localhost:19099/v3/api-docs
 
