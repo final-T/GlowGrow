@@ -124,4 +124,12 @@ public class PaymentService {
                 .orElseThrow(() -> new GlowGlowException(GlowGlowError.PAYMENT_NO_EXIST));
     }
 
+    @Transactional
+    public void tossPaymentUserCancel(String code, String message, AuthUserInfo authUserInfo) {
+        Payment payment = paymentRepository.findByUserId(authUserInfo.getId())
+                        .orElseThrow(() -> new GlowGlowException(GlowGlowError.PAYMENT_NO_EXIST));
+
+        paymentDomainService.cancelPayment(payment, message);
+        paymentRepository.save(payment);
+    }
 }
