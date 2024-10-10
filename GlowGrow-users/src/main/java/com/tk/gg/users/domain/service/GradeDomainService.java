@@ -2,9 +2,8 @@ package com.tk.gg.users.domain.service;
 
 import com.tk.gg.common.response.exception.GlowGlowError;
 import com.tk.gg.common.response.exception.GlowGlowException;
-import com.tk.gg.users.application.dto.CustomerGradeEvaluationDto;
-import com.tk.gg.users.application.dto.ProviderGradeEvaluationDto;
-import com.tk.gg.users.application.dto.UserDto;
+import com.tk.gg.security.user.AuthUserInfo;
+import com.tk.gg.users.application.dto.*;
 import com.tk.gg.users.domain.model.Grade;
 import com.tk.gg.users.domain.model.User;
 import com.tk.gg.users.domain.model.UserGrade;
@@ -18,7 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.tk.gg.common.response.exception.GlowGlowError.USER_GRADE_NOT_AVAILABLE;
+import static com.tk.gg.common.response.exception.GlowGlowError.*;
 
 @Service
 @RequiredArgsConstructor
@@ -171,5 +170,17 @@ public class GradeDomainService {
         }
 
         return userGradeType;
+    }
+
+    public UserGradeDto getMyGrade(AuthUserInfo authUserInfo) {
+        UserGrade userGrade = userGradeRepository.findByUserUserId(authUserInfo.getId())
+                .orElseThrow(() -> new GlowGlowException(USER_GRADE_NO_EXIST));
+        return UserGradeDto.from(userGrade);
+    }
+
+    public GradeDto getGradeInfo(UserGradeType userGradeType) {
+        Grade grade = gradeRepository.findByUserGradeType(userGradeType)
+                .orElseThrow(() -> new GlowGlowException(GRADE_NOT_NO_EXIST));
+        return GradeDto.from(grade);
     }
 }

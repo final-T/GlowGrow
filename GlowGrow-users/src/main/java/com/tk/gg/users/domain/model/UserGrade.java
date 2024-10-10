@@ -27,6 +27,10 @@ public class UserGrade extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private UserGradeType userGradeType;
 
+    @Setter
+    @Column(name = "is_deleted", nullable = false)
+    private Boolean isDeleted = false;
+
     private Double score;
 
     public static UserGrade of(User user, UserGradeType userGradeType, Double score) {
@@ -34,6 +38,7 @@ public class UserGrade extends BaseEntity {
                 .user(user)
                 .userGradeType(userGradeType)
                 .score(score)
+                .isDeleted(false)
                 .build();
     }
 

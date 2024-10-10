@@ -42,7 +42,12 @@ public class Grade extends BaseEntity {
     @Column(name = "grade_info")
     private String gradeInfo;
 
+    @Setter
+    @Column(name = "is_deleted", nullable = false)
+    private Boolean isDeleted = false;
+
+
     public static Grade of(UUID gradeId, UserGradeType userGradeType, String gradeName, Double gradeMinScore, Double gradeMaxScore, String gradeImageUrl, String gradeInfo) {
-        return new Grade(gradeId, userGradeType, gradeName, gradeMinScore, gradeMaxScore, gradeImageUrl, gradeInfo);
+        return new Grade(gradeId, userGradeType, gradeName, gradeMinScore, gradeMaxScore, gradeImageUrl, gradeInfo, false);
     }
 }
