@@ -11,4 +11,10 @@ public interface PaymentRepository extends JpaRepository<Payment, UUID> {
     default Optional<Payment> findByPaymentId(UUID paymentId) {
         return findByPaymentIdAndIsDeletedFalse(paymentId);
     }
+
+    Optional<Payment> findByPaymentKeyAndUserId(String paymentKey, Long userId);
+    default Optional<Payment> findByPaymentKey(String paymentKey, Long userId) {
+        return findByPaymentKeyAndUserId(paymentKey, userId);
+    }
+
 }
