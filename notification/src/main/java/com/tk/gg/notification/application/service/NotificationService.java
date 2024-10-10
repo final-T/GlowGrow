@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class NotificationService {
@@ -19,5 +21,11 @@ public class NotificationService {
         userService.checkUserExists(authUserInfo.getEmail());
 
         return notificationDomainService.getNotifications(authUserInfo.getId(), pageable).map(NotificationResponse::from);
+    }
+
+    public void readNotification(AuthUserInfoImpl authUserInfo, UUID notificationId) {
+        userService.checkUserExists(authUserInfo.getEmail());
+
+        notificationDomainService.readNotification(authUserInfo, notificationId);
     }
 }

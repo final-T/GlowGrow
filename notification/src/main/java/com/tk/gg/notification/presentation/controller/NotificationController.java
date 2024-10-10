@@ -12,8 +12,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
+import static com.tk.gg.common.response.ResponseMessage.NOTIFICATION_READ_SUCCESS;
 import static com.tk.gg.common.response.ResponseMessage.NOTIFICATION_RETRIEVE_SUCCESS;
 
 @RestController("/api/notifications")
@@ -27,5 +32,14 @@ public class NotificationController {
             @PageableDefault(sort = {"createdAt"}, direction = Sort.Direction.DESC)Pageable pageable
     ) {
         return ApiUtils.success(NOTIFICATION_RETRIEVE_SUCCESS.getMessage(), notificationService.getNotifications(authUserInfo, pageable));
+    }
+
+    @PostMapping("/{notificationId}")
+    public GlobalResponse<String> readNotification(
+            @AuthUser AuthUserInfoImpl authUserInfo,
+            @PathVariable("notificationId") UUID notificationId
+    ) {
+        notificationService.readNotification(authUserInfo, notificationId);
+        return ApiUtils.success(NOTIFICATION_READ_SUCCESS.getMessage());
     }
 }

@@ -93,6 +93,9 @@ public enum GlowGlowError {
     USER_GRADE_NOT_AVAILABLE(404, "USER_GRADE_001", "알맞은 등급이 아닙니다."),
     USER_GRADE_NO_EXIST(404, "USER_GRADE_002", "사용자의 등급이 없습니다."),
     GRADE_NOT_NO_EXIST(404, "USER_GRADE_003", "해당 등급이 존재하지 않습니다."),
+
+    NOTIFICATION_NO_EXIST(404, "NOTIFICATION_001", "해당 알림이 존재하지 않습니다."),
+    NOTIFICATION_ALREADY_READ(409, "NOTIFICATION_002", "해당 알림은 이미 읽음 처리 되어있습니다."),
     ;
     private final int statusCode; // HTTP 상태 코드
     private final String errorCode; // 내부 시스템의 에러 코드

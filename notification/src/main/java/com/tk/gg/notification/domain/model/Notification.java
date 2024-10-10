@@ -49,4 +49,11 @@ public class Notification extends BaseEntity {
                 .isDeleted(false)
                 .build();
     }
+
+    public void readNotification(String username){
+        this.isRead = true;
+        this.readAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        this.updatedBy = username;
+    }
 }
