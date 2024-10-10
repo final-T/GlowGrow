@@ -126,7 +126,7 @@ public class PaymentService {
 
     @Transactional
     public void tossPaymentUserCancel(String code, String message, AuthUserInfo authUserInfo) {
-        Payment payment = paymentRepository.findByUserId(authUserInfo.getId())
+        Payment payment = paymentRepository.findLatestByUserId(authUserInfo.getId())
                         .orElseThrow(() -> new GlowGlowException(GlowGlowError.PAYMENT_NO_EXIST));
 
         paymentDomainService.cancelPayment(payment, message);
