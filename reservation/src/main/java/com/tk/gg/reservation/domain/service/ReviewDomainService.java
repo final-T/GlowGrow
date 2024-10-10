@@ -43,4 +43,8 @@ public class ReviewDomainService {
     public void delete(Review review, String deletedBy) {
         review.delete(deletedBy);
     }
+
+    public boolean existsByReservationId(UUID reservationId) {
+        return reviewRepository.existsByReservationId(reservationId);
+    }
 }
