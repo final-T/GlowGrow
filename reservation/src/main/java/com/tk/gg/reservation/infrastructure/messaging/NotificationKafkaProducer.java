@@ -15,6 +15,13 @@ public class NotificationKafkaProducer {
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
+    public void sendReportToNotificationEvent(KafkaNotificationDto event) {
+        log.info("신고 접수 시 알림 이벤트 발행: {}", event);
+        kafkaTemplate.send("noti-send", event);
+        log.info("신고에 대한 알림 이벤트 발행 완료");
+    }
+
+
     public void sendReservationToNotificationEvent(KafkaNotificationDto event) {
         log.info("예약 생성 시 알림 이벤트 발행: {}", event);
         kafkaTemplate.send("noti-send", event);
