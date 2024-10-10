@@ -3,7 +3,6 @@ package com.tk.gg.reservation.infrastructure.messaging;
 
 import com.tk.gg.common.enums.NotificationType;
 import com.tk.gg.common.kafka.alarm.KafkaNotificationDto;
-import com.tk.gg.common.kafka.alarm.NotificationDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
