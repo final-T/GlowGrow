@@ -1,6 +1,7 @@
 package com.tk.gg.users.domain.model;
 
 import com.tk.gg.common.jpa.BaseEntity;
+import com.tk.gg.users.domain.type.UserGradeType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,6 +17,10 @@ public class Grade extends BaseEntity {
     @Id
     @Column(name = "grade_id", nullable = false, updatable = false)
     private UUID gradeId;
+
+    @Setter
+    @Enumerated(EnumType.STRING)
+    private UserGradeType userGradeType;
 
     @Setter
     @Column(name = "grade_name", nullable = false, unique = true)
@@ -37,7 +42,7 @@ public class Grade extends BaseEntity {
     @Column(name = "grade_info")
     private String gradeInfo;
 
-    public static Grade of(UUID gradeId, String gradeName, Double gradeMinScore, Double gradeMaxScore, String gradeImageUrl, String gradeInfo) {
-        return new Grade(gradeId, gradeName, gradeMinScore, gradeMaxScore, gradeImageUrl, gradeInfo);
+    public static Grade of(UUID gradeId, UserGradeType userGradeType, String gradeName, Double gradeMinScore, Double gradeMaxScore, String gradeImageUrl, String gradeInfo) {
+        return new Grade(gradeId, userGradeType, gradeName, gradeMinScore, gradeMaxScore, gradeImageUrl, gradeInfo);
     }
 }
