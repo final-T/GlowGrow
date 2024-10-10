@@ -79,6 +79,9 @@ public enum ResponseMessage {
     USER_DELETE_SUCCESS("사용자 정보를 성공적으로 삭제했습니다."),
     USER_RETRIEVE_SUCCESS("사용자 정보를 성공적으로 조회했습니다."),
 
+    // 등급 관련 메세지
+    USER_GRADE_RETRIEVE_SUCCESS("사용자 정보를 성공적으로 조회했습니다."),
+
     // 다른 메시지들...
     ;
 
