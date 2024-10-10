@@ -1,9 +1,11 @@
 package com.tk.gg.users.domain.model;
 
 import com.tk.gg.common.jpa.BaseEntity;
+import com.tk.gg.users.domain.type.UserGradeType;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -22,8 +24,26 @@ public class UserGrade extends BaseEntity {
     private User user;
 
     @Setter
-    @OneToOne(fetch = FetchType.LAZY)
-    private Grade grade;
+    @Enumerated(EnumType.STRING)
+    private UserGradeType userGradeType;
+
+    @Setter
+    @Column(name = "is_deleted", nullable = false)
+    private Boolean isDeleted = false;
 
     private Double score;
+
+    public static UserGrade of(User user, UserGradeType userGradeType, Double score) {
+        return UserGrade.builder()
+                .user(user)
+                .userGradeType(userGradeType)
+                .score(score)
+                .isDeleted(false)
+                .build();
+    }
+
+    public void updateGrade(UserGradeType userGradeType, Double updateScore) {
+        this.userGradeType = userGradeType;
+        this.score = updateScore;
+    }
 }

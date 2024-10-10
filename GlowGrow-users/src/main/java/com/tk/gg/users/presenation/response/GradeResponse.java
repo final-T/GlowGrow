@@ -1,6 +1,8 @@
 package com.tk.gg.users.presenation.response;
 
 import com.tk.gg.common.enums.UserRole;
+import com.tk.gg.users.application.dto.CustomerGradeEvaluationDto;
+import com.tk.gg.users.application.dto.ProviderGradeEvaluationDto;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
@@ -26,4 +28,17 @@ public record GradeResponse(
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
+    public ProviderGradeEvaluationDto toProviderGradeEvaluationDto() {
+        return ProviderGradeEvaluationDto.of(
+                id, userId, userType, reviewId, reservationId,
+                providerServiceQuality, providerProfessionalism, providerCommunication, providerPunctuality, providerPriceSatisfaction
+        );
+    }
+
+    public CustomerGradeEvaluationDto toCustomerGradeEvaluationDto() {
+        return CustomerGradeEvaluationDto.of(
+                id, userId, userType, reviewId, reservationId,
+                customerCommunication, customerPunctuality, customerManners, customerPaymentPromptness
+        );
+    }
 }

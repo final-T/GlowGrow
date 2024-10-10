@@ -14,9 +14,16 @@ public class SecurityConfig {
     public SecurityRequestMatcherChain securityRequestMatcherChain() {
         SecurityRequestMatcherChain securityRequestMatcherChain = new SecurityRequestMatcherChain();
         securityRequestMatcherChain
-                .add(SecurityRequestMatcher.hasAnyRolesOf(
-                        List.of(UserRole.CUSTOMER, UserRole.PROVIDER, UserRole.MASTER),
-                        "/api/profile/**"));
+                .addAll(
+                        SecurityRequestMatcher.hasAnyRolesOf(
+                        List.of(UserRole.CUSTOMER, UserRole.PROVIDER, UserRole.MASTER), "/api/profile/**"),
+
+                        SecurityRequestMatcher.hasAnyRolesOf(
+                                List.of(UserRole.CUSTOMER, UserRole.PROVIDER, UserRole.MASTER), "/api/users/**"
+                        )
+
+                );
+
         return securityRequestMatcherChain;
     }
 }
