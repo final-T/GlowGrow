@@ -2,6 +2,7 @@ package com.tk.gg.common.s3;
 
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -13,6 +14,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import java.io.InputStream;
 
 @Service
+@ConditionalOnProperty(name = "app.s3.enabled", havingValue = "true", matchIfMissing = false)
 public class S3UploadService implements UploadService {
 
     private final S3Client s3Client;
