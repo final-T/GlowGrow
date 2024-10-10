@@ -11,6 +11,7 @@ import com.tk.gg.reservation.domain.model.TimeSlot;
 import com.tk.gg.reservation.domain.type.ReservationStatus;
 import com.tk.gg.reservation.presentation.request.CreateReservationRequest;
 import com.tk.gg.reservation.presentation.request.UpdateReservationRequest;
+import com.tk.gg.security.user.AuthUserInfo;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +61,7 @@ class ReservationControllerTest {
     void 예약_생성_성공() throws Exception {
         LocalDate localDate = LocalDate.parse("2024-10-07");
         CreateReservationRequest request = new CreateReservationRequest(
-                UUID.randomUUID(),1L, 2L, localDate, 20,0);
+                UUID.randomUUID(), 1L, 2L, localDate, 20, 0);
         TimeSlotDto timeSlotDto = createTimeSlotDto();
         ReservationDto reservationDto = createReservationDto(timeSlotDto);
         given(reservationService.createReservation(any(CreateReservationDto.class)))
@@ -138,9 +139,9 @@ class ReservationControllerTest {
         UUID reservationId = UUID.randomUUID();
         LocalDate localDate = LocalDate.parse("2024-10-07");
         UpdateReservationRequest request = new UpdateReservationRequest(
-                UUID.randomUUID(), 1L, 2L, ReservationStatus.CHECK, localDate,20,0);
+                UUID.randomUUID(), 1L, 2L, ReservationStatus.CHECK, localDate, 20, 0);
         willDoNothing().given(reservationService)
-                .updateReservation(eq(reservationId), any(UpdateReservationDto.class), any());
+                .updateReservation(eq(reservationId), any(UpdateReservationDto.class), any(AuthUserInfo.class));
 
         mvc.perform(put("/api/reservations/{reservationId}", reservationId)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -153,7 +154,7 @@ class ReservationControllerTest {
                 .andExpect(jsonPath("$.message").value(RESERVATION_UPDATE_SUCCESS.getMessage()))
                 .andDo(print());
 
-        then(reservationService).should().updateReservation(eq(reservationId), any(UpdateReservationDto.class), any());
+        then(reservationService).should().updateReservation(eq(reservationId), any(UpdateReservationDto.class), any(AuthUserInfo.class));
     }
 
     @DisplayName("[DELETE] 예약 삭제 - 정상 호출")
@@ -162,7 +163,7 @@ class ReservationControllerTest {
     void 예약_삭제_성공() throws Exception {
         UUID reservationId = UUID.randomUUID();
         willDoNothing().given(reservationService)
-                .deleteReservation(eq(reservationId), any());
+                .deleteReservation(eq(reservationId), any(AuthUserInfo.class));
 
         mvc.perform(delete("/api/reservations/{reservationId}", reservationId)
                         .with(csrf())
@@ -173,7 +174,7 @@ class ReservationControllerTest {
                 .andExpect(jsonPath("$.message").value(RESERVATION_DELETE_SUCCESS.getMessage()))
                 .andDo(print());
 
-        then(reservationService).should().deleteReservation(eq(reservationId), any());
+        then(reservationService).should().deleteReservation(eq(reservationId), any(AuthUserInfo.class));
     }
 
     private ReservationDto createReservationDto(TimeSlotDto timeSlotDto) {
@@ -189,7 +190,7 @@ class ReservationControllerTest {
                 .build();
     }
 
-    private TimeSlotDto createTimeSlotDto(){
+    private TimeSlotDto createTimeSlotDto() {
         return TimeSlotDto.builder()
                 .id(UUID.randomUUID())
                 .availableDate(LocalDate.parse("2024-10-07"))

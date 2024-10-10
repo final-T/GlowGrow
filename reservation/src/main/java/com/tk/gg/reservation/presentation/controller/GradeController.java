@@ -24,6 +24,7 @@ public class GradeController {
 
     private final GradeService gradeService;
 
+    @Deprecated(forRemoval = true)
     @GetMapping()
     public GlobalResponse<ResultGradeDto> getTotalGradeForUser(
             @RequestParam(value = "userId") Long userId,
@@ -33,7 +34,6 @@ public class GradeController {
         return ApiUtils.success(GRADE_RETRIEVE_SUCCESS.getMessage(),
                 gradeService.getUserGradeSummary(userId, userType, pageable));
     }
-
 
     @GetMapping("/users/{userId}/reservations/{reservationId}")
     public GlobalResponse<GradeResponse> getGradeForUserAndReservation(
