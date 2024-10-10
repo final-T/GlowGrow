@@ -10,7 +10,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class NotificationDto {
+public class KafkaNotificationDto {
     Long userId;
     String message;
     String type; // promotion, reservation, payment, post, chat

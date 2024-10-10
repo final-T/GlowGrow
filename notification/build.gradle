@@ -2,6 +2,7 @@ jar.enabled = true
 
 dependencies {
     implementation project(':GlowGrow-common')
+    implementation project(':GlowGrow-security')
 
     implementation project(':GlowGrow-kafka')
     implementation 'org.springframework.kafka:spring-kafka'
@@ -30,9 +31,9 @@ dependencies {
     runtimeOnly 'org.postgresql:postgresql'
 
     // spring cloud
-//    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
-//    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
-//    implementation 'io.github.openfeign:feign-hc5'
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+    implementation 'io.github.openfeign:feign-hc5'
 
     // Resilience4j
 //    implementation 'io.github.resilience4j:resilience4j-spring-boot3:2.2.0'
