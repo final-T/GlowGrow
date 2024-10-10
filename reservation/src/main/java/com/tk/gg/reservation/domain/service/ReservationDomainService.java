@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 import static com.tk.gg.common.response.exception.GlowGlowError.RESERVATION_NO_EXIST;
@@ -66,5 +67,9 @@ public class ReservationDomainService {
     public void deleteOne(Reservation reservation,String deletedBy) {
         reservation.getTimeSlot().updateIsReserved(false);
         reservation.delete(deletedBy);
+    }
+
+    public List<Reservation> getReservationsByStatusIsDone(){
+        return reservationRepository.findAllByReservationStatus(ReservationStatus.DONE);
     }
 }
