@@ -16,12 +16,7 @@ public class SecurityConfig {
         securityRequestMatcherChain
                 .addAll(
                         SecurityRequestMatcher.hasAnyRolesOf(
-                        List.of(UserRole.CUSTOMER, UserRole.PROVIDER, UserRole.MASTER), "/api/profile/**"),
-
-                        SecurityRequestMatcher.hasAnyRolesOf(
-                                List.of(UserRole.CUSTOMER, UserRole.PROVIDER, UserRole.MASTER), "/api/users/**"
-                        )
-
+                        List.of(UserRole.CUSTOMER, UserRole.PROVIDER, UserRole.MASTER), "/api/notification/**")
                 );
 
         return securityRequestMatcherChain;
