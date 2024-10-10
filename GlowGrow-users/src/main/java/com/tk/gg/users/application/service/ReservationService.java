@@ -15,4 +15,8 @@ public class ReservationService {
     public GradeResponse getGradeForReservation(Long userId, UUID reservationId){
         return reservationClient.getGradeForUserAndReservation(userId, reservationId).getData();
     }
+
+    public GradeResponse getGradeForReview(Long userId, UUID reviewId) {
+        return reservationClient.getGradeForUserAndReview(userId, reviewId).getData();
+    }
 }

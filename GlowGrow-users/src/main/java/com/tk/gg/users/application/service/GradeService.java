@@ -25,6 +25,8 @@ public class GradeService {
     }
 
     public void updateUserGradeByReview(GradeForReviewEventDto event) {
-
+        gradeDomainService.updateUserGradeByReview(
+                reservationService.getGradeForReview(event.targetUserId(), event.reviewId())
+        );
     }
 }

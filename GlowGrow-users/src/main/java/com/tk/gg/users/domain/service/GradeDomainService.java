@@ -2,6 +2,8 @@ package com.tk.gg.users.domain.service;
 
 import com.tk.gg.common.response.exception.GlowGlowError;
 import com.tk.gg.common.response.exception.GlowGlowException;
+import com.tk.gg.users.application.dto.CustomerGradeEvaluationDto;
+import com.tk.gg.users.application.dto.ProviderGradeEvaluationDto;
 import com.tk.gg.users.application.dto.UserDto;
 import com.tk.gg.users.domain.model.Grade;
 import com.tk.gg.users.domain.model.User;
@@ -13,7 +15,6 @@ import com.tk.gg.users.presenation.response.GradeResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -27,24 +28,51 @@ public class GradeDomainService {
     private final UserGradeRepository userGradeRepository;
     private final UserDomainService userDomainService;
 
+    private final static Double SEED_PER = 0.5;
+    private final static Double SPROUT_PER = 0.3;
+    private final static Double BUD_PER = 0.2;
+    private final static Double HALF_BLOOMED_FLOWER_PER = 0.1;
+    private final static Double FULLY_BLOOMED_FLOWER_PER = 0.1;
+
+
     public void updateUserGradeByReservation(GradeResponse response) {
         UserDto userDto = userDomainService.findById(response.userId());
+        if (userDto == null) {
+            throw new GlowGlowException(GlowGlowError.USER_NO_EXIST);
+        }
+
 
         UserGrade userGrade = userGradeRepository.findByUserUserId(userDto.userId())
                 .orElse(UserGrade.of(User.of(userDto), UserGradeType.SEED, 0.0));
 
-        Double updateScore = calculateScoreForReservation(userGrade.getUserGradeType(), userGrade.getScore());
+        Double updateScore = calculateScoreByReservation(userGrade.getUserGradeType(), userGrade.getScore());
         userGrade.updateGrade(checkUserGrantType(userGrade.getUserGradeType(), updateScore), updateScore);
     }
 
     public void updateUserGradeByReview(GradeResponse response) {
+        UserDto userDto = userDomainService.findById(response.userId());
+        if (userDto == null) {
+            throw new GlowGlowException(GlowGlowError.USER_NO_EXIST);
+        }
 
+        UserGrade userGrade = userGradeRepository.findByUserUserId(userDto.userId())
+                .orElse(UserGrade.of(User.of(userDto), UserGradeType.SEED, 0.0));
+        Double updateScore = userGrade.getScore();
+
+        switch (response.userType()){
+            case CUSTOMER -> {
+                updateScore = calculateScoreForReviewByCustomer(userGrade, response.toCustomerGradeEvaluationDto());
+            }
+            case PROVIDER -> {
+                updateScore = calculateScoreForReviewByProvider(userGrade, response.toProviderGradeEvaluationDto());
+            }
+        }
+
+        userGrade.updateGrade(checkUserGrantType(userGrade.getUserGradeType(), updateScore), updateScore);
     }
 
-    private Double calculateScoreForReservation(UserGradeType userGradeType, Double score) {
-        if (userGradeType == null) {
-            userGradeType = UserGradeType.SEED;
-        }
+    // 예약 완료에 따른 점수 계산
+    private Double calculateScoreByReservation(UserGradeType userGradeType, Double score) {
         switch (userGradeType) {
             case SEED -> {
                 return score + 1;
@@ -54,6 +82,46 @@ public class GradeDomainService {
             }
             case BUD, HALF_BLOOMED_FLOWER, FULLY_BLOOMED_FLOWER -> {
                 return score + 0.1;
+            }
+            default -> {
+                throw new GlowGlowException(USER_GRADE_NOT_AVAILABLE);
+            }
+        }
+    }
+
+    // 리뷰 완료에 따른 점수 계산
+    private Double calculateScoreForReviewByProvider(UserGrade userGrade, ProviderGradeEvaluationDto dto) {
+        Integer totalScore = dto.providerPriceSatisfaction() + dto.providerCommunication() + dto.providerProfessionalism()
+                + dto.providerServiceQuality() + dto.providerPunctuality();
+
+        return calculateScoreByReview(userGrade, totalScore);
+    }
+
+
+    private Double calculateScoreForReviewByCustomer(UserGrade userGrade, CustomerGradeEvaluationDto dto) {
+
+        Integer totalScore = dto.customerCommunication() + dto.customerPunctuality() + dto.customerManners()
+                + dto.customerPaymentPromptness();
+
+        return calculateScoreByReview(userGrade, totalScore);
+    }
+
+    private Double calculateScoreByReview(UserGrade userGrade, Integer totalScore) {
+        switch (userGrade.getUserGradeType()){
+            case SEED -> {
+                return totalScore * SEED_PER;
+            }
+            case SPROUT -> {
+                return totalScore * SPROUT_PER;
+            }
+            case BUD -> {
+                return totalScore * BUD_PER;
+            }
+            case HALF_BLOOMED_FLOWER -> {
+                return totalScore * HALF_BLOOMED_FLOWER_PER;
+            }
+            case FULLY_BLOOMED_FLOWER -> {
+                return totalScore * FULLY_BLOOMED_FLOWER_PER;
             }
             default -> {
                 throw new GlowGlowException(USER_GRADE_NOT_AVAILABLE);
