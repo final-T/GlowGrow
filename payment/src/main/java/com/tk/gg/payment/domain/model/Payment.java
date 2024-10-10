@@ -6,6 +6,8 @@ import com.tk.gg.payment.domain.type.PayType;
 import com.tk.gg.payment.domain.type.PaymentStatus;
 import com.tk.gg.security.user.AuthUserInfo;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -29,6 +31,7 @@ public class Payment extends BaseEntity {
     private PayType payType; // 결제 방식
 
     @Column(name = "amount", nullable = false)
+    @Positive
     private Long amount; // 결제 금액
 
     @Column(name = "user_id", nullable = false)
@@ -64,8 +67,14 @@ public class Payment extends BaseEntity {
     @Setter
     private String failReason;
 
-    @Column
-    private boolean cancelYN;
+
+    @OneToOne(mappedBy = "payment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Refund refund;
+
+    public void paymentCancel(Refund refund) {
+        this.status = PaymentStatus.CANCELED;
+        this.refund = refund;
+    }
 
     public void changeStatusCompleted() {
         this.status = PaymentStatus.COMPLETED;
@@ -74,6 +83,8 @@ public class Payment extends BaseEntity {
     public void changeStatusFailed() {
         this.status = PaymentStatus.FAILED;
     }
+
+
 
     public void updatePaidAt(String approvedAt) {
         this.paidAt = OffsetDateTime.parse(approvedAt).toLocalDateTime();

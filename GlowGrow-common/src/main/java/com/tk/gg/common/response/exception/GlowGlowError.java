@@ -42,6 +42,10 @@ public enum GlowGlowError {
     PAYMENT_AMOUNT_MISMATCH(404,"PAYMENT_002","결제 금액이 일치하지 않습니다."),
     ALREADY_APPROVED(404,"PAYMENT_003","이미 승인된 결제입니다."),
 
+    // Refund (환불 관련 에러)
+    REFUND_PROCESS_FAILED(404,"REFUND_001","환불 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."),
+    PAYMENT_ALREADY_CANCELED(404,"REFUND_002","이미 취소된 결제입니다."),
+
 
 
     // 프로모션 관련 에러
