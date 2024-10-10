@@ -17,10 +17,10 @@ public class NotificationService {
     private final NotificationDomainService notificationDomainService;
     private final UserService userService;
 
-    public Page<NotificationResponse> getNotifications(AuthUserInfoImpl authUserInfo, Pageable pageable) {
+    public Page<NotificationResponse> getNotifications(AuthUserInfoImpl authUserInfo, Boolean isRead, Pageable pageable) {
         userService.checkUserExists(authUserInfo.getEmail());
 
-        return notificationDomainService.getNotifications(authUserInfo.getId(), pageable).map(NotificationResponse::from);
+        return notificationDomainService.getNotifications(authUserInfo.getId(), isRead, pageable).map(NotificationResponse::from);
     }
 
     public void readNotification(AuthUserInfoImpl authUserInfo, UUID notificationId) {

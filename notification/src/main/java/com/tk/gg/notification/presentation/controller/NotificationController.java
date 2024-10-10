@@ -11,10 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -29,9 +26,10 @@ public class NotificationController {
     @GetMapping
     public GlobalResponse<Page<NotificationResponse>> getNotifications(
             @AuthUser AuthUserInfoImpl authUserInfo,
+            @RequestParam(value = "isRead", required = false) Boolean isRead,
             @PageableDefault(sort = {"createdAt"}, direction = Sort.Direction.DESC)Pageable pageable
     ) {
-        return ApiUtils.success(NOTIFICATION_RETRIEVE_SUCCESS.getMessage(), notificationService.getNotifications(authUserInfo, pageable));
+        return ApiUtils.success(NOTIFICATION_RETRIEVE_SUCCESS.getMessage(), notificationService.getNotifications(authUserInfo,isRead, pageable));
     }
 
     @PostMapping("/{notificationId}")

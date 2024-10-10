@@ -34,8 +34,8 @@ public class NotificationDomainService {
     }
 
 
-    public Page<NotificationDto> getNotifications(Long userId, Pageable pageable) {
-        return notificationRepository.findAllByUserIdAndIsDeletedFalse(userId, pageable).map(NotificationDto::from);
+    public Page<NotificationDto> getNotifications(Long userId, Boolean isRead, Pageable pageable) {
+        return notificationRepository.findAllByUserIdAndIsReadAndIsDeletedFalse(userId, isRead, pageable).map(NotificationDto::from);
     }
 
     public void readNotification(AuthUserInfoImpl authUserInfo, UUID notificationId) {
