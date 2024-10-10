@@ -37,4 +37,10 @@ public class PaymentDomainService {
         payment.changeStatusFailed();
     }
 
+    public void cancelPayment(Payment payment, String message) {
+        payment.setPaySuccessYN(false);
+        payment.setFailReason(message);
+        payment.changeStatusCanceled();
+    }
+
 }
