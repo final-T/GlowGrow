@@ -1,6 +1,7 @@
 package com.tk.gg.reservation.infrastructure.messaging;
 
 
+import com.tk.gg.common.kafka.grade.GradeForReportEventDto;
 import com.tk.gg.common.kafka.grade.GradeForReservationEventDto;
 import com.tk.gg.common.kafka.grade.GradeForReviewEventDto;
 import com.tk.gg.reservation.application.dto.GradeDto;
@@ -27,6 +28,14 @@ public class GradeKafkaProducer {
         kafkaTemplate.send("grade-review-user", event);
         log.info("평가정보 발행 완료");
     }
+
+    public void sendGradeEventForReportToUser(GradeForReportEventDto event){
+        log.info("리뷰에 대한 평가 정보 유저에게 발행: {}", event);
+        kafkaTemplate.send("grade-report-user", event);
+        log.info("평가정보 발행 완료");
+    }
+
+
 
     public void sendReservationDoneEventForGrade(GradeForReservationEventDto event) {
         log.info("예약 완료에 대한 평가정보 생성 발행: {}", event);

@@ -4,6 +4,7 @@ package com.tk.gg.reservation.application.service;
 import com.tk.gg.common.enums.NotificationType;
 import com.tk.gg.common.enums.UserRole;
 import com.tk.gg.common.kafka.alarm.KafkaNotificationDto;
+import com.tk.gg.common.kafka.grade.GradeForReportEventDto;
 import com.tk.gg.common.response.exception.GlowGlowError;
 import com.tk.gg.common.response.exception.GlowGlowException;
 import com.tk.gg.reservation.application.dto.CreateReportDto;
@@ -12,6 +13,7 @@ import com.tk.gg.reservation.domain.model.Report;
 import com.tk.gg.reservation.domain.model.Reservation;
 import com.tk.gg.reservation.domain.service.ReportDomainService;
 import com.tk.gg.reservation.domain.service.ReservationDomainService;
+import com.tk.gg.reservation.infrastructure.messaging.GradeKafkaProducer;
 import com.tk.gg.reservation.infrastructure.messaging.NotificationKafkaProducer;
 import com.tk.gg.security.user.AuthUserInfo;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,7 @@ public class ReportService {
     private final ReportDomainService reportDomainService;
     private final ReservationDomainService reservationDomainService;
     private final NotificationKafkaProducer notificationKafkaProducer;
+    private final GradeKafkaProducer gradeKafkaProducer;
 
     @Transactional
     public ReportDto createReport(CreateReportDto dto, AuthUserInfo userInfo) {
@@ -45,6 +48,10 @@ public class ReportService {
         notificationKafkaProducer.sendReportToNotificationEvent(KafkaNotificationDto.builder()
                 .userId(report.getTargetUserId()).message("신고가 접수되었습니다.")
                 .type(NotificationType.RESERVATION.getName()).build()
+        );
+
+        gradeKafkaProducer.sendGradeEventForReportToUser(GradeForReportEventDto.builder()
+                .targetUserId(report.getTargetUserId()).reservationId(reservation.getId()).build()
         );
         return ReportDto.from(report);
     }
