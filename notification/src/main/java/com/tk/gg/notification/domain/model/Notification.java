@@ -2,7 +2,7 @@ package com.tk.gg.notification.domain.model;
 
 import com.tk.gg.common.enums.NotificationType;
 import com.tk.gg.common.jpa.BaseEntity;
-import com.tk.gg.common.kafka.alarm.NotificationDto;
+import com.tk.gg.common.kafka.alarm.KafkaNotificationDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -35,12 +35,12 @@ public class Notification extends BaseEntity {
     private Boolean isRead = false;
 
     @Column(name = "read_at")
-    private LocalDateTime read_at;
+    private LocalDateTime readAt;
 
     @Column(nullable = false)
     private Boolean isDeleted = false;
 
-    public static Notification create(NotificationDto dto){
+    public static Notification create(KafkaNotificationDto dto){
         return Notification.builder()
                 .userId(dto.getUserId())
                 .message(dto.getMessage())

@@ -82,6 +82,12 @@ public enum ResponseMessage {
     // 등급 관련 메세지
     USER_GRADE_RETRIEVE_SUCCESS("사용자 정보를 성공적으로 조회했습니다."),
 
+    // 알림 관련 메세지
+    NOTIFICATION_SEND_SUCCESS("알림을 성공적으로 보냈습니다."),
+    NOTIFICATION_READ_SUCCESS("알림을 성공적으로 읽었습니다.."),
+    NOTIFICATION_DELETE_SUCCESS("알림을 성공적으로 삭제했습니다."),
+    NOTIFICATION_RETRIEVE_SUCCESS("알림을 성공적으로 조회했습니다."),
+
     // 다른 메시지들...
     ;
 
