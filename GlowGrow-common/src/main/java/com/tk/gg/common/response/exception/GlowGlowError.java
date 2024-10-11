@@ -46,6 +46,10 @@ public enum GlowGlowError {
     REFUND_PROCESS_FAILED(404,"REFUND_001","환불 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."),
     PAYMENT_ALREADY_CANCELED(404,"REFUND_002","이미 취소된 결제입니다."),
 
+    // Settlement (정산 관련 에러)
+    SETTLEMENT_NO_EXIST(404,"SETTLEMENT_001","존재하지 않은 정산입니다."),
+    SETTLEMENT_NO_AUTH_PERMISSION_DENIED(403,"SETTLEMENT_002","정산에 대한 권한이 없습니다."),
+
 
 
     // 프로모션 관련 에러

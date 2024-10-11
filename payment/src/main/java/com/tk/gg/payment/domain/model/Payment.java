@@ -19,6 +19,7 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "p_payments")
 public class Payment extends BaseEntity {
 
     @Id
