@@ -8,8 +8,11 @@ import com.tk.gg.reservation.presentation.request.CreateReportRequest;
 import com.tk.gg.reservation.presentation.response.ReportResponse;
 import com.tk.gg.security.user.AuthUser;
 import com.tk.gg.security.user.AuthUserInfo;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -23,11 +26,13 @@ import static com.tk.gg.common.response.ResponseMessage.*;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/reports")
+@Tag(name = "Report API", description = "예약에 대한 신고 기능")
 public class ReportController {
 
     private final ReportService reportService;
 
     @PostMapping
+    @Operation(summary = "생성 API", description = "신고(report) 정보를 생성합니다.**[ROLE: Provider,Customer,Master]**")
     public GlobalResponse<ReportResponse> createReport(
         @RequestBody @Valid CreateReportRequest request,
         @AuthUser AuthUserInfo userInfo
@@ -38,10 +43,11 @@ public class ReportController {
     }
 
     @GetMapping("'/users/{userId}")
+    @Operation(summary = "전체 조회 API", description = "신고(report) 목록을 조회합니다.**[ROLE: Provider,Customer,Master]**")
     public GlobalResponse<Page<ReportResponse>> getAllReportsByUser(
             @PathVariable(value = "userId") Long userId,
-            @AuthUser AuthUserInfo userInfo,
-            @PageableDefault(sort = {"createdAt"}, direction = Sort.Direction.DESC) Pageable pageable
+            @ParameterObject  @PageableDefault(sort = {"createdAt"}, direction = Sort.Direction.DESC) Pageable pageable,
+            @AuthUser AuthUserInfo userInfo
     ){
         return ApiUtils.success(REPORT_RETRIEVE_SUCCESS.getMessage(),
                 reportService.getAllReportsByUser(userId,userInfo, pageable).map(ReportResponse::from)
@@ -50,6 +56,7 @@ public class ReportController {
 
 
     @GetMapping("/{reportId}")
+    @Operation(summary = "단건 조회 API", description = "신고(report) 정보를 조회합니다.**[ROLE: Provider,Customer,Master]**")
     public GlobalResponse<ReportResponse> getReport(
             @PathVariable(value = "reportId") UUID reportId,
             @AuthUser AuthUserInfo userInfo
@@ -59,6 +66,7 @@ public class ReportController {
     }
 
     @DeleteMapping("/{reportId}")
+    @Operation(summary = "삭제 API", description = "신고(report) 정보를 삭제합니다.**[ROLE: Provider,Customer,Master]**")
     public GlobalResponse<String> deleteReport(
             @PathVariable(value = "reportId") UUID reportId,
             @AuthUser AuthUserInfo userInfo

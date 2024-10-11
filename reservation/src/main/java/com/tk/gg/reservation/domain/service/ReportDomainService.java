@@ -38,7 +38,7 @@ public class ReportDomainService {
         report.delete(deletedBy);
     }
 
-    public Report getByReportIdAndType(Long userId, Long targetId){
+    public Report getByUserIds(Long userId, Long targetId){
         return reportRepository.findByUserIdAndTargetUserId(userId, targetId).orElse(null);
     }
 

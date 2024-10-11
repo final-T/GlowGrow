@@ -36,7 +36,7 @@ public class ReportService {
     @Transactional
     public ReportDto createReport(CreateReportDto dto, AuthUserInfo userInfo) {
         Reservation reservation = reservationDomainService.getOne(dto.reservationId());
-        Report existsReport = reportDomainService.getByReportIdAndType(
+        Report existsReport = reportDomainService.getByUserIds(
                 dto.userId(), dto.targetUserId()
         );
         // 이미 신고한 예약에 대해 같은 유저가 신고하면 에러
