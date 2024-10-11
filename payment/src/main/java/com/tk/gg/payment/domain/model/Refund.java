@@ -1,12 +1,10 @@
 package com.tk.gg.payment.domain.model;
 
-import com.tk.gg.common.jpa.BaseEntity;
 import com.tk.gg.payment.domain.type.RefundType;
 import com.tk.gg.security.user.AuthUserInfo;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -16,6 +14,7 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "p_refunds")
 public class Refund {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
