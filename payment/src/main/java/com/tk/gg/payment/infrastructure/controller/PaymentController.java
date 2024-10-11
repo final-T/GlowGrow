@@ -65,5 +65,15 @@ public class PaymentController {
         return ResponseEntity.ok().body(responseDto);
     }
 
+    @GetMapping("/toss/fail-cancel")
+    public ResponseEntity tossPaymentUserCancel(
+            @RequestParam String code,
+            @RequestParam String message,
+            @AuthUser AuthUserInfo authUserInfo
+    ){
+        paymentService.tossPaymentUserCancel(code,message,authUserInfo);
+        return ResponseEntity.ok().body(code + " " + message);
+    }
+
 
 }

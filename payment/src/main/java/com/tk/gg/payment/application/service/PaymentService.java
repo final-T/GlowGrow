@@ -93,7 +93,7 @@ public class PaymentService {
     }
 
 
-    private HttpHeaders getHeaders(){ // 요청 헤더에 꼭 Authorization 넣어줘야 함
+    public HttpHeaders getHeaders(){ // 요청 헤더에 꼭 Authorization 넣어줘야 함
         // 시크릿 키를 base64로 인코딩 한 값을 넣음
         HttpHeaders headers = new HttpHeaders();
         String encodedAuthKey = new String(
@@ -103,7 +103,8 @@ public class PaymentService {
 
         // Basic Authorization 인가 코드를 보낼 때 시크릿 키를 Base64를 사용하여 인코딩하여 보내게 되는데,
         // 이 때, {시크릿 키 + ":"} 조합으로 인코딩해야한다.
-        headers.set("Authorization", "Basic " + encodedAuthKey);
+        //headers.set("Authorization", "Basic " + encodedAuthKey);
+        headers.setBasicAuth(encodedAuthKey);
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         return headers;
@@ -114,5 +115,21 @@ public class PaymentService {
     private Payment findPaymentByOrderId(String orderId) {
         return paymentRepository.findByPaymentId(UUID.fromString(orderId))
                 .orElseThrow(() -> new GlowGlowException(GlowGlowError.PAYMENT_NO_EXIST));
+    }
+
+    // 결제 키 + 사용자 ID를 사용하여 결제 정보 존재 여부 확인
+    @Transactional(readOnly = true)
+    public Payment findPaymentByPaymentKey(String paymentKey, Long userId) {
+        return paymentRepository.findByPaymentKey(paymentKey, userId)
+                .orElseThrow(() -> new GlowGlowException(GlowGlowError.PAYMENT_NO_EXIST));
+    }
+
+    @Transactional
+    public void tossPaymentUserCancel(String code, String message, AuthUserInfo authUserInfo) {
+        Payment payment = paymentRepository.findLatestByUserId(authUserInfo.getId())
+                        .orElseThrow(() -> new GlowGlowException(GlowGlowError.PAYMENT_NO_EXIST));
+
+        paymentDomainService.cancelPayment(payment, message);
+        paymentRepository.save(payment);
     }
 }

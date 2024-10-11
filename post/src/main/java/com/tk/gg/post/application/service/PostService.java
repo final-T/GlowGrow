@@ -67,7 +67,7 @@ public class PostService {
         Post post = getPostById(postId);
         postRepository.incrementViews(postId);
         int updatedViews = postRepository.getViews(postId);
-        post.setViews(updatedViews);
+        post.updateViews(updatedViews);
         return PostResponseDto.Get.of(post);
     }
 

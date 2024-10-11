@@ -140,21 +140,26 @@
 
 
                 tossPayments.requestPayment(data.payType, {
-                    amount: paymentAmount, // 결제 금액
-                    orderId: data.paymentId, // 주문 번호
-                    orderName: orderName, // 결제 상품
-                    //customerName: data.customerName,
-                    //customerEmail: data.customerEmail,
+                    amount: paymentAmount,
+                    orderId: data.paymentId,
+                    orderName: orderName,
                     successUrl: "http://localhost:19096/api/payments/toss/success",
                     failUrl: "http://localhost:19096/api/payments/toss/fail",
+                }).catch(function (error) {
+                    if (error.code === "USER_CANCEL") {
+                        // 결제 고객이 결제창을 닫았을 때 에러 처리
+                        console.log("사용자가 결제를 취소했습니다.");
+                        fetch("http://localhost:19096/api/payments/toss/fail-cancel?code=" + error.code + "&message=" + error.message, {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': token.startsWith('Bearer ') ? token : 'Bearer ' + token
+                            }
+                        });
+                    }
                 });
 
-                console.log("@@@"+data.customerName, amount, data.paymentId, orderName);
             })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('결제 요청 중 오류가 발생했습니다: ' + error.message);
-            });
+
     });
 </script>
 </body>
