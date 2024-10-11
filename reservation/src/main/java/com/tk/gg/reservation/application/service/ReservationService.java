@@ -118,8 +118,7 @@ public class ReservationService {
             return reservation.getCustomerId().equals(userInfo.getId());
         } else if (userInfo.getUserRole().equals(UserRole.PROVIDER)) {
             return reservation.getServiceProviderId().equals(userInfo.getId());
-        }
-        return false;
+        } else return userInfo.getUserRole().equals(UserRole.MASTER);
     }
 
 

@@ -7,6 +7,8 @@ import com.tk.gg.common.response.GlobalResponse;
 import com.tk.gg.reservation.application.dto.ResultGradeDto;
 import com.tk.gg.reservation.application.service.GradeService;
 import com.tk.gg.reservation.presentation.response.GradeResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -20,12 +22,15 @@ import static com.tk.gg.common.response.ResponseMessage.GRADE_RETRIEVE_SUCCESS;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/grades")
+@Tag(name = "Grade API", description = "유저 평가정보 기능, 내부 서비스에서 사용")
 public class GradeController {
 
     private final GradeService gradeService;
 
+    //기능 필요성 검증
     @Deprecated(forRemoval = true)
     @GetMapping()
+    @Operation(deprecated = true, hidden = true)
     public GlobalResponse<ResultGradeDto> getTotalGradeForUser(
             @RequestParam(value = "userId") Long userId,
             @RequestParam(value = "userType") UserRole userType,
@@ -36,6 +41,7 @@ public class GradeController {
     }
 
     @GetMapping("/users/{userId}/reservations/{reservationId}")
+    @Operation(hidden = true)
     public GlobalResponse<GradeResponse> getGradeForUserAndReservation(
             @PathVariable(value = "userId") Long userId,
             @PathVariable(value = "reservationId") UUID reservationId
@@ -46,6 +52,7 @@ public class GradeController {
     }
 
     @GetMapping("/users/{userId}/reviews/{reviewId}")
+    @Operation(hidden = true)
     public GlobalResponse<GradeResponse> getGradeForUserAndReview(
             @PathVariable(value = "userId") Long userId,
             @PathVariable(value = "reviewId") UUID reviewId

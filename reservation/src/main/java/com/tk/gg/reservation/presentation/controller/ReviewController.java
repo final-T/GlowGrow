@@ -2,7 +2,6 @@ package com.tk.gg.reservation.presentation.controller;
 
 import com.tk.gg.common.response.ApiUtils;
 import com.tk.gg.common.response.GlobalResponse;
-import com.tk.gg.common.response.ResponseMessage;
 import com.tk.gg.reservation.presentation.request.ReviewSearchCondition;
 import com.tk.gg.reservation.application.service.ReviewService;
 import com.tk.gg.reservation.presentation.request.CreateReviewRequest;
@@ -11,8 +10,11 @@ import com.tk.gg.reservation.presentation.response.ReviewResponse;
 import com.tk.gg.reservation.presentation.response.ReviewWithReservationResponse;
 import com.tk.gg.security.user.AuthUser;
 import com.tk.gg.security.user.AuthUserInfo;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -26,11 +28,13 @@ import static com.tk.gg.common.response.ResponseMessage.*;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/reviews")
+@Tag(name = "Review API", description = "예약에 대한 리뷰 CRUD")
 public class ReviewController {
 
     private final ReviewService reviewService;
 
     @PostMapping
+    @Operation(summary = "생성 API", description = "리뷰(review) 정보를 생성합니다.**[ROLE: Provider,Customer,Master]**")
     public GlobalResponse<ReviewWithReservationResponse> createReview(
             @RequestBody @Valid CreateReviewRequest request,
             @AuthUser AuthUserInfo userInfo
@@ -41,9 +45,10 @@ public class ReviewController {
     }
 
     @GetMapping
+    @Operation(summary = "전체 조회 API", description = "리뷰(review)의 모든 정보를 조회합니다.**[ROLE: Provider,Customer,Master]**")
     public GlobalResponse<Page<ReviewResponse>> getAllReviews(
-            ReviewSearchCondition searchCondition,
-            @PageableDefault(sort = {"createdAt, updatedAt"}, direction = Sort.Direction.DESC) Pageable pageable
+            @ParameterObject ReviewSearchCondition searchCondition,
+            @ParameterObject @PageableDefault(sort = {"createdAt, updatedAt"}, direction = Sort.Direction.DESC) Pageable pageable
     ){
         return ApiUtils.success(REVIEW_RETRIEVE_SUCCESS.getMessage(),
                 reviewService.searchReviews(searchCondition, pageable).map(ReviewResponse::from)
@@ -51,6 +56,7 @@ public class ReviewController {
     }
 
     @GetMapping("/{reviewId}")
+    @Operation(summary = "단건 조회 API", description = "리뷰(review) 정보를 조회합니다.**[ROLE: Provider,Customer,Master]**")
     public GlobalResponse<ReviewWithReservationResponse> getOneReview(
             @PathVariable(value = "reviewId") UUID reviewId
     ){
@@ -60,6 +66,7 @@ public class ReviewController {
     }
 
     @PutMapping("/{reviewId}")
+    @Operation(summary = "수정 API", description = "리뷰(review) 정보를 수정합니다.**[ROLE: Provider,Customer,Master]**")
     public GlobalResponse<String> updateReview(
             @PathVariable(value = "reviewId") UUID reviewId,
             @RequestBody @Valid UpdateReviewRequest request,
@@ -70,6 +77,7 @@ public class ReviewController {
     }
 
     @DeleteMapping("/{reviewId}")
+    @Operation(summary = "삭제 API", description = "리뷰(review) 정보를 삭제합니다.**[ROLE: Provider,Customer,Master]**")
     public GlobalResponse<String> deleteReview(
             @PathVariable(value = "reviewId") UUID reviewId,
             @AuthUser AuthUserInfo userInfo

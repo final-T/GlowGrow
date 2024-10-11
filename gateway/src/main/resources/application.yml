@@ -12,7 +12,7 @@ spring:
         - id: reservation-service # 예약 서비스
           uri: lb://reservation-service
           predicates:
-            - Path=/api/reservations/**, /api/time-slots/**, /api/reviews/**, /api/reports/**,
+            - Path=/api/reservations/**, /api/time-slots/**, /api/reviews/**, /api/reports/**, /api/grades/**
         - id: user-service # 사용자 서비스
           uri: lb://user-service
           predicates:

@@ -8,8 +8,12 @@ import com.tk.gg.reservation.presentation.request.UpdateTimeSlotRequest;
 import com.tk.gg.reservation.presentation.response.TimeSlotResponse;
 import com.tk.gg.security.user.AuthUser;
 import com.tk.gg.security.user.AuthUserInfo;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -25,11 +29,13 @@ import static com.tk.gg.common.response.ResponseMessage.*;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/time-slots")
+@Tag(name = "TimeSlot API", description = "예약타임슬롯(가능시간테이블) CRUD")
 public class TimeSlotController {
 
     private final TimeSlotService timeSlotService;
 
     @PostMapping
+    @Operation(summary = "생성 API", description = "예약 가능 시간 (time-slot) 정보를 생성합니다.**[ROLE: Provider, Master]**")
     public GlobalResponse<TimeSlotResponse> create(
             @RequestBody @Valid CreateTimeSlotRequest request,
             @AuthUser AuthUserInfo userInfo
@@ -41,12 +47,15 @@ public class TimeSlotController {
     }
 
     @GetMapping
+    @Operation(summary = "전체 조회(페이징) API", description = "예약 가능 시간 (time-slot)의 모든 정보를 조회합니다. 날짜 범위로 검색이 가능합니다.**[ROLE: AuthenticatedUser]**")
     public GlobalResponse<Page<TimeSlotResponse>> getAll(
+            @Parameter(name = "startDate", description = "검색 시작 범위 날짜",example = "yyyy-MM-dd")
             @RequestParam(value = "startDate", required = false)
             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+            @Parameter(name = "endDate", description = "검색 끝 범위 날짜",example = "yyyy-MM-dd")
             @RequestParam(value = "endDate", required = false)
             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
-            @PageableDefault(sort = {"availableDate"}, direction = Sort.Direction.DESC) Pageable pageable
+            @ParameterObject @PageableDefault(sort = {"availableDate"}, direction = Sort.Direction.DESC) Pageable pageable
     ) {
         return ApiUtils.success(
                 TIMESLOT_RETRIEVE_SUCCESS.getMessage(),
@@ -55,6 +64,7 @@ public class TimeSlotController {
     }
 
     @GetMapping("/{timeSlotId}")
+    @Operation(summary = "단건 조회 API", description = "ID에 맞는 예약 가능 시간 (time-slot) 정보를 조회합니다.**[ROLE: AuthenticatedUser]**")
     public GlobalResponse<TimeSlotResponse> getOne(
             @PathVariable(value = "timeSlotId") UUID timeSlotId
     ) {
@@ -65,6 +75,7 @@ public class TimeSlotController {
     }
 
     @PutMapping("/{timeSlotId}")
+    @Operation(summary = "수정 API", description = "ID 에 맞는 예약 가능 시간 (time-slot) 정보를 수정합니다.**[ROLE: Provider, Master]**")
     public GlobalResponse<String> updateOne(
             @PathVariable(value = "timeSlotId") UUID timeSlotId,
             @RequestBody @Valid UpdateTimeSlotRequest request,
@@ -75,6 +86,7 @@ public class TimeSlotController {
     }
 
     @DeleteMapping("/{timeSlotId}")
+    @Operation(summary = "삭제 API", description = "ID 에 맞는 예약 가능 시간 (time-slot) 정보를 삭제합니다.**[ROLE: Provider, Master]**")
     public GlobalResponse<String> deleteOne(
             @PathVariable(value = "timeSlotId") UUID timeSlotId,
             @AuthUser AuthUserInfo userInfo
