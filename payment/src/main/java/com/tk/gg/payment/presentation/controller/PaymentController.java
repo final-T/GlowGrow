@@ -1,4 +1,4 @@
-package com.tk.gg.payment.infrastructure.controller;//package com.tk.gg.payment.infrastructure.controller;
+package com.tk.gg.payment.presentation.controller;//package com.tk.gg.payment.infrastructure.controller;
 
 import com.tk.gg.payment.application.service.PaymentService;
 import com.tk.gg.payment.application.dto.PaymentFailDto;
