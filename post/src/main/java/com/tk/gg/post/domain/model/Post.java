@@ -31,11 +31,9 @@ public class Post extends BaseEntity {
     @Column(name = "content", nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    @Setter
     @Column(name = "views", nullable = false)
     private Integer views;
 
-    @Setter
     @Column(name = "likes", nullable = false)
     private Integer likes;
 
@@ -51,6 +49,9 @@ public class Post extends BaseEntity {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Multimedia> multimediaList = new ArrayList<>();
 
+    public void updateViews(int newViews) {
+        this.views = newViews;
+    }
 
     //소프트 삭제 메서드
     public void softDelete(AuthUserInfo authUserInfo){
