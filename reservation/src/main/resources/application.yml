@@ -18,6 +18,10 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
         default_batch_fetch_size: 1000
+  cloud:
+    aws:
+      s3:
+        enabled: false
 
 eureka:
   client:
