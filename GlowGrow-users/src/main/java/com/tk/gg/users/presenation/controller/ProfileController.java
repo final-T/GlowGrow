@@ -1,4 +1,4 @@
-package com.tk.gg.users.presenation;
+package com.tk.gg.users.presenation.controller;
 
 import com.tk.gg.common.response.ApiUtils;
 import com.tk.gg.common.response.GlobalResponse;
@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -24,6 +25,14 @@ import static com.tk.gg.common.response.ResponseMessage.*;
 @RequestMapping("/api/profile")
 public class ProfileController {
     private final ProfileService profileService;
+
+    @PostMapping("/image")
+    public GlobalResponse<String> uploadProfileImage(
+            @AuthUser AuthUserInfo userInfo,
+            @RequestParam("file") MultipartFile file
+    ){
+        return ApiUtils.success(MULTIMEDIA_UPDATE_SUCCESS.getMessage(), profileService.uploadProfileImage(userInfo, file));
+    }
 
     @PostMapping
     public GlobalResponse<String> createProfile(
@@ -122,7 +131,7 @@ public class ProfileController {
      * @param request
      * @return
      */
-    @PostMapping("/{profileId}/award")
+    @PostMapping("/{profileId}/style")
     public GlobalResponse<List<StyleResponse>> addStyle(
             @AuthUser AuthUserInfo userInfo,
             @PathVariable("profileId") UUID profileId,
@@ -160,7 +169,7 @@ public class ProfileController {
      * @param request
      * @return
      */
-    @PostMapping("/{profileId}/award")
+    @PostMapping("/{profileId}/experience")
     public GlobalResponse<List<WorkExperienceResponse>> addWorkExperience(
             @AuthUser AuthUserInfo userInfo,
             @PathVariable("profileId") UUID profileId,
