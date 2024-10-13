@@ -1,12 +1,9 @@
-package com.tk.gg.users.presenation;
+package com.tk.gg.users.presenation.controller;
 
 import com.tk.gg.common.response.ApiUtils;
 import com.tk.gg.common.response.GlobalResponse;
 import com.tk.gg.security.user.AuthUser;
 import com.tk.gg.security.user.AuthUserInfo;
-import com.tk.gg.users.application.dto.GradeDto;
-import com.tk.gg.users.application.dto.UserDto;
-import com.tk.gg.users.application.dto.UserGradeDto;
 import com.tk.gg.users.application.service.GradeService;
 import com.tk.gg.users.application.service.UserService;
 import com.tk.gg.users.presenation.request.UpdateUserInfoRequest;

@@ -26,13 +26,13 @@ import static com.tk.gg.common.response.ResponseMessage.*;
 public class ProfileController {
     private final ProfileService profileService;
 
-    @PostMapping("/image")
-    public GlobalResponse<String> uploadProfileImage(
-            @AuthUser AuthUserInfo userInfo,
-            @RequestParam("file") MultipartFile file
-    ){
-        return ApiUtils.success(MULTIMEDIA_UPDATE_SUCCESS.getMessage(), profileService.uploadProfileImage(userInfo, file));
-    }
+//    @PostMapping("/image")
+//    public GlobalResponse<String> uploadProfileImage(
+//            @AuthUser AuthUserInfo userInfo,
+//            @RequestParam("file") MultipartFile file
+//    ){
+//        return ApiUtils.success(MULTIMEDIA_UPDATE_SUCCESS.getMessage(), profileService.uploadProfileImage(userInfo, file));
+//    }
 
     @PostMapping
     public GlobalResponse<String> createProfile(
