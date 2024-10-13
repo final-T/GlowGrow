@@ -33,7 +33,7 @@ jobs:
         run: |
           cd ./src/main/resources
           touch ./application.properties
-          echo "${{ secrets.GLOWGROW_ENV }}" >> .env
+          echo "${{ secrets.GLOWGROW_ENV }}" >> .application.properties
         shell: bash
 	  
       # gradle을 통해 소스를 빌드.
