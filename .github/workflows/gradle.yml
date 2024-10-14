@@ -95,7 +95,11 @@ jobs:
           port: 22
           envs: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, DOCKER_HUB_NAMESPACE
           script: |
-            sudo docker rm -f $(docker ps -qa)
-            sudo docker compose down
-            sudo docker compose pull
-            SPRING_PROFILES_ACTIVE=prod docker compose --env-file /home/ubuntu/.env up -d
+            sudo docker-compose down
+  
+            # 이미지 업데이트
+            sudo docker-compose pull
+  
+            # 컨테이너 실행
+            SPRING_PROFILES_ACTIVE=prod sudo docker-compose --env-file /home/ubuntu/.env up -d
+
