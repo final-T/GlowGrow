@@ -98,4 +98,4 @@ jobs:
             sudo docker rm -f $(docker ps -qa)
             sudo docker compose down
             sudo docker compose pull
-            SPRING_PROFILES_ACTIVE=prod docker compose up -d
+            SPRING_PROFILES_ACTIVE=prod docker compose --env-file /home/ubuntu.env up -d
