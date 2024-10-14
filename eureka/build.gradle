@@ -27,6 +27,11 @@ dependencies {
 
     // 테스트 의존성
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // Actuator 및 Prometheus 의존성
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+    implementation 'com.github.loki4j:loki-logback-appender:1.5.1' //추가
 }
 
 dependencyManagement {

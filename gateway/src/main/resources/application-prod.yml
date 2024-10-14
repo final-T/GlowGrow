@@ -39,3 +39,13 @@ springdoc:
       name: auth service
       url: http://${SERVER_HOST}:${AUTH_SERVER_PORT}/v3/api-docs
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+    endpoint:
+      health:
+        show-details: always
+      prometheus:
+        enabled: true

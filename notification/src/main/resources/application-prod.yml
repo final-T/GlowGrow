@@ -37,3 +37,14 @@ springdoc:
   enable-spring-security: true
   default-consumes-media-type: application/json;charset=UTF-8 # 요청 객체 Data Type
   default-produces-media-type: application/json;charset=UTF-8 # 응답 객체 Data Type
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+    endpoint:
+      health:
+        show-details: always
+      prometheus:
+        enabled: true
