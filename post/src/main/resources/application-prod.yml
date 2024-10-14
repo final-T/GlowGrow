@@ -19,7 +19,25 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
         default_batch_fetch_size: 1000
-
+  cloud:
+      aws:
+        credentials:
+          access-key: ${AWS_ACCESS_KEY}
+          secret-key: ${AWS_SECRET_KEY}
+        region:
+          static: ap-northeast-2
+          auto: false
+        stack:
+          auto: false
+app:
+  s3:
+    enabled: true
+  upload:
+    max-image-size: 1048576  # 1MB
+    max-video-size: 5242880 # 5MB
+s3:
+  bucket-name: glowgrow-test
+  path: multimedias
 
 eureka:
   client:
