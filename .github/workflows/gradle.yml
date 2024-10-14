@@ -2,9 +2,7 @@ name: CD with Gradle
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches: [ "dev" ]
 
 env:
   DOCKER_HUB_NAMESPACE: junghojune
@@ -97,6 +95,7 @@ jobs:
           port: 22
           envs: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, DOCKER_HUB_NAMESPACE
           script: |
-            docker compose down
-            docker compose pull
-            SPRING_ACTIVE_PROFILE=prod docker compose up -d
+            sudo docker rm -f $(docker ps -qa)
+            sudo docker compose down
+            sudo docker compose pull
+            SPRING_PROFILES_ACTIVE=prod docker compose up -d
