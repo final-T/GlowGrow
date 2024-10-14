@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 env:
-  DOCKER_HUB_NAMESPACE: twonezero98
+  DOCKER_HUB_NAMESPACE: junghojune
 # 실제 실행될 내용들을 정의합니다.
 
 jobs:

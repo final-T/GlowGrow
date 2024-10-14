@@ -142,6 +142,6 @@ services:
   #    image: ${DOCKER_HUB_NAMESPACE}/chat-service
 networks:
   default:
-    name: glowgrow-network
+    name: GlowGrow-network
     external: true
 
