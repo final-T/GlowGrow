@@ -17,6 +17,14 @@ repositories {
     mavenCentral()
 }
 
+tasks.getByName("bootJar") {
+    enabled = false
+}
+
+tasks.getByName("jar") {
+    enabled = true
+}
+
 dependencies
         {
             // Lombok - 코드 간소화
@@ -42,6 +50,11 @@ dependencies
 
             // Swagger - 공통 의존성으로 서브모듈에도 전달
             api group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.2.0'
+
+            // Monitoring(actuator, prometheus, loki)
+            api 'org.springframework.boot:spring-boot-starter-actuator'
+            api 'io.micrometer:micrometer-registry-prometheus'
+            api 'com.github.loki4j:loki-logback-appender:1.5.1' //추가
 
         }
 

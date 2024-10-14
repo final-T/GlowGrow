@@ -31,6 +31,11 @@ dependencies {
 
     // springdoc-openapi-ui
     implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webflux-ui', version: '2.2.0'
+
+    // Actuator 및 Prometheus 의존성
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+    implementation 'com.github.loki4j:loki-logback-appender:1.5.1' //추가
 }
 
 dependencyManagement {
