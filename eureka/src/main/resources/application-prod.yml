@@ -1,0 +1,16 @@
+server:
+  port: ${EUREKA_SERVER_PORT}
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+    service-url:
+      defaultZone: http://${SERVER_HOST}:${EUREKA_SERVER_PORT}/eureka/
+  instance:
+    hostname: ${SERVER_HOST}
