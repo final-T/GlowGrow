@@ -1,0 +1,18 @@
+<configuration>
+    <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
+        <http>
+            <url>http://13.124.27.13:3100/loki/api/v1/push</url>
+        </http>
+        <format>
+            <label>
+                <pattern>app=glowgrow,service=post-service,level=%level</pattern>
+            </label>
+            <message>
+                <pattern>t=%d{yyyy-MM-dd HH:mm:ss.SSS} l=%level c=%logger{20} t=%thread | %msg %ex</pattern>
+            </message>
+        </format>
+    </appender>
+    <root level="DEBUG">
+        <appender-ref ref="LOKI" />
+    </root>
+</configuration>
