@@ -6,6 +6,8 @@ services:
     container_name: eureka
     ports:
       - "19090:19090"
+    env_file:
+      - .env
     build:
       context: .
       dockerfile: ./eureka/Dockerfile
@@ -19,6 +21,8 @@ services:
     container_name: gateway
     ports:
       - "19091:19091"
+    env_file:
+      - .env
     build:
       context: .
       dockerfile: ./gateway/Dockerfile
@@ -34,6 +38,8 @@ services:
     container_name: user
     ports:
       - "19093:19093"
+    env_file:
+      - .env
     build:
       context: .
       dockerfile: ./GlowGrow-users/Dockerfile
@@ -49,6 +55,8 @@ services:
     container_name: auth
     ports:
       - "19099:19099"
+    env_file:
+      - .env
     build:
       context: .
       dockerfile: ./auth/Dockerfile
@@ -64,6 +72,8 @@ services:
     container_name: notification
     ports:
       - "19094:19094"
+    env_file:
+      - .env
     build:
       context: .
       dockerfile: ./notification/Dockerfile
@@ -79,6 +89,8 @@ services:
     container_name: post
     ports:
       - "19095:19095"
+    env_file:
+      - .env
     build:
       context: .
       dockerfile: ./post/Dockerfile
@@ -94,6 +106,8 @@ services:
     container_name: promotion
     ports:
       - "19098:19098"
+    env_file:
+      - .env
     build:
       context: .
       dockerfile: ./promotion/Dockerfile
@@ -109,6 +123,8 @@ services:
     container_name: reservation
     ports:
       - "19092:19092"
+    env_file:
+      - .env
     build:
       context: .
       dockerfile: ./reservation/Dockerfile
@@ -124,6 +140,8 @@ services:
     container_name: payment
     ports:
       - "19096:19096"
+    env_file:
+      - .env
     build:
       context: .
       dockerfile: ./payment/Dockerfile
