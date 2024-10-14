@@ -21,6 +21,11 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         default_batch_fetch_size: 1000
 
+  kafka:
+    bootstrap-servers: ${MONITORING_SERVER_HOST}:${KAFKA_SERVER_PORT}
+    consumer:
+      auto-offset-reset: earliest
+
 eureka:
   client:
     service-url:

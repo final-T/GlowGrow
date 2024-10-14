@@ -9,12 +9,12 @@ ARG FILE_DIRECTORY
 # 파일 복사
 COPY $FILE_DIRECTORY /app
 
-# Post 모듈만 빌드
-RUN ./gradlew :post:clean :post:build -x test --no-daemon
+# user 모듈만 빌드
+RUN ./gradlew :GlowGrow-users:clean :GlowGrow-users:build -x test --no-daemon
 
 FROM openjdk:17-jdk-slim
 
-COPY --from=build /app/post/build/libs/*SNAPSHOT.jar /app.jar
+COPY --from=build /app/GlowGrow-users/build/libs/*SNAPSHOT.jar /app.jar
 
 # JAR 파일 실행
 CMD ["java", "-jar", "/app.jar"]

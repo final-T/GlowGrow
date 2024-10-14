@@ -49,7 +49,7 @@ public class RefundService {
 
             List<Map<String, Object>> cancels = (List<Map<String, Object>>) response.get("cancels");
             if (cancels != null && !cancels.isEmpty()) {
-                Map<String, Object> cancelInfo = cancels.getFirst();
+                Map<String, Object> cancelInfo = cancels.get(0);
                 String cancelStatus = (String) cancelInfo.get("cancelStatus");
 
                 log.info("Cancel status: {}", cancelStatus);
