@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   eureka:
     image: ${DOCKER_HUB_NAMESPACE}/glowgrow-eureka

@@ -25,6 +25,10 @@ spring:
     consumer:
       auto-offset-reset: earliest
 
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${SERVER_HOST}:${EUREKA_SERVER_PORT}/eureka/
 # springdoc-openapi-ui# springdoc-openapi-ui
 gateway:
   url: http://${SERVER_HOST}:${GATEWAY_SERVER_PORT}
