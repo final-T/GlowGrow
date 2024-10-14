@@ -1,7 +1,6 @@
-server:
-  port: 19091
-
 spring:
+  profiles:
+    default: local
   main:
     web-application-type: reactive
   application:
@@ -45,38 +44,3 @@ spring:
       discovery:
         locator:
           enabled: true # 서비스 디스커버리를 통해 동적으로 라우트를 생성하도록 설정
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:19090/eureka/ # Eureka 서버의 URL을 지정
-
-
-springdoc:
-  swagger-ui:
-    path: /swagger
-    urls[0]:
-      name: reservation service
-      url: http://localhost:19092/v3/api-docs
-    urls[1]:
-      name: user service
-      url: http://localhost:19093/v3/api-docs
-    urls[2]:
-      name: notification service
-      url: http://localhost:19094/v3/api-docs
-    urls[3]:
-      name: post service
-      url: http://localhost:19095/v3/api-docs
-    urls[4]:
-      name: payment service
-      url: http://localhost:19096/v3/api-docs
-    urls[5]:
-      name: chat service
-      url: http://localhost:19097/v3/api-docs
-    urls[6]:
-      name: promotion service
-      url: http://localhost:19098/v3/api-docs
-    urls[7]:
-      name: auth service
-      url: http://localhost:19099/v3/api-docs
-

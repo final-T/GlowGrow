@@ -1,0 +1,41 @@
+server:
+  port: ${GATEWAY_SERVER_PORT}
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${SERVER_HOST}:${EUREKA_SERVER_PORT}/eureka/ # Eureka 서버의 URL을 지정
+
+springdoc:
+  swagger-ui:
+    path: /swagger
+    urls[0]:
+      name: reservation service
+      url: http://${SERVER_HOST}:${RESERVATION_SERVER_PORT}/v3/api-docs
+    urls[1]:
+      name: user service
+      url: http://${SERVER_HOST}:${USER_SERVER_PORT}/v3/api-docs
+    urls[2]:
+      name: notification service
+      url: http://${SERVER_HOST}:${NOTIFICATION_SERVER_PORT}/v3/api-docs
+    urls[3]:
+      name: post service
+      url: http://${SERVER_HOST}:${POST_SERVER_PORT}/v3/api-docs
+    urls[4]:
+      name: payment service
+      url: http://${SERVER_HOST}:${PAYMENT_SERVER_PORT}/v3/api-docs
+    urls[5]:
+      name: chat service
+      url: http://${SERVER_HOST}:${CHAT_SERVER_PORT}/v3/api-docs
+    urls[6]:
+      name: promotion service
+      url: http://${SERVER_HOST}:${PROMOTION_SERVER_PORT}/v3/api-docs
+    urls[7]:
+      name: auth service
+      url: http://${SERVER_HOST}:${AUTH_SERVER_PORT}/v3/api-docs
+
