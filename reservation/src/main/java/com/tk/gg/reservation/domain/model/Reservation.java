@@ -35,7 +35,8 @@ public class Reservation extends BaseEntity {
     @Column(nullable = false)
     private Long serviceProviderId;
 
-    //TODO : ReservationStatus -> common 모듈 추가
+    @Column(name = "reservationStatus", nullable = false)
+    @Enumerated(EnumType.STRING)
     private ReservationStatus reservationStatus;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
