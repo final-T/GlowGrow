@@ -30,6 +30,7 @@ public class ReviewService {
     private final UserServiceImpl userClient;
     private final GradeKafkaProducer gradeKafkaProducer;
 
+    //TODO : 예약과 관련된 사람만 해당 예약에 대한 리뷰 작성 가능하게 검증
     @Transactional
     public ReviewWithReservationDto createReview(CreateReviewDto dto, AuthUserInfo userInfo) {
         Reservation reservation = reservationDomainService.getOne(dto.reservationId());
