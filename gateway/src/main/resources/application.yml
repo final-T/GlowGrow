@@ -15,7 +15,7 @@ spring:
         - id: user-service # 사용자 서비스
           uri: lb://user-service
           predicates:
-            - Path=/api/auth/**, /api/users/**, /api/profile/**
+            - Path= /api/users/**, /api/profile/**
         - id: post-service # 게시판 서비스
           uri: lb://post-service
           predicates:
