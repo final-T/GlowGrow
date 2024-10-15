@@ -45,8 +45,8 @@ public class ProfileController {
 
     @GetMapping
     public GlobalResponse<Page<ProfilePageResponse>> searchProfiles(
-            ProfileSearch profileSearch,
-            @PageableDefault(sort = {"createAt"}, direction = Sort.Direction.ASC) Pageable pageable
+            @ModelAttribute ProfileSearch profileSearch,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         return ApiUtils.success(PROFILE_RETRIEVE_SUCCESS.getMessage(),
                 profileService.searchProfiles(profileSearch, pageable));
