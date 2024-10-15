@@ -58,20 +58,22 @@ public class ReservationController {
             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
             @Parameter(name = "status", description = "예약 상태", example = "ACCEPT")
             @RequestParam(value = "status", required = false) ReservationStatus status,
-            @ParameterObject @PageableDefault(sort = {"reservationDate"}, direction = Sort.Direction.ASC) Pageable pageable
+            @ParameterObject @PageableDefault(sort = {"reservationDate"}, direction = Sort.Direction.ASC) Pageable pageable,
+            @AuthUser AuthUserInfo userInfo
     ) {
         return ApiUtils.success(RESERVATION_RETRIEVE_SUCCESS.getMessage(),
-                reservationService.searchReservations(startDate, endDate, status, pageable).map(ReservationResponse::from)
+                reservationService.searchReservations(startDate, endDate, status, pageable, userInfo).map(ReservationResponse::from)
         );
     }
 
     @GetMapping("/{reservationId}")
     @Operation(summary = "단건 조회 API", description = "예약(reservation) 정보를 조회합니다.**[ROLE: Provider,Customer,Master]**")
     public GlobalResponse<ReservationResponse> getOneReservation(
-            @PathVariable(value = "reservationId") UUID reservationId
+            @PathVariable(value = "reservationId") UUID reservationId,
+            @AuthUser AuthUserInfo userInfo
     ) {
         return ApiUtils.success(RESERVATION_RETRIEVE_SUCCESS.getMessage(),
-                ReservationResponse.from(reservationService.getOneReservation(reservationId))
+                ReservationResponse.from(reservationService.getOneReservation(reservationId, userInfo))
         );
     }
 
