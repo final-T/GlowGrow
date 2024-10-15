@@ -49,10 +49,10 @@ public class TimeSlotController {
     @GetMapping
     @Operation(summary = "전체 조회(페이징) API", description = "예약 가능 시간 (time-slot)의 모든 정보를 조회합니다. 날짜 범위로 검색이 가능합니다.**[ROLE: AuthenticatedUser]**")
     public GlobalResponse<Page<TimeSlotResponse>> getAll(
-            @Parameter(name = "startDate", description = "검색 시작 범위 날짜",example = "yyyy-MM-dd")
+            @Parameter(name = "startDate", description = "검색 시작 범위 날짜(yyyy-MM-dd)")
             @RequestParam(value = "startDate", required = false)
             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
-            @Parameter(name = "endDate", description = "검색 끝 범위 날짜",example = "yyyy-MM-dd")
+            @Parameter(name = "endDate", description = "검색 끝 범위 날짜(yyyy-MM-dd)")
             @RequestParam(value = "endDate", required = false)
             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
             @ParameterObject @PageableDefault(sort = {"availableDate"}, direction = Sort.Direction.DESC) Pageable pageable

@@ -50,10 +50,10 @@ public class ReservationController {
     @GetMapping
     @Operation(summary = "전체 조회 API", description = "예약(reservation) 목록을 조회합니다.**[ROLE: Provider,Customer,Master]**")
     public GlobalResponse<Page<ReservationResponse>> getAllReservations(
-            @Parameter(name = "startDate", description = "검색 시작 범위 날짜",example = "yyyy-MM-dd")
+            @Parameter(name = "startDate", description = "검색 시작 범위 날짜(yyyy-MM-dd)")
             @RequestParam(value = "startDate", required = false)
             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
-            @Parameter(name = "endDate", description = "검색 끝 범위 날짜",example = "yyyy-MM-dd")
+            @Parameter(name = "endDate", description = "검색 끝 범위 날짜(yyyy-MM-dd)")
             @RequestParam(value = "endDate", required = false)
             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
             @Parameter(name = "status", description = "예약 상태", example = "ACCEPT")
