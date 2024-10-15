@@ -92,6 +92,7 @@ public enum GlowGlowError {
     PREFER_PRICE_ALREADY_EXIST(409, "PROFILE_009", "이미 존재하는 선호 가격입니다."),
     PREFER_STYLE_ALREADY_EXIST(409, "PROFILE_010", "이미 존재하는 선호 스타일입니다."),
     WORK_EXPERIENCE_ALREADY_EXIST(409, "PROFILE_011", "이미 존재하는 경력입니다."),
+    PROFILE_ALREADY_EXIST(409, "PROFILE_012","이미 프로필이 존재합니다."),
 
     //평가항목 관련 에러
     GRADE_NO_EXIST(404, "GRADE_001", "존재하지 않는 평가정보 입니다."),

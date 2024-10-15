@@ -1,5 +1,6 @@
 package com.tk.gg.users.domain.service;
 
+import com.tk.gg.common.response.exception.GlowGlowError;
 import com.tk.gg.common.response.exception.GlowGlowException;
 import com.tk.gg.users.application.dto.*;
 import com.tk.gg.users.domain.model.*;
@@ -29,6 +30,8 @@ public class ProfileDomainService {
     private final WorkExperienceRepository workExperienceRepository;
 
     public ProfileDto saveProfile(ProfileDto profileDto) {
+        if(profileRepository.findByUserUserIdAndIsDeletedFalse(profileDto.userDto().userId()).isPresent())
+            throw new GlowGlowException(PROFILE_ALREADY_EXIST);
         Profile profile = profileRepository.save(profileDto.toEntity());
         return ProfileDto.from(profile);
     }
