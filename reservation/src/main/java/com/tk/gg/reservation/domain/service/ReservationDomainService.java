@@ -8,6 +8,7 @@ import com.tk.gg.reservation.domain.model.Reservation;
 import com.tk.gg.reservation.domain.model.TimeSlot;
 import com.tk.gg.reservation.infrastructure.repository.ReservationRepository;
 import com.tk.gg.reservation.domain.type.ReservationStatus;
+import com.tk.gg.security.user.AuthUserInfo;
 import jakarta.ws.rs.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -28,8 +29,10 @@ public class ReservationDomainService {
 
     private final ReservationRepository reservationRepository;
 
-    public Page<Reservation> searchReservations(LocalDate startDate, LocalDate endDate, ReservationStatus status,Pageable pageable) {
-        return reservationRepository.searchReservations(startDate, endDate, status, pageable);
+    public Page<Reservation> searchReservations(
+            LocalDate startDate, LocalDate endDate, ReservationStatus status,Pageable pageable, AuthUserInfo userInfo
+    ) {
+        return reservationRepository.searchReservations(startDate, endDate, status, pageable, userInfo);
     }
 
     public Reservation getOne(UUID id) {

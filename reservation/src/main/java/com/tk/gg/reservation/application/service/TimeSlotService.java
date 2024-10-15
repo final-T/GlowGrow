@@ -25,6 +25,7 @@ public class TimeSlotService {
     private final UserService userService;
     private final TimeSlotDomainService timeSlotDomainService;
 
+    // TODO : 제공자만 만들 수 있게 검증 코드 추가
     @Transactional
     public TimeSlotDto createTimeSlot(CreateTimeSlotRequestDto dto, AuthUserInfo userInfo) {
         checkTimeSlotOwner(userInfo, dto.serviceProviderId());

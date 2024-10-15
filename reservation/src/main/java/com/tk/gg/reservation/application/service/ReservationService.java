@@ -42,28 +42,38 @@ public class ReservationService {
 
 
     @Transactional(readOnly = true)
-    public Page<ReservationDto> searchReservations(LocalDate startDate, LocalDate endDate, ReservationStatus status, Pageable pageable) {
-        return reservationDomainService.searchReservations(startDate, endDate, status, pageable).map(ReservationDto::from);
+    public Page<ReservationDto> searchReservations(
+            LocalDate startDate, LocalDate endDate,
+            ReservationStatus status, Pageable pageable, AuthUserInfo userInfo
+    ) {
+        return reservationDomainService.searchReservations(startDate, endDate, status, pageable, userInfo).map(ReservationDto::from);
     }
 
     @Transactional(readOnly = true)
-    public ReservationDto getOneReservation(UUID reservationId) {
-        return ReservationDto.from(reservationDomainService.getOne(reservationId));
+    public ReservationDto getOneReservation(UUID reservationId, AuthUserInfo userInfo) {
+        Reservation reservation = reservationDomainService.getOne(reservationId);
+        if (!canHandleReservation(reservation, userInfo)) {
+            throw new GlowGlowException(RESERVATION_NOT_OWNER);
+        }
+        return ReservationDto.from(reservation);
     }
 
     @Transactional
     public ReservationDto createReservation(CreateReservationDto dto) {
         TimeSlot timeSlot = timeSlotDomainService.getOne(dto.timeSlotId());
-        if (!dto.reservationDate().equals(timeSlot.getAvailableDate()) &&
+        // 이미 예약된 슬롯은 예약 불가!
+        if (timeSlot.getIsReserved()) throw new GlowGlowException(RESERVATION_ALREADY_EXIST);
+        // 타임슬롯 시간정보와 일치하지 않으면 에러
+        if (!dto.reservationDate().equals(timeSlot.getAvailableDate()) ||
                 !dto.reservationTime().equals(timeSlot.getAvailableTime())
-        ){
+        ) {
             throw new GlowGlowException(RESERVATION_CREATE_FAILED);
         }
         Reservation reservation = reservationDomainService.create(dto, timeSlot);
 
         // 예약 접수 알림
         notificationKafkaProducer.sendReservationNotificationToUsers(
-                dto.customerId(), dto.serviceProviderId(),"예약이 접수되었습니다."
+                dto.customerId(), dto.serviceProviderId(), "예약이 접수되었습니다."
         );
 
         return ReservationDto.from(reservation);
@@ -71,25 +81,30 @@ public class ReservationService {
 
     @Transactional
     public void updateReservation(UUID reservationId, UpdateReservationDto dto, AuthUserInfo userInfo) {
-        TimeSlot timeSlot  = timeSlotDomainService.getOne(dto.timeSlotId());
+        TimeSlot timeSlot = timeSlotDomainService.getOne(dto.timeSlotId());
         Reservation reservation = reservationDomainService.getOne(reservationId);
-        if(!canHandleReservation(reservation, userInfo)){
+        if (!canHandleReservation(reservation, userInfo)) {
             throw new GlowGlowException(RESERVATION_NOT_OWNER);
         }
         reservationDomainService.updateOne(reservation, dto, timeSlot);
     }
 
     @Transactional
-    public void updateReservationStatus(UUID reservationId ,ReservationStatus status, AuthUserInfo userInfo) {
+    public void updateReservationStatus(UUID reservationId, ReservationStatus status, AuthUserInfo userInfo) {
         Reservation reservation = reservationDomainService.getOne(reservationId);
-        if(!canHandleReservation(reservation, userInfo)){
+        if (!canHandleReservation(reservation, userInfo)) {
             throw new GlowGlowException(RESERVATION_NOT_OWNER);
         }
+        // 사용자 권한 status -> 취소만 가능
+        if (userInfo.getUserRole().equals(UserRole.CUSTOMER) && !status.equals(ReservationStatus.CANCEL)){
+            throw new GlowGlowException(RESERVATION_FORBIDDEN_STATUS);
+        }
+
         // 예약 상태 변경
         reservationDomainService.updateStatus(reservation, status);
 
         // 만약 예약 상태가 성공적으로 DONE 이 된다면, Grade 생성
-        if (status.equals(ReservationStatus.DONE)){
+        if (status.equals(ReservationStatus.DONE)) {
             gradeKafkaProducer.sendReservationDoneEventForGrade(GradeForReservationEventDto.builder()
                     .reservationId(reservationId).customerId(reservation.getCustomerId())
                     .providerId(reservation.getServiceProviderId())
@@ -99,7 +114,7 @@ public class ReservationService {
 
         // 예약 상태 변경 알림
         notificationKafkaProducer.sendReservationToNotificationEvent(KafkaNotificationDto.builder()
-                .userId(reservation.getCustomerId()).message("예약이"+ status.getDescription() + "되었습니다.")
+                .userId(reservation.getCustomerId()).message("예약이" + status.getDescription() + "되었습니다.")
                 .type(NotificationType.RESERVATION.getName()).build()
         );
     }
@@ -107,7 +122,7 @@ public class ReservationService {
     @Transactional
     public void deleteReservation(UUID reservationId, AuthUserInfo userInfo) {
         Reservation reservation = reservationDomainService.getOne(reservationId);
-        if (!canHandleReservation(reservation, userInfo)){
+        if (!canHandleReservation(reservation, userInfo)) {
             throw new GlowGlowException(RESERVATION_NOT_OWNER);
         }
         reservationDomainService.deleteOne(reservation, userInfo.getEmail());
@@ -122,7 +137,8 @@ public class ReservationService {
     }
 
 
-    @Scheduled(cron = "0 0 17 * * ?") // 매일 오후 5시
+    //TODO : 구현 중
+//    @Scheduled(cron = "0 0 17 * * ?") // 매일 오후 5시
     public void notifyUsersForReviews() {
         List<Reservation> doneReservations = reservationDomainService.getReservationsByStatusIsDone();
 

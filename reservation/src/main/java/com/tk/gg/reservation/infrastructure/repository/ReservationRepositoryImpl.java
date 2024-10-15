@@ -3,10 +3,12 @@ package com.tk.gg.reservation.infrastructure.repository;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.tk.gg.common.enums.UserRole;
 import com.tk.gg.reservation.domain.model.QReservation;
 import com.tk.gg.reservation.domain.model.Reservation;
 import com.tk.gg.reservation.domain.repository.ReservationRepositoryCustom;
 import com.tk.gg.reservation.domain.type.ReservationStatus;
+import com.tk.gg.security.user.AuthUserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -25,14 +27,17 @@ public class ReservationRepositoryImpl implements ReservationRepositoryCustom {
     QReservation reservation = QReservation.reservation;
 
     @Override
-    public Page<Reservation> searchReservations(LocalDate startDate, LocalDate endDate, ReservationStatus status, Pageable pageable) {
+    public Page<Reservation> searchReservations(
+            LocalDate startDate, LocalDate endDate, ReservationStatus status, Pageable pageable, AuthUserInfo userInfo
+    ) {
         List<Reservation> reservationList = queryFactory
                 .selectFrom(reservation)
                 .where(
                         isDeletedByNullCondition(), // 삭제되지 않은 것만
                         startDateCondition(startDate),  // 시작 날짜 조건
                         endDateCondition(endDate),     // 종료 날짜 조건
-                        reservationStatusCondition(status) // 상태 조건 추가
+                        reservationStatusCondition(status), // 상태 조건 추가
+                        userRoleCondition(userInfo)        // 사용자 권한 조건 추가
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -46,7 +51,8 @@ public class ReservationRepositoryImpl implements ReservationRepositoryCustom {
                         isDeletedByNullCondition(),
                         startDateCondition(startDate),
                         endDateCondition(endDate),
-                        reservationStatusCondition(status)
+                        reservationStatusCondition(status),
+                        userRoleCondition(userInfo)
                 )
                 .fetchOne();
 
@@ -86,5 +92,17 @@ public class ReservationRepositoryImpl implements ReservationRepositoryCustom {
     //삭제 되지 않은 데이터
     private BooleanExpression isDeletedByNullCondition() {
         return reservation.deletedBy.isNull();
+    }
+
+    // 사용자 권한에 따른 조회 조건
+    private BooleanExpression userRoleCondition(AuthUserInfo userInfo) {
+        if (userInfo.getUserRole().equals(UserRole.MASTER)) {
+            return null; // MASTER는 모든 Reservation을 조회할 수 있음
+        } else if (userInfo.getUserRole().equals(UserRole.CUSTOMER)) {
+            return reservation.customerId.eq(userInfo.getId()); // CUSTOMER는 자신이 고객인 예약만 조회
+        } else if (userInfo.getUserRole().equals(UserRole.PROVIDER)) {
+            return reservation.serviceProviderId.eq(userInfo.getId()); // PROVIDER는 자신이 제공자인 예약만 조회
+        }
+        return null; // 기본적으로 조회 불가
     }
 }
