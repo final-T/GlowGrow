@@ -64,7 +64,7 @@ public class ReservationService {
         // 이미 예약된 슬롯은 예약 불가!
         if (timeSlot.getIsReserved()) throw new GlowGlowException(RESERVATION_ALREADY_EXIST);
         // 타임슬롯 시간정보와 일치하지 않으면 에러
-        if (!dto.reservationDate().equals(timeSlot.getAvailableDate()) &&
+        if (!dto.reservationDate().equals(timeSlot.getAvailableDate()) ||
                 !dto.reservationTime().equals(timeSlot.getAvailableTime())
         ) {
             throw new GlowGlowException(RESERVATION_CREATE_FAILED);
