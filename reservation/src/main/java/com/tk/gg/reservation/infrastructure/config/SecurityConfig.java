@@ -37,7 +37,7 @@ public class SecurityConfig {
         matcherChain.addAll( // Report
                 SecurityRequestMatcher.authenticatedOf(GET, "/api/reports/**"), // 조회
                 SecurityRequestMatcher.authenticatedOf(POST, "/api/reports"), // 생성
-                SecurityRequestMatcher.hasRoleOf(MASTER, DELETE, "/api/report/{reportId}") // 삭제
+                SecurityRequestMatcher.hasRoleOf(MASTER, DELETE, "/api/reports/{reportId}") // 삭제
         );
         matcherChain.add( // Grade
                 SecurityRequestMatcher.hasRoleOf(MASTER, "/api/grades/**") // FeignClient 조회
