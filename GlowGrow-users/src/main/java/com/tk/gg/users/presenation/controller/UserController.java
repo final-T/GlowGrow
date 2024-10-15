@@ -17,7 +17,7 @@ import static com.tk.gg.common.response.ResponseMessage.USER_UPDATE_SUCCESS;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 public class UserController {
     private final UserService userService;
     private final GradeService gradeService;
