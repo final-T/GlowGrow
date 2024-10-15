@@ -174,7 +174,8 @@ public class GradeDomainService {
 
     public UserGradeDto getMyGrade(AuthUserInfo authUserInfo) {
         UserGrade userGrade = userGradeRepository.findByUserUserId(authUserInfo.getId())
-                .orElseThrow(() -> new GlowGlowException(USER_GRADE_NO_EXIST));
+                // 사용자가 회원가입한 후 바로 등급 조회시 없기 때문에 없으면 새로운 등급을  생성
+                .orElse(createGrade(authUserInfo.getId()));
         return UserGradeDto.from(userGrade);
     }
 
@@ -182,5 +183,10 @@ public class GradeDomainService {
         Grade grade = gradeRepository.findByUserGradeType(userGradeType)
                 .orElseThrow(() -> new GlowGlowException(GRADE_NOT_NO_EXIST));
         return GradeDto.from(grade);
+    }
+
+    private UserGrade createGrade(Long userId){
+        User user = User.of(userDomainService.findById(userId));
+        return userGradeRepository.save(UserGrade.create(user));
     }
 }
