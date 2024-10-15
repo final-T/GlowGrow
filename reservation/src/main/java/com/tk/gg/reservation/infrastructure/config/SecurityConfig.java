@@ -23,9 +23,9 @@ public class SecurityConfig {
         );
         matcherChain.addAll( // Reservation
                 SecurityRequestMatcher.authenticatedOf(GET, "/api/reservations/**"), // 조회
-                SecurityRequestMatcher.hasAnyRolesOf(List.of(MASTER, PROVIDER), POST, "/api/reservations"), // 생성
-                SecurityRequestMatcher.hasAnyRolesOf(List.of(MASTER, PROVIDER), PUT, "/api/reservations/{reservationId}"), // 수정
-                SecurityRequestMatcher.hasAnyRolesOf(List.of(MASTER, PROVIDER), PATCH, "/api/reservations/{reservationId}/status"), // 수정
+                SecurityRequestMatcher.authenticatedOf(POST, "/api/reservations"), // 생성
+                SecurityRequestMatcher.authenticatedOf(PATCH, "/api/reservations/{reservationId}/status"), // 수정
+                SecurityRequestMatcher.authenticatedOf(PUT, "/api/reservations/{reservationId}"), // 수정
                 SecurityRequestMatcher.hasAnyRolesOf(List.of(MASTER, PROVIDER), DELETE, "/api/reservations/{reservationId}") // 삭제
         );
         matcherChain.addAll( // Review
@@ -37,10 +37,10 @@ public class SecurityConfig {
         matcherChain.addAll( // Report
                 SecurityRequestMatcher.authenticatedOf(GET, "/api/reports/**"), // 조회
                 SecurityRequestMatcher.authenticatedOf(POST, "/api/reports"), // 생성
-                SecurityRequestMatcher.hasRoleOf(MASTER, DELETE, "/api/reviews/{reviewId}") // 삭제
+                SecurityRequestMatcher.hasRoleOf(MASTER, DELETE, "/api/report/{reportId}") // 삭제
         );
         matcherChain.add( // Grade
-                SecurityRequestMatcher.hasRoleOf(MASTER, "/api/reports/**") // FeignClient 조회
+                SecurityRequestMatcher.hasRoleOf(MASTER, "/api/grades/**") // FeignClient 조회
         );
 
 
