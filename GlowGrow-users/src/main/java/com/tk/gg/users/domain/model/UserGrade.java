@@ -33,6 +33,14 @@ public class UserGrade extends BaseEntity {
 
     private Double score;
 
+    public static UserGrade create(User user) {
+        return UserGrade.builder()
+                .user(user)
+                .userGradeType(UserGradeType.SEED)
+                .isDeleted(false)
+                .build();
+    }
+
     public static UserGrade of(User user, UserGradeType userGradeType, Double score) {
         return UserGrade.builder()
                 .user(user)
