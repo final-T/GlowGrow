@@ -9,13 +9,12 @@ import lombok.*;
 import java.util.Objects;
 import java.util.UUID;
 
-//TODO : 엔티티 필드 이름 수정 필요
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @Builder
 @Entity
-@Table(name = "p_grades")
+@Table(name = "p_grade_evals")
 public class Grade extends BaseEntity {
 
     @Id
@@ -36,19 +35,19 @@ public class Grade extends BaseEntity {
     private UserRole userType; // PROVIDER 또는 CUSTOMER
 
     // 제공자 (디자이너) 평가 항목들
-    @Column(name = "service_quality")
+    @Column(name = "provider_service_quality")
     private Integer providerServiceQuality;  // 서비스 품질
 
-    @Column(name = "professionalism")
+    @Column(name = "provider_professionalism")
     private Integer providerProfessionalism;  // 전문성
 
-    @Column(name = "communication")
+    @Column(name = "provider_communication")
     private Integer providerCommunication;  // 의사소통
 
-    @Column(name = "punctuality")
+    @Column(name = "provider_punctuality")
     private Integer providerPunctuality;  // 시간 준수
 
-    @Column(name = "price_satisfaction")
+    @Column(name = "provider_price_satisfaction")
     private Integer providerPriceSatisfaction;  // 가격 적정성
 
     // 고객 평가 항목들
@@ -61,7 +60,7 @@ public class Grade extends BaseEntity {
     @Column(name = "customer_manners")
     private Integer customerManners;  // 고객 매너
 
-    @Column(name = "payment_promptness")
+    @Column(name = "customer_payment_promptness")
     private Integer customerPaymentPromptness;  // 결제 신속성
 
     @Override
