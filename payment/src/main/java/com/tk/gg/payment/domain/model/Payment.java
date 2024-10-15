@@ -57,6 +57,9 @@ public class Payment extends BaseEntity {
     @Column(nullable = false)
     private Boolean isDeleted = false;
 
+    @Column(name = "customer_email",nullable = false)
+    private String customerEmail;
+
     @Setter
     private boolean paySuccessYN;
 
@@ -106,5 +109,6 @@ public class Payment extends BaseEntity {
         this.couponId = requestDto.getCouponId();
         this.status = requestDto.getStatus();
         this.orderName = requestDto.getOrderName();
+        this.customerEmail = requestDto.getCustomerEmail();
     }
 }

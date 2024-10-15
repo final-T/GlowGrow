@@ -3,6 +3,7 @@ package com.tk.gg.payment.application.dto;
 import com.tk.gg.payment.domain.model.Payment;
 import com.tk.gg.payment.domain.type.PayType;
 import com.tk.gg.payment.domain.type.PaymentStatus;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -29,6 +30,10 @@ public class PaymentRequestDto {
 
     @NotNull(message = "예약 ID는 필수입니다.")
     private UUID reservationId;
+
+    @Email
+    @NotNull(message = "서비스 제공자의 이메일은 필수입니다.")
+    private String customerEmail;
 
     @Builder.Default
     private PaymentStatus status = PaymentStatus.REQUESTED;

@@ -10,11 +10,11 @@ public class SecurityConfig {
     @Bean
     public SecurityRequestMatcherChain securityRequestMatcherChain() {
         SecurityRequestMatcherChain matcherChain = new SecurityRequestMatcherChain();
-        matcherChain
-                .add(SecurityRequestMatcher.permitAllOf("/api/auth/**"))
-                //.add(SecurityRequestMatcher.permitAllOf("/api/payments"))
-        ;
-
+        matcherChain.addAll(
+                SecurityRequestMatcher.permitAllOf("/api/auth/**"),
+                SecurityRequestMatcher.permitAllOf("/api/payments/client-key"),
+                SecurityRequestMatcher.permitAllOf("/api/payments/prepare")
+        );
         return matcherChain;
     }
 }

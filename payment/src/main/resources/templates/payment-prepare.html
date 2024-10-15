@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="utf-8" />
-    <title>결제하기</title>
+    <title>결제 준비</title>
     <script src="https://js.tosspayments.com/v1/payment"></script>
     <style>
         body {
@@ -62,6 +62,10 @@
         <input type="text" id="token" placeholder="Bearer 토큰을 입력하세요" required />
     </div>
     <div class="form-group">
+        <label for="customerEmail">서비스 이용자 이메일:</label>
+        <input type="email" id="customerEmail" placeholder="이메일을 입력하세요" required />
+    </div>
+    <div class="form-group">
         <label for="payType">결제 타입:</label>
         <select id="payType" required>
             <option value="">선택하세요</option>
@@ -91,6 +95,23 @@
 
 <script>
     var button = document.getElementById('payment-button');
+
+    // 페이지 로드 시 서버에서 clientKey를 가져오는 함수
+    function getClientKey() {
+        return fetch('/api/payments/client-key', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch client key');
+                }
+                return response.text();
+            });
+    }
+
     button.addEventListener('click', function () {
         var token = document.getElementById('token').value;
         var payType = document.getElementById('payType').value;
@@ -98,10 +119,19 @@
         var orderName = document.getElementById('orderName').value;
         var reservationId = document.getElementById('reservationId').value;
         var couponId = document.getElementById('couponId').value || null;
+        var customerEmail = document.getElementById('customerEmail').value;
+
+        // 이메일 형식 검사를 위한 정규표현식
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         // 입력 유효성 검사
-        if (!token || !payType || isNaN(amount) || amount <= 0 || !orderName || !reservationId) {
+        if (!token || !payType || isNaN(amount) || amount <= 0 || !orderName || !reservationId || !customerEmail) {
             alert('모든 필수 필드를 올바르게 입력해주세요.');
+            return;
+        }
+
+        if (!emailRegex.test(customerEmail)) {
+            alert('유효한 이메일 주소를 입력해주세요.');
             return;
         }
 
@@ -117,7 +147,8 @@
                 amount: amount,
                 orderName: orderName,
                 reservationId: reservationId,
-                couponId: couponId
+                couponId: couponId,
+                customerEmail: customerEmail
             })
         })
             .then(response => {
@@ -126,40 +157,58 @@
                         throw new Error(text || '서버 응답이 올바르지 않습니다.');
                     });
                 }
-                return response.json();
+                return response.json();  // JSON 응답을 반환
             })
             .then(data => {
-                var clientKey = 'test_ck_6bJXmgo28eE5Y2gdPLJj8LAnGKWx';
-                var tossPayments = TossPayments(clientKey);
+                console.log('결제 요청 응답 데이터:', data);  // 응답 데이터를 로그로 출력
 
-                var paymentAmount = parseInt(data.amount, 10);
-                if (isNaN(paymentAmount) || paymentAmount <= 0) {
-                    throw new Error('올바르지 않은 결제 금액입니다.');
-                }
+                return getClientKey()  // 서버에서 clientKey를 가져옴
+                    .then(clientKey => {
+                        var tossPayments = TossPayments(clientKey);
 
+                        var paymentAmount = parseInt(data.amount, 10); // data.amount로 결제 금액을 설정
+                        if (isNaN(paymentAmount) || paymentAmount <= 0) {
+                            throw new Error('올바르지 않은 결제 금액입니다.');
+                        }
 
+                        // window.location.hostname을 사용하여 동적으로 URL 설정
+                        var hostname = window.location.hostname;
+                        var successUrl, failUrl;
 
-                tossPayments.requestPayment(data.payType, {
-                    amount: paymentAmount,
-                    orderId: data.paymentId,
-                    orderName: orderName,
-                    successUrl: "http://localhost:19096/api/payments/toss/success",
-                    failUrl: "http://localhost:19096/api/payments/toss/fail",
-                }).catch(function (error) {
-                    if (error.code === "USER_CANCEL") {
-                        // 결제 고객이 결제창을 닫았을 때 에러 처리
-                        console.log("사용자가 결제를 취소했습니다.");
-                        fetch("http://localhost:19096/api/payments/toss/fail-cancel?code=" + error.code + "&message=" + error.message, {
-                            method: 'GET',
-                            headers: {
-                                'Authorization': token.startsWith('Bearer ') ? token : 'Bearer ' + token
+                        if (hostname === 'localhost') {
+                            // 로컬 개발 환경 URL
+                            successUrl = "http://localhost:19096/api/payments/toss/success";
+                            failUrl = "http://localhost:19096/api/payments/toss/fail";
+                        } else {
+                            // prod 환경 URL
+                            successUrl = "http://13.209.24.74:19091/api/payments/toss/success";
+                            failUrl = "http://13.209.24.74:19091/api/payments/toss/fail";
+                        }
+
+                        // 결제 요청
+                        tossPayments.requestPayment(data.payType, {
+                            amount: paymentAmount,
+                            orderId: data.paymentId,  // reservationId 사용
+                            orderName: orderName,
+                            successUrl: successUrl,
+                            failUrl: failUrl,
+                        }).catch(function (error) {
+                            if (error.code === "USER_CANCEL") {
+                                // 결제 고객이 결제창을 닫았을 때 에러 처리
+                                console.log("사용자가 결제를 취소했습니다.");
+                                fetch(failUrl +"-cancel?code=" + error.code + "&message=" + error.message, {
+                                    method: 'GET',
+                                    headers: {
+                                        'Authorization': token.startsWith('Bearer ') ? token : 'Bearer ' + token
+                                    }
+                                });
                             }
                         });
-                    }
-                });
-
+                    });
             })
-
+            .catch(error => {
+                console.error('결제 요청 중 오류:', error);
+            });
     });
 </script>
 </body>
