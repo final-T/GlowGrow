@@ -26,10 +26,8 @@ public class CouponController {
      */
     @PostMapping
     public GlobalResponse<CouponResponseDto> createCoupon(@RequestBody CouponCreateRequestDto requestDto) {
-        // TODO : 권한 체크 (관리자, 서비스 제공자만 가능)
         CouponResponseDto coupon = couponApplicationService.createCoupon(requestDto);
-        //return ApiUtils.success(ResponseMessage.COUPON_CREATE_SUCCESS.getMessage(), coupon);
-        return ApiUtils.success("쿠폰 생성 성공", coupon);
+        return ApiUtils.success(ResponseMessage.COUPON_CREATE_SUCCESS.getMessage(), coupon);
     }
 
     /**
@@ -40,7 +38,6 @@ public class CouponController {
      */
     @PostMapping("/{couponId}/issue")
     public GlobalResponse<CouponIssueResponseDto> issueCoupon(@PathVariable UUID couponId, @RequestBody CouponIssueRequestDto requestDto) {
-        // TODO : 권한 체크 (발급 대상자 유효성 검사 - 쿠폰 발급 대상자가 맞는지 확인)
         CouponIssueResponseDto couponIssueResponseDto = couponApplicationService.issueCoupon(requestDto);
         return ApiUtils.success(ResponseMessage.COUPON_USER_CREATE_SUCCESS.getMessage(), couponIssueResponseDto);
     }

@@ -69,7 +69,6 @@ public class CouponDomainService {
         return coupon;
     }
 
-    @Transactional
     public CouponIssueResponseDto issueCoupoon(CouponIssueRequestDto requestDto) {
         String stockKey = COUPON_STOCK_KEY_PREFIX + requestDto.getCouponId().toString();
         String issuedSetKey = COUPON_ISSUED_SET_KEY_PREFIX + requestDto.getCouponId().toString();
@@ -99,7 +98,7 @@ public class CouponDomainService {
             throw new GlowGlowException(GlowGlowError.COUPON_ALREADY_ISSUED);
         }
 
-        // TODO: 카프카를 이용하여 비동기적으로 쿠폰 사용자에게 쿠폰 발급 이벤트 전달
+        // 카프카를 이용하여 비동기적으로 쿠폰 사용자에게 쿠폰 발급 이벤트 전달
 
         log.info("사용자 쿠폰 발급 이벤트 전송 : {}", requestDto);
         CouponIssueEvent couponIssueEvent = new CouponIssueEvent(requestDto.getCouponId(), requestDto.getUserId());
