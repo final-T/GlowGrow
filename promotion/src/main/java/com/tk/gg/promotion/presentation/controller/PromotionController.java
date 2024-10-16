@@ -7,6 +7,8 @@ import com.tk.gg.promotion.application.serivce.PromotionApplicationService;
 import com.tk.gg.promotion.application.dto.PromotionRequestDto;
 import com.tk.gg.promotion.application.dto.PromotionResponseDto;
 import com.tk.gg.promotion.application.dto.PromotionSearch;
+import com.tk.gg.security.user.AuthUser;
+import com.tk.gg.security.user.AuthUserInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -34,8 +36,12 @@ public class PromotionController {
      * @return: 프로모션 생성 응답 DTO
      */
     @PostMapping
-    public GlobalResponse<PromotionResponseDto> createPromotion(@RequestBody PromotionRequestDto requestDto) {
-        PromotionResponseDto promotion = promotionApplicationService.createPromotion(requestDto);
+    public GlobalResponse<PromotionResponseDto> createPromotion(
+            @RequestBody PromotionRequestDto requestDto,
+            @AuthUser AuthUserInfo userInfo
+            ) {
+        // 권한 체크
+        PromotionResponseDto promotion = promotionApplicationService.createPromotion(requestDto, userInfo);
         return ApiUtils.success(ResponseMessage.PROMOTION_CREATE_SUCCESS.getMessage(), promotion);
     }
 
@@ -63,9 +69,12 @@ public class PromotionController {
      * @return: 프로모션 수정 응답 DTO
      */
     @PutMapping("/{promotionId}")
-    public GlobalResponse<PromotionResponseDto> updatePromotion(@PathVariable("promotionId") UUID promotionId,
-                                                                @RequestBody PromotionRequestDto requestDto) {
-        PromotionResponseDto promotion = promotionApplicationService.updatePromotion(promotionId, requestDto);
+    public GlobalResponse<PromotionResponseDto> updatePromotion(
+            @PathVariable("promotionId") UUID promotionId,
+            @RequestBody PromotionRequestDto requestDto,
+            @AuthUser AuthUserInfo userInfo
+    ) {
+        PromotionResponseDto promotion = promotionApplicationService.updatePromotion(promotionId, requestDto, userInfo);
         return ApiUtils.success(ResponseMessage.PROMOTION_UPDATE_SUCCESS.getMessage(), promotion);
     }
 
@@ -75,8 +84,11 @@ public class PromotionController {
      * @return: 프로모션 삭제 응답 DTO
      */
     @DeleteMapping("/{promotionId}")
-    public GlobalResponse<UUID> deletePromotion(@PathVariable("promotionId") UUID promotionId) {
-        promotionApplicationService.deletePromotion(promotionId);
+    public GlobalResponse<UUID> deletePromotion(
+            @PathVariable("promotionId") UUID promotionId,
+            @AuthUser AuthUserInfo userInfo
+    ) {
+        promotionApplicationService.deletePromotion(promotionId, userInfo);
         return ApiUtils.success(ResponseMessage.PROMOTION_DELETE_SUCCESS.getMessage(), promotionId);
     }
 
