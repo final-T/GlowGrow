@@ -1,18 +1,35 @@
 <configuration>
-    <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
-        <http>
-            <url>http://13.124.27.13:3100/loki/api/v1/push</url>
-        </http>
-        <format>
-            <label>
-                <pattern>app=glowgrow,service=gateway,level=%level</pattern>
-            </label>
-            <message>
-                <pattern>t=%d{yyyy-MM-dd HH:mm:ss.SSS} l=%level c=%logger{20} t=%thread | %msg %ex</pattern>
-            </message>
-        </format>
-    </appender>
-    <root level="DEBUG">
-        <appender-ref ref="LOKI" />
-    </root>
+    <!-- 프로필이 prod일 때 로키로 로그 전송 -->
+    <springProfile name="prod">
+        <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
+            <http>
+                <url>http://13.124.27.13:3100/loki/api/v1/push</url>
+            </http>
+            <format>
+                <label>
+                    <pattern>app=glowgrow,service=gateway-service,level=%level</pattern>
+                </label>
+                <message>
+                    <pattern>t=%d{yyyy-MM-dd HH:mm:ss.SSS} l=%level c=%logger{20} t=%thread | %msg %ex</pattern>
+                </message>
+            </format>
+        </appender>
+
+        <root level="DEBUG">
+            <appender-ref ref="LOKI" />
+        </root>
+    </springProfile>
+
+    <!-- 로컬 개발 환경에서 로그를 콘솔에 출력 -->
+    <springProfile name="local">
+        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            </encoder>
+        </appender>
+
+        <root level="INFO">
+            <appender-ref ref="CONSOLE" />
+        </root>
+    </springProfile>
 </configuration>
