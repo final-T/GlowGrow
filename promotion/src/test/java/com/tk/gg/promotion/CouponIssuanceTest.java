@@ -56,7 +56,7 @@ class CouponIssuanceTest {
                 .startDate(LocalDate.now())
                 .endDate(LocalDate.now().plusDays(10))
                 .status(PromotionStatus.ACTIVE)
-                .build());
+                .build(), null);
 
         promotionId = promotion.getPromotionId();
         System.out.println("프로모션 ID: " + promotionId);

@@ -3,6 +3,8 @@ jar.enabled = true
 dependencies {
     implementation project(':GlowGrow-common')
     implementation project(':GlowGrow-redis')
+    implementation project(':GlowGrow-security')
+
     implementation 'org.springframework.boot:spring-boot-starter-data-redis:3.3.4'
     // For set objectMapper in redisFactory
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.18.0'
