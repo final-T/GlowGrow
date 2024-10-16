@@ -27,6 +27,7 @@ public class PreferPrice extends BaseEntity {
 
     @Setter
     @Column(name = "is_deleted", nullable = false)
+    @Builder.Default
     private Boolean isDeleted = false;
 
     public static PreferPrice create(Profile profile, Long price) {

@@ -36,6 +36,7 @@ public class Award extends BaseEntity {
 
     @Setter
     @Column(name = "is_deleted", nullable = false)
+    @Builder.Default
     private Boolean isDeleted = false;
 
     public static Award create(Profile profile, String awardName, String awardLevel, String awardDate, String organization) {

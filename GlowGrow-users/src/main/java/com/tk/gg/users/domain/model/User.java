@@ -51,6 +51,7 @@ public class User extends BaseEntity {
 
     @Setter
     @Column(name = "is_deleted", nullable = false)
+    @Builder.Default
     private Boolean isDeleted = false;
 
     public static User of(UserDto dto){

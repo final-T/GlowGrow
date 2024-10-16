@@ -18,7 +18,7 @@ import java.util.*;
 public class Profile extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "user_id", nullable = false, updatable = false)
+    @Column(name = "profile_id", nullable = false, updatable = false)
     private UUID profileId;
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -38,20 +38,26 @@ public class Profile extends BaseEntity {
 
     @Setter
     @Column(name = "is_deleted", nullable = false)
+    @Builder.Default
     private Boolean isDeleted = false;
 
+    @Builder.Default
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PreferLocation> preferLocations = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PreferPrice> preferPrices = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PreferStyle> preferStyles = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Award> awards = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<WorkExperience> workExperiences = new ArrayList<>();
 

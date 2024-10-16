@@ -27,6 +27,7 @@ public class PreferLocation extends BaseEntity {
 
     @Setter
     @Column(name = "is_deleted", nullable = false)
+    @Builder.Default
     private Boolean isDeleted = false;
 
     public static PreferLocation create(Profile profile, String locationName) {
