@@ -14,6 +14,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import static com.tk.gg.common.response.exception.GlowGlowError.AUTH_ALREADY_SING_UP;
+import static com.tk.gg.common.response.exception.GlowGlowError.USER_NO_EXIST;
+
 @Service
 @RequiredArgsConstructor
 public class UserDomainService {
@@ -24,12 +27,14 @@ public class UserDomainService {
 
     @Transactional
     public void saveUser(UserDto dto) {
+        if(userRepository.findByEmail(dto.email()).isPresent())
+            throw new GlowGlowException(AUTH_ALREADY_SING_UP);
         userRepository.save(dto.toEntity(userInfoEncoder.hashed(dto.password())));
     }
 
     @Transactional
     public TokenInfoResponse login(UserDto dto) {
-        User user = userRepository.findByEmail(dto.email());
+        User user = userRepository.findByEmail(dto.email()).orElseThrow(() -> new GlowGlowException(USER_NO_EXIST));
 
        if(!userInfoEncoder.matches(dto.password(), user.getPassword())){
            throw new GlowGlowException(GlowGlowError.AUTH_INVALID_CREDENTIALS);
