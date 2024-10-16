@@ -1,0 +1,1 @@
+db = db.getSiblingDB('chat');  // 'chat' 데이터베이스로 전환
