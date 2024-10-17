@@ -10,6 +10,7 @@ import com.tk.gg.security.user.AuthUserInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,7 +30,6 @@ public class PaymentDomainService {
                 .build();
 
     }
-
 
     public void verifyPaymentAmount(Payment payment, Long amount) {
         if(!payment.getAmount().equals(amount)) {
@@ -57,9 +57,20 @@ public class PaymentDomainService {
     }
 
     public List<Payment> findPaymentsByProviderIdAndDateRange(Long providerId, LocalDateTime startDate, LocalDateTime endDate) {
-        return paymentRepository.findByUserIdAndPaidAtBetweenAndStatus(providerId, startDate, endDate, PaymentStatus.COMPLETED);
+        List<Payment> payments = paymentRepository.findSettleablePayments(providerId, startDate, endDate, PaymentStatus.COMPLETED);
+        log.info("Found {} settleable payments for providerId: {}, startDate: {}, endDate: {}",
+                payments.size(), providerId, startDate, endDate);
+        return payments;
     }
 
 
+    public List<Long> getAllProviderIds() {
+        return paymentRepository.findDistinctUserIdsByStatusCompleted();
+    }
 
+    @Transactional
+    public void markPaymentsAsSettled(List<Payment> payments) {
+        payments.forEach(Payment::markAsSettled);
+        paymentRepository.saveAll(payments);
+    }
 }

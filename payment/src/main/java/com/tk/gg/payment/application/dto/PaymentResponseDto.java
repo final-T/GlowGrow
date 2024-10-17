@@ -36,4 +36,28 @@ public class PaymentResponseDto {
                 .failUrl(failUrl)
                 .build();
     }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Detail {
+        private UUID paymentId;
+        private String payType;
+        private Long amount;
+        private String orderName;
+        private String customerEmail;
+        private String createdAt;
+
+        public static Detail from(Payment payment) {
+            return Detail.builder()
+                    .paymentId(payment.getPaymentId())
+                    .payType(payment.getPayType().toString())
+                    .amount(payment.getAmount())
+                    .orderName(payment.getOrderName())
+                    .customerEmail(payment.getCustomerEmail())
+                    .createdAt(String.valueOf(payment.getPaidAt()))
+                    .build();
+        }
+    }
 }

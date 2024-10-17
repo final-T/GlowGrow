@@ -37,30 +37,12 @@ public class SettlementRepositoryImpl implements SettlementRepositoryCustom {
                 .from(settlement)
                 .where(
                         providerIdEq(condition.getProviderId()),
-                        settlementTimeBetween(condition.getStartDate(), condition.getEndDate()),
-                        statusEq(condition.getStatus()),
+                        settlementTimeEq(condition.getSettlementTime()),   // settlementTime으로 검색
                         settlement.isDeleted.isFalse()
                 );
 
-        // 정렬 적용
-        if (pageable.getSort().isSorted()) {
-            for (Sort.Order order : pageable.getSort()) {
-                switch (order.getProperty()) {
-                    case "settlementTime":
-                        query.orderBy(order.isAscending() ? settlement.settlementTime.asc() : settlement.settlementTime.desc());
-                        break;
-                    case "totalAmount":
-                        query.orderBy(order.isAscending() ? settlement.totalAmount.asc() : settlement.totalAmount.desc());
-                        break;
-                    // 필요한 다른 정렬 조건들을 여기에 추가
-                }
-            }
-        }
-
-        // 전체 카운트 조회
+        // 정렬 및 페이징
         long total = query.fetchCount();
-
-        // 페이징 적용 및 결과 조회
         List<SettlementDto.Response> settlements = query
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -73,18 +55,7 @@ public class SettlementRepositoryImpl implements SettlementRepositoryCustom {
         return providerId != null ? QSettlement.settlement.providerId.eq(providerId) : null;
     }
 
-    private BooleanExpression settlementTimeBetween(LocalDateTime startDate, LocalDateTime endDate) {
-        if (startDate != null && endDate != null) {
-            return QSettlement.settlement.settlementTime.between(startDate, endDate);
-        } else if (startDate != null) {
-            return QSettlement.settlement.settlementTime.goe(startDate);
-        } else if (endDate != null) {
-            return QSettlement.settlement.settlementTime.loe(endDate);
-        }
-        return null;
-    }
-
-    private BooleanExpression statusEq(SettlementStatus status) {
-        return status != null ? QSettlement.settlement.status.eq(status) : null;
+    private BooleanExpression settlementTimeEq(Long settlementTime) {
+        return settlementTime != null ? QSettlement.settlement.settlementTime.eq(settlementTime) : null;
     }
 }
