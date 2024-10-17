@@ -66,6 +66,7 @@ public enum GlowGlowError {
     // 예약 및 리뷰 관련 에러
     TIMESLOT_ALREADY_EXIST(404, "TIMESLOT_001","예약타임슬롯 생성에 실패했습니다."),
     TIMESLOT_NO_EXIST(404, "TIMESLOT_002","존재하지 않는 예약타임슬롯 정보 입니다."),
+    TIMESLOT_NOT_OWNER(404, "TIMESLOT_003","해당 예약타임슬롯에 대한 권한이 없습니다."),
     RESERVATION_CREATE_FAILED(404, "RESERVATION_001", "예약 생성에 실패했습니다."),
     RESERVATION_NO_EXIST(404, "RESERVATION_002","존재하지 않는 예약 정보입니다."),
     RESERVATION_UPDATE_FAILED(400, "RESERVATION_003", "예약 내용 수정에 실패했습니다."),
@@ -73,6 +74,7 @@ public enum GlowGlowError {
     RESERVATION_NOT_OWNER(400, "RESERVATION_005", "해당 예약에 대한 권한이 없습니다."),
     RESERVATION_FORBIDDEN_STATUS(400, "RESERVATION_006", "사용자가 수정할 수 있는 예약 상태가 아닙니다."),
     RESERVATION_ALREADY_EXIST(400, "RESERVATION_007", "이미 해당 시간에 예약이 있습니다."),
+    RESERVATION_NOT_DONE_FOR_PAYMENT(404, "REVIEW_008", "서비스 완료된 예약만 결제 요청을 할 수 있습니다."),
     REVIEW_CREATE_FAILED(404, "REVIEW_001", "예약에 대한 리뷰 생성에 실패했습니다."),
     REVIEW_NO_EXIST(404, "REVIEW_002", "존재하지 않는 리뷰입니다."),
     REVIEW_WRONG_REVIEWER_ID(404, "REVIEW_003","요청 리뷰어와 현재 사용자가 일치하지 않습니다."),
