@@ -17,6 +17,6 @@ public class PaymentKafkaProducer {
     public void sendReservationToPaymentEvent(PaymentForReservationEventDto event) {
         log.info("완료된 예약에 대해 결제 요청 이벤트 발행: {}", event);
         kafkaTemplate.send("reservation-payment", event);
-        log.info("신고에 대한 알림 이벤트 발행 완료");
+        log.info("결제 요청 이벤트 발행 완료");
     }
 }
