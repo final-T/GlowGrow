@@ -1,6 +1,6 @@
 package com.tk.gg.reservation.application.service;
 
-import com.tk.gg.common.response.exception.GlowGlowError;
+import com.tk.gg.common.enums.UserRole;
 import com.tk.gg.common.response.exception.GlowGlowException;
 import com.tk.gg.reservation.application.client.UserService;
 import com.tk.gg.reservation.application.dto.CreateTimeSlotRequestDto;
@@ -18,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import static com.tk.gg.common.response.exception.GlowGlowError.*;
+
 @RequiredArgsConstructor
 @Service
 public class TimeSlotService {
@@ -25,10 +27,12 @@ public class TimeSlotService {
     private final UserService userService;
     private final TimeSlotDomainService timeSlotDomainService;
 
-    // TODO : 제공자만 만들 수 있게 검증 코드 추가
     @Transactional
     public TimeSlotDto createTimeSlot(CreateTimeSlotRequestDto dto, AuthUserInfo userInfo) {
-        checkTimeSlotOwner(userInfo, dto.serviceProviderId());
+        if (!userService.isUserExistsByEmail(userInfo.getEmail()) ||
+                !userInfo.getId().equals(dto.serviceProviderId())) {
+            throw new GlowGlowException(AUTH_INVALID_CREDENTIALS);
+        }
         return TimeSlotDto.from(timeSlotDomainService.create(dto.toEntity()));
     }
 
@@ -45,22 +49,22 @@ public class TimeSlotService {
 
     @Transactional
     public void updateTimeSlot(UUID timeSlotId, UpdateTimeSlotRequestDto dto, AuthUserInfo userInfo) {
-        checkTimeSlotOwner(userInfo, dto.serviceProviderId());
         TimeSlot timeSlot = timeSlotDomainService.getOne(timeSlotId);
+        checkTimeSlotOwner(userInfo, timeSlot);
         timeSlotDomainService.updateOne(timeSlot, dto);
     }
 
     @Transactional
     public void deleteTimeSlot(UUID timeSlotId, AuthUserInfo userInfo) {
         TimeSlot timeSlot = timeSlotDomainService.getOne(timeSlotId);
-        checkTimeSlotOwner(userInfo, timeSlot.getServiceProviderId());
+        checkTimeSlotOwner(userInfo, timeSlot);
         timeSlotDomainService.deleteOne(timeSlot, userInfo.getEmail());
     }
 
-    private void checkTimeSlotOwner(AuthUserInfo userInfo, Long serviceProviderId) {
-        if (!userService.isUserExistsByEmail(userInfo.getEmail()) ||
-                !userInfo.getId().equals(serviceProviderId)) {
-            throw new GlowGlowException(GlowGlowError.AUTH_INVALID_CREDENTIALS);
+    private void checkTimeSlotOwner(AuthUserInfo userInfo, TimeSlot timeSlot) {
+        if(!userInfo.getUserRole().equals(UserRole.MASTER)){
+            if(!timeSlot.getServiceProviderId().equals(userInfo.getId()))
+                throw new GlowGlowException(TIMESLOT_NOT_OWNER);    
         }
     }
 }
