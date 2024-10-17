@@ -27,6 +27,7 @@ public class PreferStyle extends BaseEntity {
 
     @Setter
     @Column(name = "is_deleted", nullable = false)
+    @Builder.Default
     private Boolean isDeleted = false;
 
     public static PreferStyle create(Profile profile, String styleName) {

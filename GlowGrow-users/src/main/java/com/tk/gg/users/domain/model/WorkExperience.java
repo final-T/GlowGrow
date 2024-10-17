@@ -33,6 +33,7 @@ public class WorkExperience extends BaseEntity {
 
     @Setter
     @Column(name = "is_deleted", nullable = false)
+    @Builder.Default
     private Boolean isDeleted = false;
 
     public static WorkExperience create(Profile profile, String companyName, String position, Integer experience) {

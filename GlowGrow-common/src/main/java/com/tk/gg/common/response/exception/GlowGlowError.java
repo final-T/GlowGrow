@@ -15,6 +15,7 @@ public enum GlowGlowError {
     AUTH_INVALID_CREDENTIALS(404, "AUTH_001", "유효하지 않은 자격 증명입니다."),
     AUTH_UNAUTHORIZED(404, "AUTH_002", "인증되지 않은 사용자입니다."),
     AUTH_TOKEN_EXPIRED(404, "AUTH_003", "토큰이 만료되었습니다."),
+    AUTH_ALREADY_SING_UP(409, "AUTH_004", "이미 회원가입이 되어있는 email 입니다."),
 
 
     // Post (게시판 관련 에러)
