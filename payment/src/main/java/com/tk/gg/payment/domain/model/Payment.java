@@ -71,6 +71,13 @@ public class Payment extends BaseEntity {
     @Setter
     private String failReason;
 
+    @Column(name = "is_settled", nullable = false)
+    private Boolean isSettled = false; // 정산 여부
+
+    public void markAsSettled() {
+        this.isSettled = true;
+    }
+
 
     @OneToOne(mappedBy = "payment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Refund refund;
