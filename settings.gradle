@@ -1,6 +1,19 @@
 rootProject.name = 'env'
+// 공통 모듈
 include 'GlowGrow-common'
 include 'GlowGrow-security'
 include 'GlowGrow-redis'
 include 'GlowGrow-kafka'
 include 'GlowGrow-users'
+
+// 서비스 모듈
+include 'eureka'
+include 'gateway'
+include 'reservation'
+include 'auth'
+include 'promotion'
+include 'post'
+include 'payment'
+include 'notification'
+include 'chat'
+

@@ -1,0 +1,46 @@
+jar.enabled = true
+
+dependencies {
+    implementation project(':GlowGrow-common')
+    implementation project(':GlowGrow-security')
+
+    implementation project(':GlowGrow-kafka')
+    implementation 'org.springframework.kafka:spring-kafka'
+
+    // lombok - 코드 간소화 (각 서비스 모듈에서도 추가 필요)
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // querydsl (각 서비스 모듈에서도 추가 필요)
+    annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+
+    // zipkin, micrometer
+    implementation 'io.micrometer:micrometer-tracing-bridge-brave'
+    implementation 'io.github.openfeign:feign-micrometer'
+    implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
+
+    // postgresql
+    runtimeOnly 'org.postgresql:postgresql'
+
+    // spring cloud
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+    implementation 'io.github.openfeign:feign-hc5'
+
+    // Resilience4j
+    implementation 'io.github.resilience4j:resilience4j-spring-boot3:2.2.0'
+    implementation 'io.github.resilience4j:resilience4j-retry'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

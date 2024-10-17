@@ -1,0 +1,16 @@
+spring:
+  profiles:
+    default: local
+  application:
+    name: payment-service
+
+payment:
+  toss:
+    client-key : ${TOSS_CLIENT_KEY}
+    secret-key: ${TOSS_SECRET_KEY}
+    success_url : ${TOSS_SUCCESS_URL}
+    fail_url : ${TOSS_FAIL_URL}
+
+app:
+  s3:
+    enabled: false

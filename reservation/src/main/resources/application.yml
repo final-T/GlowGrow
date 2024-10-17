@@ -1,0 +1,9 @@
+spring:
+  profiles:
+    default: local
+  application:
+    name: reservation-service
+
+app:
+  s3:
+    enabled: false

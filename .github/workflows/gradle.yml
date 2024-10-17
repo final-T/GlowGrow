@@ -1,0 +1,105 @@
+name: CD with Gradle
+
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+  DOCKER_HUB_NAMESPACE: junghojune
+# 실제 실행될 내용들을 정의합니다.
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    # 3개의 서비스를 모두 빌드할 수 있도록 변수로 지정합니다.
+    # https://docs.github.com/ko/actions/writing-workflows/choosing-what-your-workflow-does/running-variations-of-jobs-in-a-workflow
+    strategy:
+      matrix:
+        service: [eureka, auth, gateway, GlowGrow-users, notification, payment, post, promotion, reservation]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build with Gradle
+        run: ./gradlew :${{matrix.service}}:clean :${{matrix.service}}:build -x test --no-daemon
+
+  Docker:
+    name: Build docker image and Push to registry
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: web docker build and push
+        run: |
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+      # docker compose 를 이용해서 여러 이미지를 모두 빌드하고, 별도의 script를 사용해서 이미지를 push 합니다.
+
+      - name: Give execution permission
+        run: chmod +x ./dockerTagAndPush.sh
+
+      - name: Build, Tag and Push docker image to Hub
+        run: |
+          docker compose build
+          ./dockerTagAndPush.sh
+        env:
+          DOCKER_HUB_NAMESPACE: ${{ secrets.DOCKER_HUB_NAMESPACE }}
+
+  Deploy:
+    name: Deploy
+    needs: Docker
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # docker compose로 container를 실행하기 위해 docker-compose.yml 을 EC2로 복사합니다.
+      - name: Copy Docker compose file to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_KEY }}
+          source: "docker-compose.yml"
+          target: "/home/ubuntu" # target 은 디렉토리임. target directory 아래에 같은 이름의 파일로 옮겨진다.
+
+      # ssh를 통해 EC2에 접속하고 docker container를 재시작합니다.
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          DOCKER_HUB_NAMESPACE: ${{ secrets.DOCKER_HUB_NAMESPACE }}
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_KEY }}
+          port: 22
+          envs: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, DOCKER_HUB_NAMESPACE
+          script: |
+            sudo docker-compose down
+  
+            # 이미지 업데이트
+            sudo docker-compose pull
+  
+            # 컨테이너 실행
+            SPRING_PROFILES_ACTIVE=prod sudo docker-compose --env-file /home/ubuntu/.env up -d
+

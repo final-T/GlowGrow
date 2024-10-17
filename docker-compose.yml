@@ -1,0 +1,163 @@
+services:
+  eureka:
+    image: ${DOCKER_HUB_NAMESPACE}/glowgrow-eureka
+    container_name: eureka
+    ports:
+      - "19090:19090"
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: ./eureka/Dockerfile
+      args:
+        - FILE_DIRECTORY=.
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+
+  gateway:
+    image: ${DOCKER_HUB_NAMESPACE}/glowgrow-gateway
+    container_name: gateway
+    ports:
+      - "19091:19091"
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: ./gateway/Dockerfile
+      args:
+        - FILE_DIRECTORY=.
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+    depends_on:
+      - eureka
+
+  user:
+    image: ${DOCKER_HUB_NAMESPACE}/glowgrow-user
+    container_name: user
+    ports:
+      - "19093:19093"
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: ./GlowGrow-users/Dockerfile
+      args:
+        - FILE_DIRECTORY=.
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+    depends_on:
+      - eureka
+
+  auth:
+    image: ${DOCKER_HUB_NAMESPACE}/glowgrow-auth
+    container_name: auth
+    ports:
+      - "19099:19099"
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: ./auth/Dockerfile
+      args:
+        - FILE_DIRECTORY=.
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+    depends_on:
+      - eureka
+
+  notification:
+    image: ${DOCKER_HUB_NAMESPACE}/glowgrow-notification
+    container_name: notification
+    ports:
+      - "19094:19094"
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: ./notification/Dockerfile
+      args:
+        - FILE_DIRECTORY=.
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+    depends_on:
+      - eureka
+
+  post:
+    image: ${DOCKER_HUB_NAMESPACE}/glowgrow-post
+    container_name: post
+    ports:
+      - "19095:19095"
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: ./post/Dockerfile
+      args:
+        - FILE_DIRECTORY=.
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+    depends_on:
+      - eureka
+
+  promotion:
+    image: ${DOCKER_HUB_NAMESPACE}/glowgrow-promotion
+    container_name: promotion
+    ports:
+      - "19098:19098"
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: ./promotion/Dockerfile
+      args:
+        - FILE_DIRECTORY=.
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+    depends_on:
+      - eureka
+
+  reservation:
+    image: ${DOCKER_HUB_NAMESPACE}/glowgrow-reservation
+    container_name: reservation
+    ports:
+      - "19092:19092"
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: ./reservation/Dockerfile
+      args:
+        - FILE_DIRECTORY=.
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+    depends_on:
+      - eureka
+
+  payment:
+    image: ${DOCKER_HUB_NAMESPACE}/glowgrow-payment
+    container_name: payment
+    ports:
+      - "19096:19096"
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: ./payment/Dockerfile
+      args:
+        - FILE_DIRECTORY=.
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+    depends_on:
+      - eureka
+  #  chat:
+  #    build:
+  #      context: .
+  #      dockerfile: ./chat/Dockerfile
+  #      args:
+  #        - FILE_DIRECTORY=.
+  #    image: ${DOCKER_HUB_NAMESPACE}/chat-service
+networks:
+  default:
+    name: GlowGrow-network
+    external: true
+

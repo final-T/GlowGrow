@@ -1,5 +1,63 @@
-jar.enabled = true
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.4'
+    id 'io.spring.dependency-management' version '1.1.6'
+}
 
-dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+group = 'com.tk.gg'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+tasks.getByName("bootJar") {
+    enabled = false
+}
+
+tasks.getByName("jar") {
+    enabled = true
+}
+
+dependencies
+        {
+            // Lombok - 코드 간소화
+            api 'org.projectlombok:lombok'
+            compileOnly 'org.projectlombok:lombok'
+            annotationProcessor 'org.projectlombok:lombok'
+
+            runtimeOnly 'com.h2database:h2'
+            runtimeOnly 'org.postgresql:postgresql'
+
+            // S3
+            compileOnly platform("io.awspring.cloud:spring-cloud-aws-dependencies:3.2.0")
+            compileOnly 'io.awspring.cloud:spring-cloud-aws-starter-s3'
+
+            // JPA - 공통 의존성으로 서브모듈에도 전달
+            api 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+            // QueryDSL - 동적 쿼리
+            api 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+            annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
+            annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+            annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+
+            // Swagger - 공통 의존성으로 서브모듈에도 전달
+            api group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.2.0'
+
+            // Monitoring(actuator, prometheus, loki)
+            api 'org.springframework.boot:spring-boot-starter-actuator'
+            api 'io.micrometer:micrometer-registry-prometheus'
+            api 'com.github.loki4j:loki-logback-appender:1.5.1' //추가
+
+        }
+
+tasks.named('test') {
+    useJUnitPlatform()
 }
