@@ -4,6 +4,8 @@ package com.tk.gg.reservation.application.service;
 import com.tk.gg.common.enums.NotificationType;
 import com.tk.gg.common.enums.UserRole;
 import com.tk.gg.common.kafka.alarm.KafkaNotificationDto;
+import com.tk.gg.common.kafka.payment.PaymentForReservationEventDto;
+import com.tk.gg.common.response.exception.GlowGlowError;
 import com.tk.gg.common.response.exception.GlowGlowException;
 import com.tk.gg.reservation.application.dto.CreateReservationDto;
 import com.tk.gg.reservation.application.dto.ReservationDto;
@@ -17,6 +19,7 @@ import com.tk.gg.reservation.domain.type.ReservationStatus;
 import com.tk.gg.common.kafka.grade.GradeForReservationEventDto;
 import com.tk.gg.reservation.infrastructure.messaging.GradeKafkaProducer;
 import com.tk.gg.reservation.infrastructure.messaging.NotificationKafkaProducer;
+import com.tk.gg.reservation.infrastructure.messaging.PaymentKafkaProducer;
 import com.tk.gg.security.user.AuthUserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -39,6 +42,7 @@ public class ReservationService {
     private final ReviewDomainService reviewDomainService;
     private final GradeKafkaProducer gradeKafkaProducer;
     private final NotificationKafkaProducer notificationKafkaProducer;
+    private final PaymentKafkaProducer paymentKafkaProducer;
 
 
     @Transactional(readOnly = true)
@@ -110,6 +114,13 @@ public class ReservationService {
                     .providerId(reservation.getServiceProviderId())
                     .build()
             );
+        }
+        // 결제 요청 시 카프카 이벤트 발행
+        if (status.equals(ReservationStatus.PAYMENT_CALL)){
+            if(!reservation.getReservationStatus().equals(ReservationStatus.DONE)){
+                throw new GlowGlowException(GlowGlowError.RESERVATION_NOT_DONE_FOR_PAYMENT);
+            }
+            paymentKafkaProducer.sendReservationToPaymentEvent(new PaymentForReservationEventDto(reservationId));
         }
 
         // 예약 상태 변경 알림
