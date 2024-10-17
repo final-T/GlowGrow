@@ -31,13 +31,6 @@ public enum GlowGlowError {
     COMMENT_DEPTH_EXCEEDED(400,"COMMENT_003","댓글의 깊이 제한을 초과했습니다. 대댓글은 1단계까지만 허용됩니다."),
     COMMENT_NO_AUTH_PERMISSION_DENIED(403,"COMMENT_004","댓글에 대한 권한이 없습니다."),
 
-    // Multimedia (멀티미디어 관련 에러)
-    MULTIMEDIA_NO_EXIST(404,"MULTIMEDIA_001","존재하지 않은 파일입니다."),
-    INVALID_FILE_NAME(404, "MULTIMEDIA_002","파일 이름이 유효하지 않습니다."),
-    UNSUPPORTED_FILE_EXTENSION(404,"MULTIMEDIA_003","지원하지 않는 확장자입니다."),
-    IMAGE_FILE_SIZE_EXCEEDED(404,"MULTIMEDIA_004","이미지 파일 크기가 허용된 최대 크기를 초과했습니다."),
-    VIDEO_FILE_SIZE_EXCEEDED(404,"MULTIMEDIA_005","동영상 파일 크기가 허용된 최대 크기를 초과했습니다."),
-
     // Payment (결제 관련 에러)
     PAYMENT_NO_EXIST(404,"PAYMENT_001","존재하지 않은 결제정보입니다."),
     PAYMENT_AMOUNT_MISMATCH(404,"PAYMENT_002","결제 금액이 일치하지 않습니다."),
@@ -116,6 +109,7 @@ public enum GlowGlowError {
     MULTIMEDIA_FILE_EXTENSION_INVALID(409, "MULTIMEDIA_003", "지원하지 않는 파일 형식입니다."),
     MULTIMEDIA_FILE_INVALID(409, "MULTIMEDIA_004", "제목이 없는 파일입니다."),
     MULTIMEDIA_UPLOAD_FAIL(409, "MULTIMEDIA_005", "파일을 업로드 하는데 실패했습니다."),
+    MULTIMEDIA_NO_EXIST(404, "MULTIMEDIA_006", "존재하지 않는 파일입니다."),
 
     ;
     private final int statusCode; // HTTP 상태 코드

@@ -12,6 +12,9 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.UUID;
+
+import static com.tk.gg.common.response.ResponseMessage.MULTIMEDIA_DELETE_SUCCESS;
 import static com.tk.gg.common.response.ResponseMessage.MULTIMEDIA_UPLOAD_SUCCESS;
 
 @RestController
@@ -28,5 +31,13 @@ public class MultimediaController {
             @RequestParam("type") FileUploadType type
     ) {
         return ApiUtils.success(MULTIMEDIA_UPLOAD_SUCCESS.getMessage(), UploadResponse.from(multimediaService.uploadMultimedia(authUserInfo, file, type)));
+    }
+
+    @DeleteMapping("/{multimediaId}")
+    public GlobalResponse<String> deleteMultimedia(
+            @AuthUser AuthUserInfo authUserInfo,
+            @PathVariable("multimediaId") UUID multimediaId) {
+        multimediaService.deleteMultimedia(authUserInfo, multimediaId);
+        return ApiUtils.success(MULTIMEDIA_DELETE_SUCCESS.getMessage());
     }
 }

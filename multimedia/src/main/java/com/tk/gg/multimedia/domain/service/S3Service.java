@@ -17,7 +17,7 @@ import static com.tk.gg.common.response.exception.GlowGlowError.MULTIMEDIA_UPLOA
 
 @Service
 @RequiredArgsConstructor
-public class S3UploadService {
+public class S3Service {
     private final S3Operations s3Operations;
     private final AmazonS3BucketProperties s3BucketProperties;
 
@@ -36,4 +36,8 @@ public class S3UploadService {
         return uploadUrl;
     }
 
+    public void deleteMultiMedia(String multimediaUrl) {
+        String key = multimediaUrl.substring(multimediaUrl.indexOf(".com/") + 5);
+        s3Operations.deleteObject(s3BucketProperties.getBucket(), key);
+    }
 }
