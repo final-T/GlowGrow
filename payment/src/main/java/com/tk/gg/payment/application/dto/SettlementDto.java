@@ -17,8 +17,8 @@ public class SettlementDto {
     @Builder
     public static class Request{
         private Long providerId;
-        private LocalDateTime startDate;
-        private LocalDateTime endDate;
+        private Long startDate;
+        private Long endDate;
     }
 
     @Getter
@@ -29,11 +29,11 @@ public class SettlementDto {
         private UUID settlementId;
         private Long providerId;
         private Long totalAmount;
-        private LocalDateTime settlementTime;
+        private Long settlementTime;
         private SettlementStatus status;
 
         @QueryProjection
-        public Response(UUID settlementId, Long providerId, Long totalAmount, LocalDateTime settlementTime, SettlementStatus status) {
+        public Response(UUID settlementId, Long providerId, Long totalAmount, Long settlementTime, SettlementStatus status) {
             this.settlementId = settlementId;
             this.providerId = providerId;
             this.totalAmount = totalAmount;
@@ -68,9 +68,11 @@ public class SettlementDto {
     @AllArgsConstructor
     @Builder
     public static class SearchRequest {
-        private Long providerId;
-        private LocalDateTime startDate;
-        private LocalDateTime endDate;
-        private SettlementStatus status;
+        private Long providerId;    // 서비스 제공자 ID
+        private Long settlementTime;  // 정산 시점 (YYYYMM 형태)
+
+        //private Long startDate;
+        //private Long endDate;
+        //private SettlementStatus status;
     }
 }

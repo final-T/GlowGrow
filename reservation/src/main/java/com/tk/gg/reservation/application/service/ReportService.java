@@ -24,6 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+import static com.tk.gg.common.response.exception.GlowGlowError.RESERVATION_NOT_OWNER;
+import static com.tk.gg.reservation.application.util.ReservationUserCheck.canHandleReservation;
+
 @RequiredArgsConstructor
 @Service
 public class ReportService {
@@ -36,13 +39,17 @@ public class ReportService {
     @Transactional
     public ReportDto createReport(CreateReportDto dto, AuthUserInfo userInfo) {
         Reservation reservation = reservationDomainService.getOne(dto.reservationId());
+        if (!canHandleReservation(reservation, userInfo)) {
+            throw new GlowGlowException(RESERVATION_NOT_OWNER);
+        }
         Report existsReport = reportDomainService.getByUserIds(
                 dto.userId(), dto.targetUserId()
         );
-        // 이미 신고한 예약에 대해 같은 유저가 신고하면 에러
-        if (existsReport != null && userInfo.getId().equals(existsReport.getUserId())) {
+        // 이미 신고한 예약이 있다면 에러
+        if (existsReport != null) {
             throw new GlowGlowException(GlowGlowError.REPORT_ALREADY_EXIST);
         }
+
         Report report = reportDomainService.create(dto.toEntity(reservation, userInfo.getUserRole()));
         // 신고에 대한 알림 이벤트 발행
         notificationKafkaProducer.sendReportToNotificationEvent(KafkaNotificationDto.builder()

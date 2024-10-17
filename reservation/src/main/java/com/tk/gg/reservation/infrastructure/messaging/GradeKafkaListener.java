@@ -19,7 +19,6 @@ public class GradeKafkaListener {
     private final GradeDomainService gradeDomainService;
     // TODO : 분리 고민...
     private final ReviewDomainService reviewDomainService;
-    //    private final ReviewDomainService reviewDomainService;
     private final GradeKafkaProducer kafkaProducer;
 
     // 예약 완료 -> 평가정보 반영 리스너 -> 이벤트 발행

@@ -51,10 +51,7 @@ public class ReservationDomainService {
         // 예약 시간을 바꿀 때 한번 더 빈 시간대인지 검증
         if(!reservation.getTimeSlot().equals(timeSlot) && timeSlot.getIsReserved().equals(true))
             throw new GlowGlowException(RESERVATION_UPDATE_FAILED);
-        // 사용자 취소 시 예약 가능시간테이블 정보 상태 수정
-        if (dto.reservationStatus().equals(ReservationStatus.CANCEL)){
-            reservation.getTimeSlot().updateIsReserved(false);
-        }
+
         reservation.update(dto, timeSlot);
     }
 

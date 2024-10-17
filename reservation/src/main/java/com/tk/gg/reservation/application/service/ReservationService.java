@@ -4,10 +4,13 @@ package com.tk.gg.reservation.application.service;
 import com.tk.gg.common.enums.NotificationType;
 import com.tk.gg.common.enums.UserRole;
 import com.tk.gg.common.kafka.alarm.KafkaNotificationDto;
+import com.tk.gg.common.kafka.payment.PaymentForReservationEventDto;
+import com.tk.gg.common.response.exception.GlowGlowError;
 import com.tk.gg.common.response.exception.GlowGlowException;
 import com.tk.gg.reservation.application.dto.CreateReservationDto;
 import com.tk.gg.reservation.application.dto.ReservationDto;
 import com.tk.gg.reservation.application.dto.UpdateReservationDto;
+import com.tk.gg.reservation.application.util.ReservationUserCheck;
 import com.tk.gg.reservation.domain.model.Reservation;
 import com.tk.gg.reservation.domain.model.TimeSlot;
 import com.tk.gg.reservation.domain.service.ReservationDomainService;
@@ -17,6 +20,7 @@ import com.tk.gg.reservation.domain.type.ReservationStatus;
 import com.tk.gg.common.kafka.grade.GradeForReservationEventDto;
 import com.tk.gg.reservation.infrastructure.messaging.GradeKafkaProducer;
 import com.tk.gg.reservation.infrastructure.messaging.NotificationKafkaProducer;
+import com.tk.gg.reservation.infrastructure.messaging.PaymentKafkaProducer;
 import com.tk.gg.security.user.AuthUserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,6 +34,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.tk.gg.common.response.exception.GlowGlowError.*;
+import static com.tk.gg.reservation.application.util.ReservationUserCheck.*;
 
 @RequiredArgsConstructor
 @Service
@@ -39,6 +44,7 @@ public class ReservationService {
     private final ReviewDomainService reviewDomainService;
     private final GradeKafkaProducer gradeKafkaProducer;
     private final NotificationKafkaProducer notificationKafkaProducer;
+    private final PaymentKafkaProducer paymentKafkaProducer;
 
 
     @Transactional(readOnly = true)
@@ -111,6 +117,13 @@ public class ReservationService {
                     .build()
             );
         }
+        // 결제 요청 시 카프카 이벤트 발행
+        if (status.equals(ReservationStatus.PAYMENT_CALL)){
+            if(!reservation.getReservationStatus().equals(ReservationStatus.DONE)){
+                throw new GlowGlowException(GlowGlowError.RESERVATION_NOT_DONE_FOR_PAYMENT);
+            }
+            paymentKafkaProducer.sendReservationToPaymentEvent(new PaymentForReservationEventDto(reservationId));
+        }
 
         // 예약 상태 변경 알림
         notificationKafkaProducer.sendReservationToNotificationEvent(KafkaNotificationDto.builder()
@@ -126,14 +139,6 @@ public class ReservationService {
             throw new GlowGlowException(RESERVATION_NOT_OWNER);
         }
         reservationDomainService.deleteOne(reservation, userInfo.getEmail());
-    }
-
-    private boolean canHandleReservation(Reservation reservation, AuthUserInfo userInfo) {
-        if (userInfo.getUserRole().equals(UserRole.CUSTOMER)) {
-            return reservation.getCustomerId().equals(userInfo.getId());
-        } else if (userInfo.getUserRole().equals(UserRole.PROVIDER)) {
-            return reservation.getServiceProviderId().equals(userInfo.getId());
-        } else return userInfo.getUserRole().equals(UserRole.MASTER);
     }
 
 

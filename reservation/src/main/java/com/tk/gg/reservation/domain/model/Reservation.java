@@ -64,9 +64,6 @@ public class Reservation extends BaseEntity {
 
     public void update(UpdateReservationDto dto, TimeSlot timeSlot){
         this.timeSlot = timeSlot;
-        this.customerId = dto.customerId();
-        this.serviceProviderId = dto.serviceProviderId();
-        this.reservationStatus = dto.reservationStatus();
         this.reservationDate = dto.reservationDate();
         this.reservationTime = dto.reservationTime();
         this.price = dto.price();
