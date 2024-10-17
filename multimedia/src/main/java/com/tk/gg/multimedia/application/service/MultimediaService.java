@@ -16,14 +16,12 @@ public class MultimediaService {
     private final MultimediaDomainService multimediaDomainService;
     private final S3UploadService s3UploadService;
 
-    public String uploadMultimedia(AuthUserInfo authUserInfo, MultipartFile file, FileUploadType type) {
+    public MultimediaDto uploadMultimedia(AuthUserInfo authUserInfo, MultipartFile file, FileUploadType type) {
         // S3에 파일 업로드
         String uploadUrl = s3UploadService.uploadMultiMedia(authUserInfo.getId(), file);
         MultimediaDto multimediaDto = MultimediaDto.of(authUserInfo, file, type, uploadUrl);
 
         // 파일 정보 저장
-        multimediaDomainService.saveMultimedia(multimediaDto);
-
-        return uploadUrl;
+        return MultimediaDto.from(multimediaDomainService.saveMultimedia(multimediaDto));
     }
 }

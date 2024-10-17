@@ -47,6 +47,25 @@ public record MultimediaDto(
                 .build();
     }
 
+    public static MultimediaDto from(Multimedia entity) {
+        return MultimediaDto.builder()
+                .multiMediaId(entity.getMultiMediaId())
+                .fileUploadType(entity.getUploadType())
+                .userId(entity.getUserId())
+                .multiMediaUrl(entity.getMultiMediaUrl())
+                .fileName(entity.getFileName())
+                .fileSize(entity.getFileSize())
+                .fileType(entity.getFileType())
+                .isDeleted(entity.getIsDeleted())
+                .createdAt(entity.getCreatedAt())
+                .createdBy(entity.getCreatedBy())
+                .updatedAt(entity.getUpdatedAt())
+                .updatedBy(entity.getUpdatedBy())
+                .deletedAt(entity.getDeletedAt())
+                .deletedBy(entity.getDeletedBy())
+                .build();
+    }
+
     public Multimedia toEntity() {
         return Multimedia.create(fileUploadType, userId, multiMediaUrl, fileName, fileSize, fileType);
     }
