@@ -106,8 +106,17 @@ public enum GlowGlowError {
     USER_GRADE_NO_EXIST(404, "USER_GRADE_002", "사용자의 등급이 없습니다."),
     GRADE_NOT_NO_EXIST(404, "USER_GRADE_003", "해당 등급이 존재하지 않습니다."),
 
+    // 알림 관련 에러
     NOTIFICATION_NO_EXIST(404, "NOTIFICATION_001", "해당 알림이 존재하지 않습니다."),
     NOTIFICATION_ALREADY_READ(409, "NOTIFICATION_002", "해당 알림은 이미 읽음 처리 되어있습니다."),
+
+    // 파일 관련 에러
+    MULTIMEDIA_REQUEST_PARAM_NULL(409, "MULTIMEDIA_001", "필수 요청값이 없습니다."),
+    MULTIMEDIA_FILE_SIZE_INVALID(409, "MULTIMEDIA_002", "파일 크기가 너무 큽니다."),
+    MULTIMEDIA_FILE_EXTENSION_INVALID(409, "MULTIMEDIA_003", "지원하지 않는 파일 형식입니다."),
+    MULTIMEDIA_FILE_INVALID(409, "MULTIMEDIA_004", "제목이 없는 파일입니다."),
+    MULTIMEDIA_UPLOAD_FAIL(409, "MULTIMEDIA_005", "파일을 업로드 하는데 실패했습니다."),
+
     ;
     private final int statusCode; // HTTP 상태 코드
     private final String errorCode; // 내부 시스템의 에러 코드
