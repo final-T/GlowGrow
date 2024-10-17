@@ -50,6 +50,11 @@ public enum GlowGlowError {
     // Settlement (정산 관련 에러)
     SETTLEMENT_NO_EXIST(404,"SETTLEMENT_001","존재하지 않은 정산입니다."),
     SETTLEMENT_NO_AUTH_PERMISSION_DENIED(403,"SETTLEMENT_002","정산에 대한 권한이 없습니다."),
+    SETTLEMENT_SELF_ACCESS_ONLY(403,"SETTLEMENT_003","자신의 정산 정보만 확인할 수 있습니다."),
+    SETTLEMENT_NO_PAYMENTS_FOUND(404, "SETTLEMENT_004", "해당 기간에 정산 가능한 결제 정보가 존재하지 않습니다."),
+    SETTLEMENT_ALREADY_EXISTS(409, "SETTLEMENT_005", "이미 정산이 완료된 데이터입니다."),
+    SETTLEMENT_NO_PROVIDER_ID_FOR_PROVIDER(400, "SETTLEMENT_004", "providerId가 누락되었습니다. PROVIDER 역할일 경우 필수 입력 사항입니다."),
+
 
 
 
