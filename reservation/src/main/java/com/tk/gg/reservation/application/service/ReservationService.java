@@ -10,6 +10,7 @@ import com.tk.gg.common.response.exception.GlowGlowException;
 import com.tk.gg.reservation.application.dto.CreateReservationDto;
 import com.tk.gg.reservation.application.dto.ReservationDto;
 import com.tk.gg.reservation.application.dto.UpdateReservationDto;
+import com.tk.gg.reservation.application.util.ReservationUserCheck;
 import com.tk.gg.reservation.domain.model.Reservation;
 import com.tk.gg.reservation.domain.model.TimeSlot;
 import com.tk.gg.reservation.domain.service.ReservationDomainService;
@@ -33,6 +34,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.tk.gg.common.response.exception.GlowGlowError.*;
+import static com.tk.gg.reservation.application.util.ReservationUserCheck.*;
 
 @RequiredArgsConstructor
 @Service
@@ -137,14 +139,6 @@ public class ReservationService {
             throw new GlowGlowException(RESERVATION_NOT_OWNER);
         }
         reservationDomainService.deleteOne(reservation, userInfo.getEmail());
-    }
-
-    private boolean canHandleReservation(Reservation reservation, AuthUserInfo userInfo) {
-        if (userInfo.getUserRole().equals(UserRole.CUSTOMER)) {
-            return reservation.getCustomerId().equals(userInfo.getId());
-        } else if (userInfo.getUserRole().equals(UserRole.PROVIDER)) {
-            return reservation.getServiceProviderId().equals(userInfo.getId());
-        } else return userInfo.getUserRole().equals(UserRole.MASTER);
     }
 
 
