@@ -2,6 +2,7 @@ package com.tk.gg.users.domain.service;
 
 import com.tk.gg.common.response.exception.GlowGlowError;
 import com.tk.gg.common.response.exception.GlowGlowException;
+import com.tk.gg.security.config.UserInfoEncoder;
 import com.tk.gg.security.user.AuthUserInfo;
 import com.tk.gg.users.application.dto.UserDto;
 import com.tk.gg.users.domain.model.User;
@@ -17,6 +18,7 @@ import static com.tk.gg.common.response.exception.GlowGlowError.USER_NO_EXIST;
 public class UserDomainService {
 
     private final UserRepository userRepository;
+    private final UserInfoEncoder userInfoEncoder;
 
     public UserDto findById(Long id) {
         User user = userRepository.findByUserIdAndIsDeletedFalse(id).orElse(null);
@@ -37,5 +39,16 @@ public class UserDomainService {
 
         user.updateInfo(request);
         return UserDto.from(userRepository.findByEmail(authUserInfo.getEmail()).orElseThrow(() -> new GlowGlowException(USER_NO_EXIST)));
+    }
+
+    public void deleteUser(AuthUserInfo authUserInfo, String password) {
+        User user = userRepository.findByUserIdAndIsDeletedFalse(authUserInfo.getId())
+                .orElseThrow(() -> new GlowGlowException(USER_NO_EXIST));
+
+        if(!userInfoEncoder.matches(password, user.getPassword())){
+            throw new GlowGlowException(GlowGlowError.AUTH_INVALID_CREDENTIALS);
+        }
+
+        user.delete(authUserInfo);
     }
 }
