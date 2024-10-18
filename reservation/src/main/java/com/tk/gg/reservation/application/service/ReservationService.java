@@ -102,8 +102,10 @@ public class ReservationService {
             throw new GlowGlowException(RESERVATION_NOT_OWNER);
         }
         // 사용자 권한 status -> 취소만 가능
-        if (userInfo.getUserRole().equals(UserRole.CUSTOMER) && !status.equals(ReservationStatus.CANCEL)){
-            throw new GlowGlowException(RESERVATION_FORBIDDEN_STATUS);
+        if (userInfo.getUserRole().equals(UserRole.CUSTOMER)){
+            if(!status.equals(ReservationStatus.CANCEL) && !status.equals(ReservationStatus.PAYMENT_CALL)){
+                throw new GlowGlowException(RESERVATION_FORBIDDEN_STATUS);
+            }
         }
 
         // 예약 상태 변경
@@ -122,7 +124,9 @@ public class ReservationService {
             if(!reservation.getReservationStatus().equals(ReservationStatus.DONE)){
                 throw new GlowGlowException(GlowGlowError.RESERVATION_NOT_DONE_FOR_PAYMENT);
             }
-            paymentKafkaProducer.sendReservationToPaymentEvent(new PaymentForReservationEventDto(reservationId));
+            paymentKafkaProducer.sendReservationToPaymentEvent(new PaymentForReservationEventDto(
+                    reservationId, userInfo.getId()
+            ));
         }
 
         // 예약 상태 변경 알림
