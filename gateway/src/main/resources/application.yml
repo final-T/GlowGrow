@@ -24,10 +24,18 @@ spring:
           uri: lb://promotion-service
           predicates:
             - Path=/api/promotions/**, /api/coupons/**, /api/my-coupons/**
-        - id: chat-service # 채팅 서비스
+        - id: chat-service-http # HTTP용 채팅 서비스
           uri: lb://chat-service
           predicates:
             - Path=/api/chat/**
+          filters:
+            - RemoveRequestHeader=Cookie
+        - id: chat-service-websocket # WebSocket용 채팅 서비스
+          uri: lb:ws://chat-service
+          predicates:
+            - Path=/chat/**
+          filters:
+            - RemoveRequestHeader=Cookie
         - id: payment-service # 결제 서비스
           uri: lb://payment-service
           predicates:
