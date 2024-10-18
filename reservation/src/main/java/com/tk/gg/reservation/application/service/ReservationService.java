@@ -114,6 +114,16 @@ public class ReservationService {
             }
         }
 
+        // 결제 요청 시 카프카 이벤트 발행
+        if (status.equals(ReservationStatus.PAYMENT_CALL)){
+            if(!reservation.getReservationStatus().equals(ReservationStatus.DONE)){
+                throw new GlowGlowException(GlowGlowError.RESERVATION_NOT_DONE_FOR_PAYMENT);
+            }
+            paymentKafkaProducer.sendReservationToPaymentEvent(new PaymentForReservationEventDto(
+                    reservationId, userInfo.getId()
+            ));
+        }
+
         // 예약 상태 변경
         reservationDomainService.updateStatus(reservation, status);
 
@@ -124,15 +134,6 @@ public class ReservationService {
                     .providerId(reservation.getServiceProviderId())
                     .build()
             );
-        }
-        // 결제 요청 시 카프카 이벤트 발행
-        if (status.equals(ReservationStatus.PAYMENT_CALL)){
-            if(!reservation.getReservationStatus().equals(ReservationStatus.DONE)){
-                throw new GlowGlowException(GlowGlowError.RESERVATION_NOT_DONE_FOR_PAYMENT);
-            }
-            paymentKafkaProducer.sendReservationToPaymentEvent(new PaymentForReservationEventDto(
-                    reservationId, userInfo.getId()
-            ));
         }
 
         // 예약 상태 변경 알림
