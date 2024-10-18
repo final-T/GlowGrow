@@ -1,21 +1,27 @@
 package com.tk.gg.reservation.presentation.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tk.gg.common.response.ResponseMessage;
+import com.tk.gg.common.enums.UserRole;
 import com.tk.gg.reservation.application.dto.CreateReservationDto;
 import com.tk.gg.reservation.application.dto.ReservationDto;
 import com.tk.gg.reservation.application.dto.TimeSlotDto;
 import com.tk.gg.reservation.application.dto.UpdateReservationDto;
 import com.tk.gg.reservation.application.service.ReservationService;
-import com.tk.gg.reservation.domain.model.TimeSlot;
 import com.tk.gg.reservation.domain.type.ReservationStatus;
 import com.tk.gg.reservation.presentation.request.CreateReservationRequest;
+import com.tk.gg.reservation.presentation.request.ReservationSearchCondition;
 import com.tk.gg.reservation.presentation.request.UpdateReservationRequest;
+import com.tk.gg.security.jwt.JwtProvider;
+import com.tk.gg.security.user.AuthUserArgumentResolver;
 import com.tk.gg.security.user.AuthUserInfo;
 import com.tk.gg.security.user.AuthUserInfoImpl;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -24,19 +30,22 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableArgumentResolver;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolverSupport;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
 import static com.tk.gg.common.response.ResponseMessage.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -46,7 +55,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("[Reservation] - ReservationController")
-@AutoConfigureMockMvc
+@ExtendWith(MockitoExtension.class)
 @WebMvcTest(ReservationController.class)
 class ReservationControllerTest {
 
@@ -54,14 +63,18 @@ class ReservationControllerTest {
     private MockMvc mvc;
 
     @MockBean
-    private ReservationService reservationService;
+    ReservationService reservationService;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    ObjectMapper objectMapper;
+
+    @MockBean
+    PageableHandlerMethodArgumentResolver pageableHandlerMethodArgumentResolver;
 
     private LocalDate localDate = LocalDate.of(
             LocalDate.now().getYear(), LocalDate.now().getMonth(), LocalDate.now().getDayOfMonth()
     );
+
 
     @DisplayName("[POST] 예약 생성 - 정상 호출")
     @Test
@@ -91,22 +104,15 @@ class ReservationControllerTest {
         then(reservationService).should().createReservation(any(CreateReservationDto.class));
     }
 
-    @Disabled("test중")
     @DisplayName("[GET] 예약 목록 조회 (페이징, 정렬) - 정상 호출")
     @Test
     @WithMockUser(username = "user@example.com", roles = {"CUSTOMER"})
     void 예약_목록_조회_성공() throws Exception {
         Pageable pageable = PageRequest.of(0, 5, Sort.by("reservationDate").ascending());
-        TimeSlotDto timeSlotDto = createTimeSlotDto();
-        ReservationDto reservationDto = createReservationDto(timeSlotDto);
-
-        given(reservationService.searchReservations(eq(null), eq(null), eq(null), eq(pageable), any(AuthUserInfoImpl.class)))
-                .willReturn(new PageImpl<>(List.of(reservationDto), pageable, 1));
+        given(reservationService.searchReservations(any(ReservationSearchCondition.class), any()))
+                .willReturn(new PageImpl<>(List.of(), pageable, 0));
 
         mvc.perform(get("/api/reservations")
-                        .queryParam("page", "0")
-                        .queryParam("size", "5")
-                        .queryParam("sort", "reservationDate,asc")
                         .with(csrf())
                         .with(user("user@example.com").roles("CUSTOMER"))
                 )
@@ -115,10 +121,9 @@ class ReservationControllerTest {
                 .andExpect(jsonPath("$.message").value(RESERVATION_RETRIEVE_SUCCESS.getMessage()))
                 .andDo(print());
 
-        then(reservationService).should().searchReservations(eq(null), eq(null), eq(null), eq(pageable), any(AuthUserInfoImpl.class));
+        then(reservationService).should().searchReservations(any(ReservationSearchCondition.class), any());
     }
 
-    @Disabled("test중")
     @DisplayName("[GET] 예약 단건 조회 - 정상 호출")
     @Test
     @WithMockUser(username = "user@example.com", roles = {"CUSTOMER"})

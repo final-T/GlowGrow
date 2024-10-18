@@ -8,6 +8,7 @@ import com.tk.gg.reservation.domain.model.Reservation;
 import com.tk.gg.reservation.domain.model.TimeSlot;
 import com.tk.gg.reservation.infrastructure.repository.ReservationRepository;
 import com.tk.gg.reservation.domain.type.ReservationStatus;
+import com.tk.gg.reservation.presentation.request.ReservationSearchCondition;
 import com.tk.gg.security.user.AuthUserInfo;
 import jakarta.ws.rs.BadRequestException;
 import lombok.RequiredArgsConstructor;
@@ -31,9 +32,9 @@ public class ReservationDomainService {
     private final ReservationRepository reservationRepository;
 
     public Page<Reservation> searchReservations(
-            LocalDate startDate, LocalDate endDate, ReservationStatus status,Pageable pageable, AuthUserInfo userInfo
+            ReservationSearchCondition searchCondition, Pageable pageable, AuthUserInfo userInfo
     ) {
-        return reservationRepository.searchReservations(startDate, endDate, status, pageable, userInfo);
+        return reservationRepository.searchReservations(searchCondition, pageable, userInfo);
     }
 
     public Reservation getOne(UUID id) {
@@ -50,22 +51,22 @@ public class ReservationDomainService {
     //TODO : 예약 취소, 거절 가능 날짜 검증 추가
     public void updateOne(Reservation reservation, UpdateReservationDto dto, TimeSlot timeSlot) {
         // 예약 시간을 바꿀 때 한번 더 빈 시간대인지 검증
-        if(!reservation.getTimeSlot().equals(timeSlot) && timeSlot.getIsReserved().equals(true))
+        if (!reservation.getTimeSlot().equals(timeSlot) && timeSlot.getIsReserved().equals(true))
             throw new GlowGlowException(RESERVATION_UPDATE_FAILED);
 
         reservation.update(dto, timeSlot);
     }
 
     //TODO : 예약 취소, 거절 가능 날짜 검증 추가
-    public void updateStatus(Reservation reservation  ,ReservationStatus status){
+    public void updateStatus(Reservation reservation, ReservationStatus status) {
         // 제공자 취소,거절 시 예약 가능시간테이블 정보 상태 수정
-        if (status.equals(ReservationStatus.CANCEL) || status.equals(ReservationStatus.REFUSED)){
+        if (status.equals(ReservationStatus.CANCEL) || status.equals(ReservationStatus.REFUSED)) {
             reservation.getTimeSlot().updateIsReserved(false);
         }
         reservation.updateStatus(status);
     }
 
-    public void deleteOne(Reservation reservation,String deletedBy) {
+    public void deleteOne(Reservation reservation, String deletedBy) {
         reservation.getTimeSlot().updateIsReserved(false);
         reservation.delete(deletedBy);
     }

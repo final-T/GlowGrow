@@ -19,6 +19,7 @@ import com.tk.gg.common.kafka.grade.GradeForReservationEventDto;
 import com.tk.gg.reservation.infrastructure.messaging.GradeKafkaProducer;
 import com.tk.gg.reservation.infrastructure.messaging.NotificationKafkaProducer;
 import com.tk.gg.reservation.infrastructure.messaging.PaymentKafkaProducer;
+import com.tk.gg.reservation.presentation.request.ReservationSearchCondition;
 import com.tk.gg.security.user.AuthUserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -46,10 +47,9 @@ public class ReservationService {
 
     @Transactional(readOnly = true)
     public Page<ReservationDto> searchReservations(
-            LocalDate startDate, LocalDate endDate,
-            ReservationStatus status, Pageable pageable, AuthUserInfo userInfo
+            ReservationSearchCondition searchCondition, Pageable pageable, AuthUserInfo userInfo
     ) {
-        return reservationDomainService.searchReservations(startDate, endDate, status, pageable, userInfo).map(ReservationDto::from);
+        return reservationDomainService.searchReservations(searchCondition, pageable, userInfo).map(ReservationDto::from);
     }
 
     @Transactional(readOnly = true)
@@ -108,19 +108,19 @@ public class ReservationService {
             throw new GlowGlowException(RESERVATION_NOT_OWNER);
         }
         // 사용자 권한 status -> 취소, 결제 요청만 가능
-        if (userInfo.getUserRole().equals(UserRole.CUSTOMER)){
-            if(!status.equals(ReservationStatus.CANCEL) && !status.equals(ReservationStatus.PAYMENT_CALL)) {
+        if (userInfo.getUserRole().equals(UserRole.CUSTOMER)) {
+            if (!status.equals(ReservationStatus.CANCEL) && !status.equals(ReservationStatus.PAYMENT_CALL)) {
                 throw new GlowGlowException(RESERVATION_FORBIDDEN_STATUS);
             }
         }
 
         // 결제 요청 시 카프카 이벤트 발행
-        if (status.equals(ReservationStatus.PAYMENT_CALL)){
-            if(!reservation.getReservationStatus().equals(ReservationStatus.DONE)){
+        if (status.equals(ReservationStatus.PAYMENT_CALL)) {
+            if (!reservation.getReservationStatus().equals(ReservationStatus.DONE)) {
                 throw new GlowGlowException(GlowGlowError.RESERVATION_NOT_DONE_FOR_PAYMENT);
             }
             paymentKafkaProducer.sendReservationToPaymentEvent(new PaymentForReservationEventDto(
-                    reservationId, userInfo.getId()
+                    reservationId, reservation.getCustomerId(), reservation.getServiceProviderId(), reservation.getPrice()
             ));
         }
 
