@@ -25,8 +25,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/chat")
-                .setAllowedOriginPatterns("*")
-                .withSockJS();
+                .setAllowedOriginPatterns("*");
+                // .withSockJS();  // Apic 테스트를 위해 주석 처리
     }
 
     /**
@@ -39,7 +39,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
      */
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/subscribe");
+        // registry.enableSimpleBroker("/subscribe"); simpleBroker 대신 외부 메시지 브로커 사용
         registry.setApplicationDestinationPrefixes("/publish");
     }
 
