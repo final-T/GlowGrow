@@ -19,6 +19,18 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
         default_batch_fetch_size: 1000
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      username: root
+      password: root
+      database: chat
+      authentication-database: admin
+    redis:
+      host: localhost
+      port: 6379
+
 
   # 카프카 설정
   kafka:
