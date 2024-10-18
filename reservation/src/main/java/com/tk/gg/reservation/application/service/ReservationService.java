@@ -120,7 +120,7 @@ public class ReservationService {
                 throw new GlowGlowException(GlowGlowError.RESERVATION_NOT_DONE_FOR_PAYMENT);
             }
             paymentKafkaProducer.sendReservationToPaymentEvent(new PaymentForReservationEventDto(
-                    reservationId, userInfo.getId()
+                    reservationId, reservation.getCustomerId(),reservation.getServiceProviderId(),reservation.getPrice()
             ));
         }
 

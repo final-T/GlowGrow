@@ -4,6 +4,8 @@ import java.util.UUID;
 
 public record PaymentForReservationEventDto(
         UUID reservationId,
-        Long userId
+        Long customerId,
+        Long providerId,
+        Integer price
 ) {
 }
