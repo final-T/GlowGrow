@@ -6,6 +6,7 @@ import com.tk.gg.common.response.GlobalResponse;
 import com.tk.gg.reservation.application.service.ReservationService;
 import com.tk.gg.reservation.domain.type.ReservationStatus;
 import com.tk.gg.reservation.presentation.request.CreateReservationRequest;
+import com.tk.gg.reservation.presentation.request.ReservationSearchCondition;
 import com.tk.gg.reservation.presentation.request.UpdateReservationRequest;
 import com.tk.gg.reservation.presentation.request.UpdateReservationStatusRequest;
 import com.tk.gg.reservation.presentation.response.ReservationResponse;
@@ -50,19 +51,13 @@ public class ReservationController {
     @GetMapping
     @Operation(summary = "전체 조회 API", description = "예약(reservation) 목록을 조회합니다.**[ROLE: Provider,Customer,Master]**")
     public GlobalResponse<Page<ReservationResponse>> getAllReservations(
-            @Parameter(name = "startDate", description = "검색 시작 범위 날짜(yyyy-MM-dd)")
-            @RequestParam(value = "startDate", required = false)
-            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
-            @Parameter(name = "endDate", description = "검색 끝 범위 날짜(yyyy-MM-dd)")
-            @RequestParam(value = "endDate", required = false)
-            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
-            @Parameter(name = "status", description = "예약 상태", example = "ACCEPT")
-            @RequestParam(value = "status", required = false) ReservationStatus status,
-            @ParameterObject @PageableDefault(sort = {"reservationDate"}, direction = Sort.Direction.ASC) Pageable pageable,
+            @ParameterObject ReservationSearchCondition searchCondition,
+            @ParameterObject @PageableDefault(sort = {"reservationDate"}, direction = Sort.Direction.ASC)
+            Pageable pageable,
             @AuthUser AuthUserInfo userInfo
     ) {
         return ApiUtils.success(RESERVATION_RETRIEVE_SUCCESS.getMessage(),
-                reservationService.searchReservations(startDate, endDate, status, pageable, userInfo).map(ReservationResponse::from)
+                reservationService.searchReservations(searchCondition, pageable, userInfo).map(ReservationResponse::from)
         );
     }
 

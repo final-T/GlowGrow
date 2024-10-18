@@ -8,6 +8,7 @@ import com.tk.gg.reservation.domain.model.QReservation;
 import com.tk.gg.reservation.domain.model.Reservation;
 import com.tk.gg.reservation.domain.repository.ReservationRepositoryCustom;
 import com.tk.gg.reservation.domain.type.ReservationStatus;
+import com.tk.gg.reservation.presentation.request.ReservationSearchCondition;
 import com.tk.gg.security.user.AuthUserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -28,16 +29,18 @@ public class ReservationRepositoryImpl implements ReservationRepositoryCustom {
 
     @Override
     public Page<Reservation> searchReservations(
-            LocalDate startDate, LocalDate endDate, ReservationStatus status, Pageable pageable, AuthUserInfo userInfo
+            ReservationSearchCondition searchCondition, Pageable pageable, AuthUserInfo userInfo
     ) {
         List<Reservation> reservationList = queryFactory
                 .selectFrom(reservation)
                 .where(
                         isDeletedByNullCondition(), // 삭제되지 않은 것만
-                        startDateCondition(startDate),  // 시작 날짜 조건
-                        endDateCondition(endDate),     // 종료 날짜 조건
-                        reservationStatusCondition(status), // 상태 조건 추가
-                        userRoleCondition(userInfo)        // 사용자 권한 조건 추가
+                        startDateCondition(searchCondition.startDate()),  // 시작 날짜 조건
+                        endDateCondition(searchCondition.endDate()),     // 종료 날짜 조건
+                        reservationStatusCondition(searchCondition.status()), // 상태 조건 추가
+                        userRoleCondition(userInfo),        // 사용자 권한 조건 추가
+                        customerCondition(searchCondition.customerId()), // 고객 ID 조건 추가
+                        providerCondition(searchCondition.providerId())   // 제공자 ID 조건 추가
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -49,9 +52,9 @@ public class ReservationRepositoryImpl implements ReservationRepositoryCustom {
                 .select(reservation.count())
                 .where(
                         isDeletedByNullCondition(),
-                        startDateCondition(startDate),
-                        endDateCondition(endDate),
-                        reservationStatusCondition(status),
+                        startDateCondition(searchCondition.startDate()),
+                        endDateCondition(searchCondition.endDate()),
+                        reservationStatusCondition(searchCondition.status()),
                         userRoleCondition(userInfo)
                 )
                 .fetchOne();
@@ -87,6 +90,16 @@ public class ReservationRepositoryImpl implements ReservationRepositoryCustom {
     // ReservationStatus 조건
     private BooleanExpression reservationStatusCondition(ReservationStatus status) {
         return status != null ? reservation.reservationStatus.eq(status) : null;
+    }
+
+    // 고객 ID 조건
+    private BooleanExpression customerCondition(Long customerId) {
+        return customerId != null ? reservation.customerId.eq(customerId) : null;
+    }
+
+    // 제공자 ID 조건
+    private BooleanExpression providerCondition(Long providerId) {
+        return providerId != null ? reservation.serviceProviderId.eq(providerId) : null;
     }
 
     //삭제 되지 않은 데이터
