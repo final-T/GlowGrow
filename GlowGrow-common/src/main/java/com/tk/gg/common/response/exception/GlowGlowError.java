@@ -73,6 +73,8 @@ public enum GlowGlowError {
     RESERVATION_FORBIDDEN_STATUS(400, "RESERVATION_006", "사용자가 수정할 수 있는 예약 상태가 아닙니다."),
     RESERVATION_ALREADY_EXIST(400, "RESERVATION_007", "이미 해당 시간에 예약이 있습니다."),
     RESERVATION_NOT_DONE_FOR_PAYMENT(404, "REVIEW_008", "서비스 완료된 예약만 결제 요청을 할 수 있습니다."),
+    RESERVATION_BEFORE_NOW(404, "RESERVATION_009","현재 시간 이전의 예약은 불가합니다."),
+    RESERVATION_WRONG_TIME(404, "RESERVATION_010","잘못된 요청 예약 날짜 및 시간입니다."),
     REVIEW_CREATE_FAILED(404, "REVIEW_001", "예약에 대한 리뷰 생성에 실패했습니다."),
     REVIEW_NO_EXIST(404, "REVIEW_002", "존재하지 않는 리뷰입니다."),
     REVIEW_WRONG_REVIEWER_ID(404, "REVIEW_003","요청 리뷰어와 현재 사용자가 일치하지 않습니다."),

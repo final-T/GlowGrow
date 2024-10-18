@@ -14,15 +14,6 @@ public record UpdateReservationRequest(
         @NotNull(message = "예약타임슬롯 ID 는 필수입니다.")
         UUID timeSlotId,
 
-        @NotNull(message = "예약 고객 ID 는 필수입니다.")
-        Long customerId,
-
-        @NotNull(message = "예약에 대한 서비스 제공자 ID 는 필수입니다.")
-        Long serviceProviderId,
-
-        @NotNull(message = "예약 상태는 필수입니다.")
-        ReservationStatus reservationStatus,
-
         @NotNull(message = "예약 날짜는 필수입니다.")
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         LocalDate reservationDate,
@@ -41,9 +32,6 @@ public record UpdateReservationRequest(
     public UpdateReservationDto toDto() {
         return UpdateReservationDto.builder()
                 .timeSlotId(timeSlotId)
-                .customerId(customerId)
-                .serviceProviderId(serviceProviderId)
-                .reservationStatus(reservationStatus)
                 .reservationDate(reservationDate)
                 .reservationTime(reservationTime)
                 .price(price)

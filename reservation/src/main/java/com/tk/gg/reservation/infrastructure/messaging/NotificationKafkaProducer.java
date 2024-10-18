@@ -23,7 +23,7 @@ public class NotificationKafkaProducer {
 
 
     public void sendReservationToNotificationEvent(KafkaNotificationDto event) {
-        log.info("예약 생성 시 알림 이벤트 발행: {}", event);
+        log.info("예약 관련 알림 이벤트 발행: {}", event);
         kafkaTemplate.send("noti-send", event);
         log.info("알림 이벤트 발행 완료");
     }

@@ -12,6 +12,7 @@ import com.tk.gg.security.user.AuthUserInfo;
 import jakarta.ws.rs.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -69,7 +70,8 @@ public class ReservationDomainService {
         reservation.delete(deletedBy);
     }
 
-    public List<Reservation> getReservationsByStatusIsDone(){
-        return reservationRepository.findAllByReservationStatus(ReservationStatus.DONE);
+    public List<Reservation> getReservationsByStatusIsDoneWithLimit(int offset, int batchSize) {
+        Pageable pageable = PageRequest.of(offset / batchSize, batchSize); // 페이지 번호와 배치 크기 설정
+        return reservationRepository.findAllByReservationStatusWithLimit(ReservationStatus.DONE, pageable);
     }
 }

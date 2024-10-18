@@ -18,7 +18,9 @@ import java.util.UUID;
 @Getter
 @Builder
 @Entity
-@Table(name = "p_reservations")
+@Table(name = "p_reservations", indexes = {
+        @Index(name = "idx_reservation_status", columnList = "reservation_status")
+})
 public class Reservation extends BaseEntity {
 
     @Id
@@ -35,7 +37,7 @@ public class Reservation extends BaseEntity {
     @Column(nullable = false)
     private Long serviceProviderId;
 
-    @Column(name = "reservationStatus", nullable = false)
+    @Column(name = "reservation_status", nullable = false)
     @Enumerated(EnumType.STRING)
     private ReservationStatus reservationStatus;
 

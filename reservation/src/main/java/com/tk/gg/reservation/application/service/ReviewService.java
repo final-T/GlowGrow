@@ -37,27 +37,26 @@ public class ReviewService {
     @Transactional
     public ReviewWithReservationDto createReview(CreateReviewDto dto, AuthUserInfo userInfo) {
         Reservation reservation = reservationDomainService.getOne(dto.reservationId());
-        if(!canHandleReservation(reservation, userInfo)){
+        if (!canHandleReservation(reservation, userInfo)) {
             throw new GlowGlowException(RESERVATION_NOT_OWNER);
         }
         // 예약 상태 검증 -> 예약 체크, 거절, 취소인 경우에는 리뷰 불가
-        if (reservation.getReservationStatus().equals(ReservationStatus.CHECK) ||
-                reservation.getReservationStatus().equals(ReservationStatus.REFUSED) ||
-                reservation.getReservationStatus().equals(ReservationStatus.CANCEL)
-        ) {
+        if (!reservation.getReservationStatus().equals(ReservationStatus.DONE) &&
+                !reservation.getReservationStatus().equals(ReservationStatus.PAYMENT_CALL)
+        ){
             throw new GlowGlowException(REVIEW_CREATE_FAILED);
         }
         // 유저 ID 입력 데이터 검증
-        switch (userInfo.getUserRole()){
+        switch (userInfo.getUserRole()) {
             case CUSTOMER -> {
-                if(!dto.reviewerId().equals(reservation.getCustomerId())
-                        || !dto.targetUserId().equals(reservation.getServiceProviderId())){
+                if (!dto.reviewerId().equals(reservation.getCustomerId())
+                        || !dto.targetUserId().equals(reservation.getServiceProviderId())) {
                     throw new GlowGlowException(REVIEW_WRONG_REVIEWER_ID);
                 }
             }
             case PROVIDER -> {
-                if(!dto.reviewerId().equals(reservation.getServiceProviderId())
-                        || !dto.targetUserId().equals(reservation.getCustomerId())){
+                if (!dto.reviewerId().equals(reservation.getServiceProviderId())
+                        || !dto.targetUserId().equals(reservation.getCustomerId())) {
                     throw new GlowGlowException(REVIEW_WRONG_REVIEWER_ID);
                 }
             }
@@ -92,7 +91,7 @@ public class ReviewService {
         reviewDomainService.delete(review, userInfo.getEmail());
     }
 
-    private Review checkIsUserExistAndReviewOwner(UUID reviewId, AuthUserInfo userInfo){
+    private Review checkIsUserExistAndReviewOwner(UUID reviewId, AuthUserInfo userInfo) {
         Review review = reviewDomainService.getOne(reviewId);
         if (!userClient.isUserExistsByEmail(userInfo.getEmail()))
             throw new GlowGlowException(AUTH_INVALID_CREDENTIALS);

@@ -29,6 +29,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
@@ -58,11 +59,15 @@ class ReservationControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    private LocalDate localDate = LocalDate.of(
+            LocalDate.now().getYear(), LocalDate.now().getMonth(), LocalDate.now().getDayOfMonth()
+    );
+
     @DisplayName("[POST] 예약 생성 - 정상 호출")
     @Test
     @WithMockUser(username = "user@example.com", roles = {"CUSTOMER"})
     void 예약_생성_성공() throws Exception {
-        LocalDate localDate = LocalDate.parse("2024-10-07");
+
         CreateReservationRequest request = new CreateReservationRequest(
                 UUID.randomUUID(), 1L, 2L, localDate, 20, 0);
         TimeSlotDto timeSlotDto = createTimeSlotDto();
@@ -95,7 +100,7 @@ class ReservationControllerTest {
         TimeSlotDto timeSlotDto = createTimeSlotDto();
         ReservationDto reservationDto = createReservationDto(timeSlotDto);
 
-        given(reservationService.searchReservations(eq(null), eq(null), eq(null), eq(pageable) ,any(AuthUserInfoImpl.class)))
+        given(reservationService.searchReservations(eq(null), eq(null), eq(null), eq(pageable), any(AuthUserInfoImpl.class)))
                 .willReturn(new PageImpl<>(List.of(reservationDto), pageable, 1));
 
         mvc.perform(get("/api/reservations")
@@ -110,7 +115,7 @@ class ReservationControllerTest {
                 .andExpect(jsonPath("$.message").value(RESERVATION_RETRIEVE_SUCCESS.getMessage()))
                 .andDo(print());
 
-        then(reservationService).should().searchReservations(eq(null), eq(null), eq(null), eq(pageable),any(AuthUserInfoImpl.class));
+        then(reservationService).should().searchReservations(eq(null), eq(null), eq(null), eq(pageable), any(AuthUserInfoImpl.class));
     }
 
     @Disabled("test중")
@@ -142,9 +147,8 @@ class ReservationControllerTest {
     @WithMockUser(username = "user@example.com", roles = {"CUSTOMER"})
     void 예약_수정_성공() throws Exception {
         UUID reservationId = UUID.randomUUID();
-        LocalDate localDate = LocalDate.parse("2024-10-07");
         UpdateReservationRequest request = new UpdateReservationRequest(
-                UUID.randomUUID(), 1L, 2L, ReservationStatus.CHECK, localDate, 20, 0);
+                UUID.randomUUID(), localDate, 20, 0);
         willDoNothing().given(reservationService)
                 .updateReservation(eq(reservationId), any(UpdateReservationDto.class), any(AuthUserInfo.class));
 
@@ -186,7 +190,7 @@ class ReservationControllerTest {
         return ReservationDto.builder()
                 .id(UUID.randomUUID())
                 .timeSlotDto(timeSlotDto)
-                .reservationDate(LocalDate.parse("2024-10-07"))
+                .reservationDate(localDate)
                 .reservationTime(20)
                 .customerId(1L)
                 .serviceProviderId(2L)
@@ -198,7 +202,7 @@ class ReservationControllerTest {
     private TimeSlotDto createTimeSlotDto() {
         return TimeSlotDto.builder()
                 .id(UUID.randomUUID())
-                .availableDate(LocalDate.parse("2024-10-07"))
+                .availableDate(localDate)
                 .serviceProviderId(2L)
                 .isReserved(false)
                 .availableTime(20).build();
