@@ -3,4 +3,4 @@ spring:
     default:
       local
   application:
-    name: promotion-service
+    name: chat-service
