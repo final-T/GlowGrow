@@ -1,5 +1,6 @@
 package com.tk.gg.promotion.domain.service;
 
+import com.tk.gg.common.enums.UserRole;
 import com.tk.gg.common.response.exception.GlowGlowError;
 import com.tk.gg.common.response.exception.GlowGlowException;
 import com.tk.gg.promotion.application.dto.CouponCreateRequestDto;
@@ -15,6 +16,7 @@ import com.tk.gg.promotion.infrastructure.repository.CouponRepository;
 import com.tk.gg.promotion.infrastructure.repository.CouponUserRepository;
 import com.tk.gg.promotion.infrastructure.repository.PromotionRepository;
 import com.tk.gg.promotion.infrastructure.repository.RedisRepository;
+import com.tk.gg.security.user.AuthUserInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,8 @@ public class CouponDomainService {
     private final RedisRepository redisRepository;
     private final CouponKafkaProducer couponKafkaProducer;
 
+    private static final String MASTER_COUPON_CODE_PREFIX = "GlowGrow";
+
     private static final String COUPON_STOCK_KEY_PREFIX = "coupon:stock:";
     private static final String COUPON_ISSUED_SET_KEY_PREFIX = "coupon:issued:set:";
 
@@ -42,15 +46,18 @@ public class CouponDomainService {
      * @return 생성된 쿠폰
      */
     @Transactional
-    public Coupon createCoupon(CouponCreateRequestDto requestDto) {
+    public Coupon createCoupon(CouponCreateRequestDto requestDto, AuthUserInfo userInfo) {
         Promotion promotion = promotionRepository.findById(requestDto.getPromotionId())
                 .orElseThrow(() -> new GlowGlowException(GlowGlowError.PROMOTION_NO_EXIST));
+
+        // 쿠폰 생성 주체의 권한이 MASTER(SYSTEM)이면 GlowGrow + UUID로 생성
+        // 쿠폰 생성 주체의 권한이 PROVIDER(서비스 제공자)이면 userID + UUID로 생성
+        String couponCode = generateCouponCode(userInfo);
 
         // 쿠폰 생성 로직을 Promotion 에서 분리
         Coupon coupon = Coupon.builder()
                 .promotion(promotion)
-                // TODO : 일단 RANDOM CODE로 생성
-                .code(UUID.randomUUID().toString()) // CouponCodeGenerator
+                .code(couponCode)
                 .description(requestDto.getDescription())
                 .discountType(requestDto.getDiscountType())
                 .discountValue(requestDto.getDiscountValue())
@@ -67,6 +74,20 @@ public class CouponDomainService {
         redisRepository.set(stockKey, savedCoupon.getTotalQuantity().toString());
 
         return coupon;
+    }
+
+    /**
+     * 쿠폰 코드를 생성합니다. MASTER 권한은 GlowGrow + UUID, PROVIDER 권한은 userID + UUID로 생성합니다.
+     * @param userInfo 유저 정보
+     * @return 생성된 쿠폰 코드
+     */
+    private String generateCouponCode(AuthUserInfo userInfo) {
+        if (userInfo.getUserRole().equals(UserRole.MASTER)) {
+            return MASTER_COUPON_CODE_PREFIX + "-" + UUID.randomUUID();
+        } else if (userInfo.getUserRole().equals(UserRole.PROVIDER)) {
+            return userInfo.getId().toString() + "-" + UUID.randomUUID();
+        }
+        throw new GlowGlowException(GlowGlowError.AUTH_INVALID_CREDENTIALS);
     }
 
     public CouponIssueResponseDto issueCoupoon(CouponIssueRequestDto requestDto) {

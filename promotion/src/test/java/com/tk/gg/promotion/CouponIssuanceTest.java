@@ -1,5 +1,6 @@
 package com.tk.gg.promotion;
 
+import com.tk.gg.common.enums.UserRole;
 import com.tk.gg.promotion.application.dto.CouponCreateRequestDto;
 import com.tk.gg.promotion.application.dto.CouponIssueRequestDto;
 import com.tk.gg.promotion.application.serivce.CouponApplicationService;
@@ -10,7 +11,8 @@ import com.tk.gg.promotion.domain.enums.PromotionStatus;
 import com.tk.gg.promotion.domain.service.CouponDomainService;
 import com.tk.gg.promotion.domain.service.PromotionDomainService;
 import com.tk.gg.promotion.infrastructure.repository.CouponUserRepository;
-import jakarta.persistence.EntityManager;
+import com.tk.gg.security.user.AuthUserInfo;
+import com.tk.gg.security.user.AuthUserInfoImpl;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -45,9 +47,15 @@ class CouponIssuanceTest {
 
     private UUID promotionId;
     private UUID couponId;
+    private AuthUserInfo userInfo;
 
     @BeforeEach
     public void setUp() {
+        userInfo = AuthUserInfoImpl.builder()
+                .id(1L)
+                .userRole(UserRole.MASTER)
+                .build();
+
         // 프로모션 생성
         Promotion promotion = promotionDomainService.createPromotion(Promotion.builder()
                 .title("프로모션 제목")
@@ -71,7 +79,7 @@ class CouponIssuanceTest {
                 .validFrom(LocalDate.now())
                 .validUntil(LocalDate.now().plusDays(10))
                 .totalQuantity(100)
-                .build());
+                .build(), userInfo);
 
         couponId = coupon.getCouponId();
         System.out.println("쿠폰 ID: " + couponId);
