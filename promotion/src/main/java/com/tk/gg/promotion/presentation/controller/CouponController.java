@@ -5,6 +5,8 @@ import com.tk.gg.common.response.GlobalResponse;
 import com.tk.gg.common.response.ResponseMessage;
 import com.tk.gg.promotion.application.dto.*;
 import com.tk.gg.promotion.application.serivce.CouponApplicationService;
+import com.tk.gg.security.user.AuthUser;
+import com.tk.gg.security.user.AuthUserInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -25,8 +27,8 @@ public class CouponController {
      * @return: 쿠폰 생성 응답 DTO
      */
     @PostMapping
-    public GlobalResponse<CouponResponseDto> createCoupon(@RequestBody CouponCreateRequestDto requestDto) {
-        CouponResponseDto coupon = couponApplicationService.createCoupon(requestDto);
+    public GlobalResponse<CouponResponseDto> createCoupon(@AuthUser AuthUserInfo userInfo, @RequestBody CouponCreateRequestDto requestDto) {
+        CouponResponseDto coupon = couponApplicationService.createCoupon(requestDto, userInfo);
         return ApiUtils.success(ResponseMessage.COUPON_CREATE_SUCCESS.getMessage(), coupon);
     }
 
