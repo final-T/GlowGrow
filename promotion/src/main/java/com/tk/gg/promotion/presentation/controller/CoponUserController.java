@@ -51,9 +51,7 @@ public class CoponUserController {
      * @return: 사용자 쿠폰 사용 응답 DTO
      */
     @PatchMapping("{couponId}/use")
-    public GlobalResponse<Void> useCoupon(@PathVariable UUID couponId, @AuthUser AuthUserInfo userInfo) {
-        // 토큰에 있는 사용자 ID로 사용자 쿠폰 사용
-        Long userId = userInfo.getId();
+    public GlobalResponse<Void> useCoupon(@PathVariable UUID couponId, @RequestBody Long userId) {
         // 쿠폰 사용 처리
         couponApplicationService.useCoupon(userId, couponId);
         return ApiUtils.success(ResponseMessage.COUPON_USER_USE_SUCCESS.getMessage(), null);
