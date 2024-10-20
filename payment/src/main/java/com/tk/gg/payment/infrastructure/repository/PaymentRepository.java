@@ -18,15 +18,17 @@ public interface PaymentRepository extends JpaRepository<Payment, UUID> , Paymen
         return findByPaymentIdAndIsDeletedFalse(paymentId);
     }
 
-    Optional<Payment> findByPaymentKeyAndUserId(String paymentKey, Long userId);
+    Optional<Payment> findByPaymentKeyAndCustomerId(String paymentKey, Long userId);
     default Optional<Payment> findByPaymentKey(String paymentKey, Long userId) {
-        return findByPaymentKeyAndUserId(paymentKey, userId);
+        return findByPaymentKeyAndCustomerId(paymentKey, userId);
     }
 
-    @Query(value = "SELECT * FROM p_payments WHERE user_id = :userId ORDER BY created_at DESC LIMIT 1", nativeQuery = true)
+    @Query(value = "SELECT * FROM p_payments WHERE customer_id = :userId ORDER BY created_at DESC LIMIT 1", nativeQuery = true)
     Optional<Payment> findLatestByUserId(@Param("userId") Long userId);
 
 
     @Query(value = "SELECT DISTINCT user_id FROM  p_payments WHERE status = 'COMPLETED'", nativeQuery = true)
     List<Long> findDistinctUserIdsByStatusCompleted();
+
+    List<Payment> findByCustomerIdOrderByCreatedAtDesc(Long customerId);
 }

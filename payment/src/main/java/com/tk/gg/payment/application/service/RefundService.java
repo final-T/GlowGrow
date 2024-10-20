@@ -8,6 +8,7 @@ import com.tk.gg.payment.application.dto.PaymentCancelDto;
 import com.tk.gg.payment.domain.model.Payment;
 import com.tk.gg.payment.domain.model.Refund;
 import com.tk.gg.payment.domain.service.RefundDomainService;
+import com.tk.gg.payment.domain.type.PaymentStatus;
 import com.tk.gg.payment.domain.type.RefundType;
 import com.tk.gg.payment.infrastructure.config.TossPaymentConfig;
 import com.tk.gg.payment.infrastructure.repository.RefundRepository;
@@ -36,11 +37,11 @@ public class RefundService {
 
     @Transactional
     public PaymentCancelDto cancelPayment(AuthUserInfo authUserInfo, String paymentKey, String cancelReason) {
+        // 자신의 결제에 대해서만 취소 가능, 서비스 이용자만 취소 가능
         Payment payment = paymentService.findPaymentByPaymentKey(paymentKey, authUserInfo.getId());
 
-        if (payment.getRefund() != null) {
-            throw new GlowGlowException(GlowGlowError.PAYMENT_ALREADY_CANCELED);
-        }
+        // 결제 유효성 검사
+        validatePayment(payment);
 
         Refund refund = refundDomainService.createRefund(payment, cancelReason, payment.getAmount(), RefundType.REFUND_REQUESTED, authUserInfo);
 
@@ -87,5 +88,20 @@ public class RefundService {
                 new HttpEntity<>(params, headers),
                 Map.class
         );
+    }
+
+    private void validatePayment(Payment payment) {
+        if (payment.getRefund() != null) {
+            throw new GlowGlowException(GlowGlowError.PAYMENT_CANCELED_OR_REFUNDED);
+        }
+
+        if (!PaymentStatus.COMPLETED.equals(payment.getStatus())) {
+            throw new GlowGlowException(GlowGlowError.PAYMENT_CANCELED_OR_REFUNDED);
+        }
+
+        if (payment.getIsSettled()) {
+            throw new GlowGlowException(GlowGlowError.PAYMENT_ALREADY_SETTLEMENT);
+        }
+
     }
 }

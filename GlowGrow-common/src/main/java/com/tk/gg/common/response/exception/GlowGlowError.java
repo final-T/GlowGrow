@@ -35,10 +35,12 @@ public enum GlowGlowError {
     PAYMENT_NO_EXIST(404,"PAYMENT_001","존재하지 않은 결제정보입니다."),
     PAYMENT_AMOUNT_MISMATCH(404,"PAYMENT_002","결제 금액이 일치하지 않습니다."),
     ALREADY_APPROVED(404,"PAYMENT_003","이미 승인된 결제입니다."),
+    MY_PAYMENT_NOT_FOUND(404,"PAYMENT_004","내 결제정보가 존재하지 않습니다."),
 
     // Refund (환불 관련 에러)
     REFUND_PROCESS_FAILED(404,"REFUND_001","환불 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."),
-    PAYMENT_ALREADY_CANCELED(404,"REFUND_002","이미 취소된 결제입니다."),
+    PAYMENT_CANCELED_OR_REFUNDED(404,"REFUND_002","이미 취소 또는 환불된 결제입니다."),
+    PAYMENT_ALREADY_SETTLEMENT(404,"REFUND_003","이미 정산이 완료된 결제입니다."),
 
     // Settlement (정산 관련 에러)
     SETTLEMENT_NO_EXIST(404,"SETTLEMENT_001","존재하지 않은 정산입니다."),
