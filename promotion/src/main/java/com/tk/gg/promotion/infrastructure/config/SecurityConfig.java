@@ -31,8 +31,7 @@ public class SecurityConfig {
         matcherChain.addAll(
                 // CouponUser
                 SecurityRequestMatcher.authenticatedOf(GET, "/api/my-coupons"), // 조회
-                SecurityRequestMatcher.authenticatedOf(GET, "/api/my-coupons/{couponId}"), // 단건 조회
-                SecurityRequestMatcher.authenticatedOf(PATCH, "/api/my-coupons/{couponId}/use") // 사용
+                SecurityRequestMatcher.authenticatedOf(GET, "/api/my-coupons/{couponId}") // 단건 조회
         );
 
         return matcherChain;
