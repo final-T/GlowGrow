@@ -22,13 +22,13 @@ public class AutomatedSettlementScheduler {
     private final SettlementDomainService settlementDomainService;
 
     // 테스트용 1분 주기 스케줄러
-    @Scheduled(cron = "0 * * * * ?")
-    public void runTestSettlement() {
-        log.info("Starting test settlement process");
-        runMonthlySettlement();
-    }
+//    @Scheduled(cron = "0 * * * * ?")
+//    public void runTestSettlement() {
+//        log.info("Starting test settlement process");
+//        runMonthlySettlement();
+//    }
 
-    //@Scheduled(cron = "0 0 1 * * ?") // 매월 1일 00:00에 실행
+    @Scheduled(cron = "0 0 1 * * ?") // 매월 1일 00:00에 실행
     public void runMonthlySettlement() {
         log.info("Starting automated monthly settlement process");
         try {
