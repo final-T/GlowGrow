@@ -119,7 +119,7 @@
         loadCouponsButton.addEventListener('click', function() {
             var token = document.getElementById('token').value;
 
-            fetch('/api/payments/user-coupons', {
+            fetch(`/api/payments/user-coupons?reservationId=${document.getElementById('reservationId').value}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': token.startsWith('Bearer ') ? token : 'Bearer ' + token
@@ -128,13 +128,21 @@
                 .then(response => response.json())
                 .then(coupons => {
                     couponSelect.innerHTML = '<option value="">쿠폰을 선택하세요</option>';
+
+                    // 서비스 제공자 ID 가져오기
+                    var serviceProviderId = document.getElementById('userId').value;
+
                     coupons.forEach(coupon => {
-                        var option = document.createElement('option');
-                        option.value = coupon.couponId;
-                        //option.textContent = `${coupon.discountValue}${coupon.discountType === 'PERCENTAGE' ? '%' : '원'} 할인 (${coupon.validFrom} ~ ${coupon.validUntil})`;
-                        option.textContent = `${coupon.couponcode} - ${coupon.description} - ${coupon.discountValue}${coupon.discountType === 'PERCENTAGE' ? '%' : '원'} 할인 (${coupon.validFrom} ~ ${coupon.validUntil})`;
-                        option.setAttribute('data-coupon', JSON.stringify(coupon));
-                        couponSelect.appendChild(option);
+                        var couponId = coupon.couponcode.split('-')[0]; // 쿠폰 코드에서 ID 추출
+
+                        // 서비스 제공자 ID와 비교하여 일치하는 경우만 추가
+                        if (couponId === serviceProviderId) {
+                            var option = document.createElement('option');
+                            option.value = coupon.couponId;
+                            option.textContent = `${coupon.couponcode} - ${coupon.description} - ${coupon.discountValue}${coupon.discountType === 'PERCENTAGE' ? '%' : '원'} 할인 (${coupon.validFrom} ~ ${coupon.validUntil})`;
+                            option.setAttribute('data-coupon', JSON.stringify(coupon));
+                            couponSelect.appendChild(option);
+                        }
                     });
 
                     loadCouponsButton.style.display = 'none';
