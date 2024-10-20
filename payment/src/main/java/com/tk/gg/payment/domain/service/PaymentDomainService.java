@@ -3,17 +3,22 @@ package com.tk.gg.payment.domain.service;
 import com.tk.gg.common.response.exception.GlowGlowError;
 import com.tk.gg.common.response.exception.GlowGlowException;
 import com.tk.gg.payment.application.dto.PaymentRequestDto;
+import com.tk.gg.payment.application.dto.PaymentResponseDto;
+import com.tk.gg.payment.application.dto.PaymentSearchCondition;
 import com.tk.gg.payment.domain.model.Payment;
 import com.tk.gg.payment.domain.type.PaymentStatus;
 import com.tk.gg.payment.infrastructure.repository.PaymentRepository;
 import com.tk.gg.security.user.AuthUserInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -23,10 +28,11 @@ public class PaymentDomainService {
     private final PaymentRepository paymentRepository;
 
 
-    public Payment createPayment(PaymentRequestDto requestDto, AuthUserInfo authUserInfo) {
+    public Payment createPayment(PaymentRequestDto requestDto, AuthUserInfo authUserInfo, Long customerId) {
         return Payment.CreatePaymentBuilder()
                 .authUserInfo(authUserInfo)
                 .requestDto(requestDto)
+                .customerId(customerId)
                 .build();
 
     }
@@ -37,9 +43,11 @@ public class PaymentDomainService {
         }
     }
 
-    public void completePayment(Payment payment, String paymentKey, String approvedAt) {
+    public void completePayment(Payment payment, String paymentKey, String approvedAt, String payType) {
         payment.setPaymentKey(paymentKey);
+        payment.setPayType(payType);
         payment.setPaySuccessYN(true);
+        payment.setFailReason(null); // 사용자가 취소했다가 다시 결제했을 경우 취소 사유 삭제
         payment.changeStatusCompleted();
         payment.updatePaidAt(approvedAt);
     }
@@ -72,5 +80,21 @@ public class PaymentDomainService {
     public void markPaymentsAsSettled(List<Payment> payments) {
         payments.forEach(Payment::markAsSettled);
         paymentRepository.saveAll(payments);
+    }
+
+
+    public List<Payment> getPaymentsByCustomerId(Long customerId) {
+        List<Payment> payments = paymentRepository.findByCustomerIdOrderByCreatedAtDesc(customerId);
+        log.info("Retrieved {} payments for customerId: {}", payments.size(), customerId);
+        return payments;
+    }
+
+    @Transactional(readOnly = true)
+    public Page<PaymentResponseDto.Get> searchPayments(PaymentSearchCondition condition, Pageable pageable) {
+        Page<Payment> payments = paymentRepository.searchPaymentsByCondition(condition, pageable);
+        if(payments.isEmpty()){
+            throw new GlowGlowException(GlowGlowError.NO_SEARCH_RESULTS);
+        }
+        return payments.map(PaymentResponseDto.Get::from);
     }
 }
