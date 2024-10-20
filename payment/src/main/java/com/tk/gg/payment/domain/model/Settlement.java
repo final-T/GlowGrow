@@ -43,6 +43,10 @@ public class Settlement extends BaseEntity {
     @Column(nullable = false)
     private Boolean isDeleted = false;
 
+    @Column(nullable = false)
+    private Boolean isAutomated = false;
+
+
     @OneToMany(mappedBy = "settlement", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SettlementDetail> settlementDetails = new ArrayList<>();
 
@@ -68,11 +72,12 @@ public class Settlement extends BaseEntity {
     }
 
     @Builder(builderClassName = "CreateSettlementBuilder", builderMethodName = "createSettlementBuilder")
-    public Settlement(Long providerId, Long totalAmount, Long settlementTime, AuthUserInfo authUserInfo) {
+    public Settlement(Long providerId, Long totalAmount, Long settlementTime, AuthUserInfo authUserInfo, Boolean isAutomated) {
         this.providerId = providerId;
         this.totalAmount = totalAmount;
         this.settlementTime = settlementTime;
         this.status =  SettlementStatus.COMPLETED;
+        this.isAutomated = isAutomated;
         this.createdBy = String.valueOf(authUserInfo.getId());
         this.updatedBy = String.valueOf(authUserInfo.getId());
     }
