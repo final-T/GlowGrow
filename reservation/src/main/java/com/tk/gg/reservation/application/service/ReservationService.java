@@ -4,7 +4,7 @@ package com.tk.gg.reservation.application.service;
 import com.tk.gg.common.enums.NotificationType;
 import com.tk.gg.common.enums.UserRole;
 import com.tk.gg.common.kafka.alarm.KafkaNotificationDto;
-import com.tk.gg.common.kafka.payment.PaymentForReservationEventDto;
+import com.tk.gg.common.kafka.payment.PaymentReservationResponseDto;
 import com.tk.gg.common.response.exception.GlowGlowError;
 import com.tk.gg.common.response.exception.GlowGlowException;
 import com.tk.gg.reservation.application.dto.CreateReservationDto;
@@ -27,7 +27,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
@@ -119,7 +118,7 @@ public class ReservationService {
             if (!reservation.getReservationStatus().equals(ReservationStatus.DONE)) {
                 throw new GlowGlowException(GlowGlowError.RESERVATION_NOT_DONE_FOR_PAYMENT);
             }
-            paymentKafkaProducer.sendReservationToPaymentEvent(new PaymentForReservationEventDto(
+            paymentKafkaProducer.sendReservationToPaymentEvent(new PaymentReservationResponseDto(
                     reservationId, reservation.getCustomerId(), reservation.getServiceProviderId(), reservation.getPrice()
             ));
         }
