@@ -34,6 +34,7 @@ public class PostRepositoryCustomImpl extends QuerydslRepositorySupport implemen
         List<PostSearchResponseDto> content = queryFactory
                 .select(Projections.constructor(PostSearchResponseDto.class,
                         post.postId,
+                        post.userId,
                         post.title,
                         post.content,
                         post.createdAt,
