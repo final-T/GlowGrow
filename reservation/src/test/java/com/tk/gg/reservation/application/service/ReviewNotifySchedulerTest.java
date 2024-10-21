@@ -11,6 +11,7 @@ import com.tk.gg.reservation.domain.type.ReservationStatus;
 import com.tk.gg.reservation.infrastructure.config.SwaggerConfig;
 import com.tk.gg.reservation.infrastructure.messaging.NotificationKafkaProducer;
 import com.tk.gg.reservation.infrastructure.repository.ReservationRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Slf4j(topic = "[ReviewNotifyScheduler]")
 @SpringBootTest(classes = ReservationApplication.class)
 @ActiveProfiles("test") // test 프로파일 사용
 @EmbeddedKafka(partitions = 1, topics = {"noti-send"})
@@ -38,6 +40,7 @@ class ReviewNotifySchedulerTest {
     private ReservationDomainService reservationDomainService;
     @Autowired
     private NotificationKafkaProducer notificationKafkaProducer;
+
 
     @BeforeEach
     public void setUp() {
@@ -69,34 +72,30 @@ class ReviewNotifySchedulerTest {
         long endTime = System.currentTimeMillis();
 
         long duration = endTime - startTime;
-        System.out.println("Execution Time: " + duration + "ms");
+        System.out.println("============Execution Time:" + duration + "ms");
     }
 
     private void notifyUsersForReviews() {
-        int batchSize = 100; // 배치 크기 설정
-        int offset = 0;
+
         List<Reservation> doneReservations;
-        do {
-            doneReservations = reservationDomainService.getReservationsByStatusIsDoneWithLimit(offset, batchSize);
-            for (Reservation reservation : doneReservations) {
-                // 리뷰가 존재하는지 확인
-                List<Review> reviews = reviewDomainService.getReviewsByReservationId(reservation.getId());
-                if (reviews.isEmpty()) {
-                    notificationKafkaProducer.sendReservationNotificationToUsers(
-                            reservation.getCustomerId(),
-                            reservation.getServiceProviderId(),
-                            "서비스 완료가 된 예약에 대해 리뷰를 남길 수 있습니다!"
-                    );
-                }else if(reviews.size() == 1) {
-                    notificationKafkaProducer.sendReservationToNotificationEvent(
-                            KafkaNotificationDto.builder().type(NotificationType.RESERVATION.getName())
-                                    .userId(reviews.get(0).getTargetUserId())
-                                    .message("서비스 완료가 된 예약에 대해 리뷰를 남길 수 있습니다!")
-                                    .build()
-                    );
-                }
+        doneReservations = reservationDomainService.getReservationsByStatusIsDone();
+        for (Reservation reservation : doneReservations) {
+            // 리뷰가 존재하는지 확인
+            List<Review> reviews = reviewDomainService.getReviewsByReservationId(reservation.getId());
+            if (reviews.isEmpty()) {
+                notificationKafkaProducer.sendReservationNotificationToUsers(
+                        reservation.getCustomerId(),
+                        reservation.getServiceProviderId(),
+                        "서비스 완료가 된 예약에 대해 리뷰를 남길 수 있습니다!"
+                );
+            } else if (reviews.size() == 1) {
+                notificationKafkaProducer.sendReservationToNotificationEvent(
+                        KafkaNotificationDto.builder().type(NotificationType.RESERVATION.getName())
+                                .userId(reviews.get(0).getTargetUserId())
+                                .message("서비스 완료가 된 예약에 대해 리뷰를 남길 수 있습니다!")
+                                .build()
+                );
             }
-            offset += batchSize;
-        } while(doneReservations.size() == batchSize);
+        }
     }
 }
