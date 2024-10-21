@@ -72,7 +72,7 @@ public class ReservationController {
         );
     }
 
-    @PutMapping("/{reservationId}")
+    @PatchMapping("/{reservationId}")
     @Operation(summary = "수정 API", description = "예약(reservation) 정보를 수정합니다.**[ROLE: Provider,Customer,Master]**")
     public GlobalResponse<String> updateReservation(
             @PathVariable(value = "reservationId") UUID reservationId,
