@@ -7,6 +7,7 @@ import com.tk.gg.common.response.ResponseMessage;
 import com.tk.gg.payment.application.dto.*;
 import com.tk.gg.payment.application.service.PaymentService;
 import com.tk.gg.payment.domain.model.Payment;
+import com.tk.gg.payment.domain.model.PendingPaymentRequest;
 import com.tk.gg.payment.infrastructure.config.TossPaymentConfig;
 import com.tk.gg.security.user.AuthUser;
 import com.tk.gg.security.user.AuthUserInfo;
@@ -167,7 +168,6 @@ public class PaymentController {
     }
 
 
-
     /**
      * 사용자 보유 쿠폰 목록 조회
      * @return: 사용자 쿠폰 목록 조회 응답 DTO
@@ -178,6 +178,14 @@ public class PaymentController {
         return ResponseEntity.ok(coupons);
     }
 
-
+    /**
+     * 나에게 온 결제 요청 확인하기
+     * @return: 서비스 제공자에게 온 결제 요청 목록
+     */
+    @GetMapping("/pending-requests")
+    @ResponseBody
+    public GlobalResponse<List<PendingPaymentRequest>> getPendingPaymentRequests(@AuthUser AuthUserInfo authUserInfo) {
+        return ApiUtils.success(ResponseMessage.PAYMENT_RETRIEVE_SUCCESS.getMessage(), paymentService.getPendingPaymentRequestsByProviderId(authUserInfo));
+    }
 
 }

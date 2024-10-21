@@ -2,6 +2,7 @@ package com.tk.gg.payment.application.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.tk.gg.common.enums.UserRole;
 import com.tk.gg.common.kafka.coupon.CouponUserResponseDto;
 import com.tk.gg.common.kafka.payment.PaymentReservationResponseDto;
 import com.tk.gg.common.response.exception.GlowGlowError;
@@ -11,9 +12,12 @@ import com.tk.gg.payment.application.client.ReservationService;
 import com.tk.gg.payment.application.client.UserService;
 import com.tk.gg.payment.application.dto.*;
 import com.tk.gg.payment.domain.model.Payment;
+import com.tk.gg.payment.domain.model.PendingPaymentRequest;
 import com.tk.gg.payment.domain.service.PaymentDomainService;
+import com.tk.gg.payment.domain.service.PendingPaymentRequestDomainService;
 import com.tk.gg.payment.domain.type.PaymentStatus;
 import com.tk.gg.payment.infrastructure.config.TossPaymentConfig;
+import com.tk.gg.payment.infrastructure.messaging.NotificationPaymentKafkaProducer;
 import com.tk.gg.payment.infrastructure.repository.PaymentRepository;
 import com.tk.gg.security.user.AuthUserInfo;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +48,8 @@ public class PaymentService {
     private final TossPaymentConfig tossPaymentConfig;
     private final ReservationService reservationService;
     private final CouponService couponService;
+    private final PendingPaymentRequestDomainService pendingPaymentRequestDomainService;
+    private final NotificationPaymentKafkaProducer notificationPaymentKafkaProducer;
 
 
     @Transactional
@@ -97,6 +103,12 @@ public class PaymentService {
             couponService.useCoupon(payment.getCouponId(), payment.getCustomerId());
         }
 
+        pendingPaymentRequestDomainService.softDeletePendingRequest(payment.getReservationId());
+
+        // 결제 완료 알림
+        String notificationMessage = String.format("결제가 성공적으로 완료되었습니다. 결제 금액: %d원", amount);
+        notificationPaymentKafkaProducer.sendPaymentNotificationToUser(payment.getCustomerId(), notificationMessage ,true);
+
         return result;
     }
 
@@ -110,6 +122,10 @@ public class PaymentService {
 
         paymentDomainService.failPayment(payment, message);
         paymentRepository.save(payment);
+
+        // 결제 완료 알림
+        notificationPaymentKafkaProducer.sendPaymentNotificationToUser(payment.getCustomerId(), "결제 처리 중 오류가 발생했습니다." ,false);
+
 
         return PaymentFailDto.builder()
                 .errorCode(code)
@@ -257,5 +273,35 @@ public class PaymentService {
         }
 
         return paymentDomainService.searchPayments(condition, pageable);
+    }
+
+    /**
+     * 결제 요청 이벤트 수신했을 때 결제요청 데이터 저장 메서드
+     * @return:
+     */
+    @Transactional
+    public void savePendingPaymentRequest(PaymentReservationResponseDto event) {
+        PendingPaymentRequest request = pendingPaymentRequestDomainService.createPendingPaymentRequest(
+                event.reservationId(), event.customerId(), event.serviceProviderId(), event.price());
+        log.info("Pending payment request saved: {}", request);
+    }
+
+
+    @Transactional(readOnly = true)
+    public List<PendingPaymentRequest> getPendingPaymentRequestsByProviderId(AuthUserInfo authUserInfo) {
+        UserRole userRole = authUserInfo.getUserRole();
+
+        if(!UserRole.MASTER.equals(userRole)){
+            throw new GlowGlowException(GlowGlowError.PAYMENT_NO_AUTH_PERMISSION_DENIED);
+        }
+
+        Long providerId = authUserInfo.getId();
+
+        List<PendingPaymentRequest> requests = pendingPaymentRequestDomainService.getPendingRequestsForProvider(providerId);
+        if (requests.isEmpty()) {
+            log.info("No pending payment requests found for provider: {}", providerId);
+            throw new GlowGlowException(GlowGlowError.PAYMENT_REQUEST_NOT_FOUND);
+        }
+        return requests;
     }
 }
