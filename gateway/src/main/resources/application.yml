@@ -19,7 +19,7 @@ spring:
         - id: post-service # 게시판 서비스
           uri: lb://post-service
           predicates:
-            - Path=/api/posts/**, /api/comments/**, /api/multimedia/**
+            - Path=/api/posts/**, /api/comments/**
         - id: promotion-service # 프로모션 서비스
           uri: lb://promotion-service
           predicates:
