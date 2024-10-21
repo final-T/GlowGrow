@@ -47,7 +47,7 @@ public class Post extends BaseEntity {
     private List<Like> likesList = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Multimedia> multimediaList = new ArrayList<>();
+    private List<PostFile> postFiles = new ArrayList<>();
 
     public void updateViews(int newViews) {
         this.views = newViews;
@@ -65,8 +65,6 @@ public class Post extends BaseEntity {
         // 좋아요에 대해 소프트 삭제 수행
         this.likesList.forEach(like -> like.softDelete(authUserInfo));
 
-        // 멀티미디어에 대해 소프트 삭제 수행
-        this.multimediaList.forEach(multimedia -> multimedia.softDelete(authUserInfo));
     }
 
 
