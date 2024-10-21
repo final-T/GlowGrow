@@ -11,7 +11,6 @@ import com.tk.gg.post.application.dto.PostSearchResponseDto;
 import com.tk.gg.post.domain.model.Post;
 import com.tk.gg.post.domain.repository.PostRepository;
 import com.tk.gg.post.domain.service.PostDomainService;
-import com.tk.gg.post.infrastructure.client.UserFeignClient;
 import com.tk.gg.security.user.AuthUserInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -86,7 +85,11 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public Page<PostSearchResponseDto> searchPosts(Pageable pageable, PostSearchCondition searchDto) {
-        return postRepository.findPostsByCondition(searchDto, pageable);
+        Page<PostSearchResponseDto> result = postRepository.findPostsByCondition(searchDto, pageable);
+        if(result.isEmpty()){
+            throw new GlowGlowException(GlowGlowError.NO_SEARCH_RESULTS);
+        }
+        return result;
     }
 
     @Transactional(readOnly = true)

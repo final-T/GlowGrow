@@ -13,14 +13,16 @@ public class PostSearchResponseDto {
     private LocalDateTime createdAt;
     private Integer likes;
     private Integer views;
+    private Long userId;
 
-    public PostSearchResponseDto(UUID postId, String title, String content, LocalDateTime createdAt, Integer likes, Integer views) {
+    public PostSearchResponseDto(UUID postId, Long userId, String title, String content, LocalDateTime createdAt, Integer likes, Integer views) {
         this.postId = postId;
         this.title = title;
         this.contentPreview = getContentPreview(content);
         this.createdAt = createdAt;
         this.likes = likes;
         this.views = views;
+        this.userId = userId;
     }
 
     private String getContentPreview(String content) {
