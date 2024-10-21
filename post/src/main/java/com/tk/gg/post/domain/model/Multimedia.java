@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "p_multimedias")
+@Table(name = "p_multimedias_remove")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Multimedia extends BaseEntity {
