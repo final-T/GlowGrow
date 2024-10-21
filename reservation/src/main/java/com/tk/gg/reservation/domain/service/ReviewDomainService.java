@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 import static com.tk.gg.common.response.exception.GlowGlowError.REVIEW_NO_EXIST;
@@ -44,7 +45,7 @@ public class ReviewDomainService {
         review.delete(deletedBy);
     }
 
-    public boolean existsByReservationId(UUID reservationId) {
-        return reviewRepository.existsByReservationId(reservationId);
+    public List<Review> getReviewsByReservationId(UUID reservationId) {
+        return reviewRepository.findAllByReservationId(reservationId);
     }
 }

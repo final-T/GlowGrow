@@ -1,0 +1,27 @@
+server:
+  port: 19092
+
+spring:
+  application:
+    name: reservation-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/reservation  # 테스트용 DB URL (Docker에서 실행 중인 PostgreSQL 컨테이너)
+    username: postgres                           # 테스트용 DB 사용자
+    password: postgres                           # 테스트용 DB 비밀번호
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop  # 테스트 환경에서 데이터베이스 스키마를 생성 후 테스트 종료 시 삭제
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_batch_fetch_size: 1000
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      auto-offset-reset: earliest
+
+gateway:
+  url: http://localhost:19091

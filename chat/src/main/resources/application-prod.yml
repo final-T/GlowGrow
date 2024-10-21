@@ -13,6 +13,17 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+  data:
+    mongodb:
+      host: mongo
+      port: 27017
+      username: root
+      password: ${MONGODB_ROOT_PASSWORD}
+      database: chat
+      authentication-database: admin
+    redis:
+      host: redis
+      port: 6379
 
   # 카프카 설정
   kafka:

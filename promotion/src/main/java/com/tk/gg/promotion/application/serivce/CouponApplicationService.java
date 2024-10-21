@@ -4,6 +4,7 @@ import com.tk.gg.promotion.application.dto.*;
 import com.tk.gg.promotion.domain.Coupon;
 import com.tk.gg.promotion.domain.CouponUser;
 import com.tk.gg.promotion.domain.service.CouponDomainService;
+import com.tk.gg.security.user.AuthUserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,8 +17,8 @@ public class CouponApplicationService {
     private final CouponDomainService couponDomainService;
 
     // 쿠폰 생성
-    public CouponResponseDto createCoupon(CouponCreateRequestDto requestDto) {
-        Coupon savedCoupon = couponDomainService.createCoupon(requestDto);
+    public CouponResponseDto createCoupon(CouponCreateRequestDto requestDto, AuthUserInfo userInfo) {
+        Coupon savedCoupon = couponDomainService.createCoupon(requestDto, userInfo);
 
         return CouponResponseDto.from(savedCoupon);
     }

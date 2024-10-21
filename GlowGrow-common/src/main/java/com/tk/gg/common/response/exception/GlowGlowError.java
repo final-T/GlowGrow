@@ -31,25 +31,27 @@ public enum GlowGlowError {
     COMMENT_DEPTH_EXCEEDED(400,"COMMENT_003","댓글의 깊이 제한을 초과했습니다. 대댓글은 1단계까지만 허용됩니다."),
     COMMENT_NO_AUTH_PERMISSION_DENIED(403,"COMMENT_004","댓글에 대한 권한이 없습니다."),
 
-    // Multimedia (멀티미디어 관련 에러)
-    MULTIMEDIA_NO_EXIST(404,"MULTIMEDIA_001","존재하지 않은 파일입니다."),
-    INVALID_FILE_NAME(404, "MULTIMEDIA_002","파일 이름이 유효하지 않습니다."),
-    UNSUPPORTED_FILE_EXTENSION(404,"MULTIMEDIA_003","지원하지 않는 확장자입니다."),
-    IMAGE_FILE_SIZE_EXCEEDED(404,"MULTIMEDIA_004","이미지 파일 크기가 허용된 최대 크기를 초과했습니다."),
-    VIDEO_FILE_SIZE_EXCEEDED(404,"MULTIMEDIA_005","동영상 파일 크기가 허용된 최대 크기를 초과했습니다."),
-
     // Payment (결제 관련 에러)
     PAYMENT_NO_EXIST(404,"PAYMENT_001","존재하지 않은 결제정보입니다."),
     PAYMENT_AMOUNT_MISMATCH(404,"PAYMENT_002","결제 금액이 일치하지 않습니다."),
     ALREADY_APPROVED(404,"PAYMENT_003","이미 승인된 결제입니다."),
+    MY_PAYMENT_NOT_FOUND(404,"PAYMENT_004","내 결제정보가 존재하지 않습니다."),
+    PAYMENT_REQUEST_NOT_FOUND(404,"PAYMENT_005","결제 요청이 존재하지 않습니다."),
+    PAYMENT_NO_AUTH_PERMISSION_DENIED(403,"PAYMENT_006","결제 정보에 대한 권한이 없습니다."),
 
     // Refund (환불 관련 에러)
     REFUND_PROCESS_FAILED(404,"REFUND_001","환불 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."),
-    PAYMENT_ALREADY_CANCELED(404,"REFUND_002","이미 취소된 결제입니다."),
+    PAYMENT_CANCELED_OR_REFUNDED(404,"REFUND_002","이미 취소 또는 환불된 결제입니다."),
+    PAYMENT_ALREADY_SETTLEMENT(404,"REFUND_003","이미 정산이 완료된 결제입니다."),
 
     // Settlement (정산 관련 에러)
     SETTLEMENT_NO_EXIST(404,"SETTLEMENT_001","존재하지 않은 정산입니다."),
     SETTLEMENT_NO_AUTH_PERMISSION_DENIED(403,"SETTLEMENT_002","정산에 대한 권한이 없습니다."),
+    SETTLEMENT_SELF_ACCESS_ONLY(403,"SETTLEMENT_003","자신의 정산 정보만 확인할 수 있습니다."),
+    SETTLEMENT_NO_PAYMENTS_FOUND(404, "SETTLEMENT_004", "해당 기간에 정산 가능한 결제 정보가 존재하지 않습니다."),
+    SETTLEMENT_ALREADY_EXISTS(409, "SETTLEMENT_005", "이미 정산이 완료된 데이터입니다."),
+    SETTLEMENT_NO_PROVIDER_ID_FOR_PROVIDER(400, "SETTLEMENT_004", "providerId가 누락되었습니다. PROVIDER 역할일 경우 필수 입력 사항입니다."),
+
 
 
 
@@ -66,6 +68,7 @@ public enum GlowGlowError {
     // 예약 및 리뷰 관련 에러
     TIMESLOT_ALREADY_EXIST(404, "TIMESLOT_001","예약타임슬롯 생성에 실패했습니다."),
     TIMESLOT_NO_EXIST(404, "TIMESLOT_002","존재하지 않는 예약타임슬롯 정보 입니다."),
+    TIMESLOT_NOT_OWNER(404, "TIMESLOT_003","해당 예약타임슬롯에 대한 권한이 없습니다."),
     RESERVATION_CREATE_FAILED(404, "RESERVATION_001", "예약 생성에 실패했습니다."),
     RESERVATION_NO_EXIST(404, "RESERVATION_002","존재하지 않는 예약 정보입니다."),
     RESERVATION_UPDATE_FAILED(400, "RESERVATION_003", "예약 내용 수정에 실패했습니다."),
@@ -73,6 +76,9 @@ public enum GlowGlowError {
     RESERVATION_NOT_OWNER(400, "RESERVATION_005", "해당 예약에 대한 권한이 없습니다."),
     RESERVATION_FORBIDDEN_STATUS(400, "RESERVATION_006", "사용자가 수정할 수 있는 예약 상태가 아닙니다."),
     RESERVATION_ALREADY_EXIST(400, "RESERVATION_007", "이미 해당 시간에 예약이 있습니다."),
+    RESERVATION_NOT_DONE_FOR_PAYMENT(404, "REVIEW_008", "서비스 완료된 예약만 결제 요청을 할 수 있습니다."),
+    RESERVATION_BEFORE_NOW(404, "RESERVATION_009","현재 시간 이전의 예약은 불가합니다."),
+    RESERVATION_WRONG_TIME(404, "RESERVATION_010","잘못된 요청 예약 날짜 및 시간입니다."),
     REVIEW_CREATE_FAILED(404, "REVIEW_001", "예약에 대한 리뷰 생성에 실패했습니다."),
     REVIEW_NO_EXIST(404, "REVIEW_002", "존재하지 않는 리뷰입니다."),
     REVIEW_WRONG_REVIEWER_ID(404, "REVIEW_003","요청 리뷰어와 현재 사용자가 일치하지 않습니다."),
@@ -106,8 +112,18 @@ public enum GlowGlowError {
     USER_GRADE_NO_EXIST(404, "USER_GRADE_002", "사용자의 등급이 없습니다."),
     GRADE_NOT_NO_EXIST(404, "USER_GRADE_003", "해당 등급이 존재하지 않습니다."),
 
+    // 알림 관련 에러
     NOTIFICATION_NO_EXIST(404, "NOTIFICATION_001", "해당 알림이 존재하지 않습니다."),
     NOTIFICATION_ALREADY_READ(409, "NOTIFICATION_002", "해당 알림은 이미 읽음 처리 되어있습니다."),
+
+    // 파일 관련 에러
+    MULTIMEDIA_REQUEST_PARAM_NULL(409, "MULTIMEDIA_001", "필수 요청값이 없습니다."),
+    MULTIMEDIA_FILE_SIZE_INVALID(409, "MULTIMEDIA_002", "파일 크기가 너무 큽니다."),
+    MULTIMEDIA_FILE_EXTENSION_INVALID(409, "MULTIMEDIA_003", "지원하지 않는 파일 형식입니다."),
+    MULTIMEDIA_FILE_INVALID(409, "MULTIMEDIA_004", "제목이 없는 파일입니다."),
+    MULTIMEDIA_UPLOAD_FAIL(409, "MULTIMEDIA_005", "파일을 업로드 하는데 실패했습니다."),
+    MULTIMEDIA_NO_EXIST(404, "MULTIMEDIA_006", "존재하지 않는 파일입니다."),
+
     ;
     private final int statusCode; // HTTP 상태 코드
     private final String errorCode; // 내부 시스템의 에러 코드

@@ -1,29 +1,28 @@
 package com.tk.gg.reservation.presentation.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tk.gg.common.response.ResponseMessage;
 import com.tk.gg.reservation.application.dto.CreateReservationDto;
 import com.tk.gg.reservation.application.dto.ReservationDto;
 import com.tk.gg.reservation.application.dto.TimeSlotDto;
 import com.tk.gg.reservation.application.dto.UpdateReservationDto;
 import com.tk.gg.reservation.application.service.ReservationService;
-import com.tk.gg.reservation.domain.model.TimeSlot;
 import com.tk.gg.reservation.domain.type.ReservationStatus;
 import com.tk.gg.reservation.presentation.request.CreateReservationRequest;
+import com.tk.gg.reservation.presentation.request.ReservationSearchCondition;
 import com.tk.gg.reservation.presentation.request.UpdateReservationRequest;
 import com.tk.gg.security.user.AuthUserInfo;
-import com.tk.gg.security.user.AuthUserInfoImpl;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -33,9 +32,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.tk.gg.common.response.ResponseMessage.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -45,24 +42,27 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("[Reservation] - ReservationController")
-@AutoConfigureMockMvc
+@ExtendWith(MockitoExtension.class)
 @WebMvcTest(ReservationController.class)
 class ReservationControllerTest {
 
+    @MockBean
+    ReservationService reservationService;
+    @Autowired
+    ObjectMapper objectMapper;
     @Autowired
     private MockMvc mvc;
 
-    @MockBean
-    private ReservationService reservationService;
+    private LocalDate localDate = LocalDate.of(
+            LocalDate.now().getYear(), LocalDate.now().getMonth(), LocalDate.now().getDayOfMonth()
+    );
 
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @DisplayName("[POST] 예약 생성 - 정상 호출")
     @Test
     @WithMockUser(username = "user@example.com", roles = {"CUSTOMER"})
     void 예약_생성_성공() throws Exception {
-        LocalDate localDate = LocalDate.parse("2024-10-07");
+
         CreateReservationRequest request = new CreateReservationRequest(
                 UUID.randomUUID(), 1L, 2L, localDate, 20, 0);
         TimeSlotDto timeSlotDto = createTimeSlotDto();
@@ -86,22 +86,17 @@ class ReservationControllerTest {
         then(reservationService).should().createReservation(any(CreateReservationDto.class));
     }
 
-    @Disabled("test중")
     @DisplayName("[GET] 예약 목록 조회 (페이징, 정렬) - 정상 호출")
     @Test
     @WithMockUser(username = "user@example.com", roles = {"CUSTOMER"})
     void 예약_목록_조회_성공() throws Exception {
         Pageable pageable = PageRequest.of(0, 5, Sort.by("reservationDate").ascending());
-        TimeSlotDto timeSlotDto = createTimeSlotDto();
-        ReservationDto reservationDto = createReservationDto(timeSlotDto);
-
-        given(reservationService.searchReservations(eq(null), eq(null), eq(null), eq(pageable) ,any(AuthUserInfoImpl.class)))
-                .willReturn(new PageImpl<>(List.of(reservationDto), pageable, 1));
+        given(reservationService.searchReservations
+                (any(ReservationSearchCondition.class), any(), any(AuthUserInfo.class))
+        )
+                .willReturn(new PageImpl<>(List.of(), pageable, 0));
 
         mvc.perform(get("/api/reservations")
-                        .queryParam("page", "0")
-                        .queryParam("size", "5")
-                        .queryParam("sort", "reservationDate,asc")
                         .with(csrf())
                         .with(user("user@example.com").roles("CUSTOMER"))
                 )
@@ -110,10 +105,11 @@ class ReservationControllerTest {
                 .andExpect(jsonPath("$.message").value(RESERVATION_RETRIEVE_SUCCESS.getMessage()))
                 .andDo(print());
 
-        then(reservationService).should().searchReservations(eq(null), eq(null), eq(null), eq(pageable),any(AuthUserInfoImpl.class));
+        then(reservationService).should().searchReservations(
+                any(ReservationSearchCondition.class), any(), any(AuthUserInfo.class)
+        );
     }
 
-    @Disabled("test중")
     @DisplayName("[GET] 예약 단건 조회 - 정상 호출")
     @Test
     @WithMockUser(username = "user@example.com", roles = {"CUSTOMER"})
@@ -121,7 +117,7 @@ class ReservationControllerTest {
         UUID reservationId = UUID.randomUUID();
         TimeSlotDto timeSlotDto = createTimeSlotDto();
         ReservationDto reservationDto = createReservationDto(timeSlotDto);
-        given(reservationService.getOneReservation(reservationId, any(AuthUserInfoImpl.class))).willReturn(reservationDto);
+        given(reservationService.getOneReservation(any(UUID.class), any(AuthUserInfo.class))).willReturn(reservationDto);
 
         mvc.perform(get("/api/reservations/{reservationId}", reservationId)
                         .with(csrf())
@@ -134,7 +130,7 @@ class ReservationControllerTest {
                 .andExpect(jsonPath("$.message").value(RESERVATION_RETRIEVE_SUCCESS.getMessage()))
                 .andDo(print());
 
-        then(reservationService).should().getOneReservation(reservationId, any(AuthUserInfoImpl.class));
+        then(reservationService).should().getOneReservation(any(UUID.class), any(AuthUserInfo.class));
     }
 
     @DisplayName("[PUT] 예약 수정 - 정상 호출")
@@ -142,9 +138,8 @@ class ReservationControllerTest {
     @WithMockUser(username = "user@example.com", roles = {"CUSTOMER"})
     void 예약_수정_성공() throws Exception {
         UUID reservationId = UUID.randomUUID();
-        LocalDate localDate = LocalDate.parse("2024-10-07");
         UpdateReservationRequest request = new UpdateReservationRequest(
-                UUID.randomUUID(), 1L, 2L, ReservationStatus.CHECK, localDate, 20, 0);
+                UUID.randomUUID(), localDate, 20, 0);
         willDoNothing().given(reservationService)
                 .updateReservation(eq(reservationId), any(UpdateReservationDto.class), any(AuthUserInfo.class));
 
@@ -186,7 +181,7 @@ class ReservationControllerTest {
         return ReservationDto.builder()
                 .id(UUID.randomUUID())
                 .timeSlotDto(timeSlotDto)
-                .reservationDate(LocalDate.parse("2024-10-07"))
+                .reservationDate(localDate)
                 .reservationTime(20)
                 .customerId(1L)
                 .serviceProviderId(2L)
@@ -198,7 +193,7 @@ class ReservationControllerTest {
     private TimeSlotDto createTimeSlotDto() {
         return TimeSlotDto.builder()
                 .id(UUID.randomUUID())
-                .availableDate(LocalDate.parse("2024-10-07"))
+                .availableDate(localDate)
                 .serviceProviderId(2L)
                 .isReserved(false)
                 .availableTime(20).build();

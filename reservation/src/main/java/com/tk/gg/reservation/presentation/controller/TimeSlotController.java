@@ -55,7 +55,7 @@ public class TimeSlotController {
             @Parameter(name = "endDate", description = "검색 끝 범위 날짜(yyyy-MM-dd)")
             @RequestParam(value = "endDate", required = false)
             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
-            @ParameterObject @PageableDefault(sort = {"availableDate"}, direction = Sort.Direction.DESC) Pageable pageable
+            @ParameterObject @PageableDefault(sort = {"availableDate","availableTime"}, direction = Sort.Direction.DESC) Pageable pageable
     ) {
         return ApiUtils.success(
                 TIMESLOT_RETRIEVE_SUCCESS.getMessage(),

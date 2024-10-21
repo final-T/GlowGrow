@@ -38,7 +38,7 @@ public class UserDomainService {
 
        if(!userInfoEncoder.matches(dto.password(), user.getPassword())){
            throw new GlowGlowException(GlowGlowError.AUTH_INVALID_CREDENTIALS);
-       };
+       }
 
         return toTokenInfoServiceResponse(
                 generateTokenAndSaveRefresh(user), user

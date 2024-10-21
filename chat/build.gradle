@@ -13,6 +13,9 @@ dependencies {
     // stomp
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
+    // mongodb
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+
     // lombok - 코드 간소화 (각 서비스 모듈에서도 추가 필요)
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
