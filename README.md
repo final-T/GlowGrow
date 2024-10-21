@@ -62,7 +62,8 @@
 
 ## 인프라 아키텍처
 
-![img_1.png](img_1.png)
+![image](https://github.com/user-attachments/assets/ac9500e3-7d39-41a7-98d9-fc70a1182812)
+
 
 ## 프로젝트 기능 및 서비스 구성
 

@@ -3,6 +3,7 @@ package com.tk.gg.payment.domain.service;
 import com.tk.gg.payment.domain.model.Payment;
 import com.tk.gg.payment.domain.model.Settlement;
 import com.tk.gg.payment.domain.model.SettlementDetail;
+import com.tk.gg.payment.domain.type.CouponType;
 import com.tk.gg.payment.infrastructure.repository.SettlementDetailRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,10 +26,14 @@ public class SettlementDetailDomainService {
         List<SettlementDetail> newDetails = new ArrayList<>();
         for (Payment payment : payments) {
             if (!settlementDetailRepository.existsByPayment_PaymentId(payment.getPaymentId())) {
+                long settlementAmount = calculateSettlementAmountForPayment(payment);
                 SettlementDetail detail = SettlementDetail.createSettlementDetailBuilder()
                         .settlement(settlement)
                         .payment(payment)
-                        .amount(payment.getAmount())
+                        .amount(settlementAmount)
+                        .originalAmount(payment.getOriginalAmount())
+                        .couponId(payment.getCouponId())
+                        .couponType(payment.getCouponType())
                         .build();
                 newDetails.add(detail);
                 log.info("Created new settlement detail for payment: {}", payment.getPaymentId());
@@ -49,6 +54,20 @@ public class SettlementDetailDomainService {
     public List<SettlementDetail> getSettlementDetailsByProviderAndTime(Long providerId, Long settlementTime) {
         //return settlementDetailRepository.findByProviderIdAndSettlementTimeAndIsDeletedFalse(providerId, settlementTime);
         return settlementDetailRepository.findDetailsByProviderIdAndSettlementTime(providerId,settlementTime);
+    }
+
+    private long calculateSettlementAmountForPayment(Payment payment) {
+        if (payment.getCouponId() == null) {
+            return payment.getAmount();
+        } else {
+            if (payment.getCouponType() == CouponType.PROVIDER) {
+                return payment.getAmount();
+            } else if (payment.getCouponType() == CouponType.GLOWGROW) {
+                return payment.getOriginalAmount();
+            } else {
+                throw new IllegalStateException("Unknown coupon type: " + payment.getCouponType());
+            }
+        }
     }
 
 }
