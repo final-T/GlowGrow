@@ -1,9 +1,11 @@
 package com.tk.gg.reservation.application.service;
 
 
+import com.tk.gg.common.enums.UserRole;
 import com.tk.gg.common.response.exception.GlowGlowException;
 import com.tk.gg.reservation.application.client.UserServiceImpl;
 import com.tk.gg.reservation.application.dto.*;
+import com.tk.gg.reservation.application.util.ReservationUserCheck;
 import com.tk.gg.reservation.domain.model.Review;
 import com.tk.gg.reservation.domain.type.ReservationStatus;
 import com.tk.gg.reservation.infrastructure.messaging.GradeKafkaProducer;
@@ -21,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
 import static com.tk.gg.common.response.exception.GlowGlowError.*;
+import static com.tk.gg.reservation.application.util.ReservationUserCheck.*;
 
 @RequiredArgsConstructor
 @Service
@@ -30,20 +33,35 @@ public class ReviewService {
     private final UserServiceImpl userClient;
     private final GradeKafkaProducer gradeKafkaProducer;
 
-    //TODO : 예약과 관련된 사람만 해당 예약에 대한 리뷰 작성 가능하게 검증
+
     @Transactional
     public ReviewWithReservationDto createReview(CreateReviewDto dto, AuthUserInfo userInfo) {
         Reservation reservation = reservationDomainService.getOne(dto.reservationId());
+        if (!canHandleReservation(reservation, userInfo)) {
+            throw new GlowGlowException(RESERVATION_NOT_OWNER);
+        }
         // 예약 상태 검증 -> 예약 체크, 거절, 취소인 경우에는 리뷰 불가
-        if (reservation.getReservationStatus().equals(ReservationStatus.CHECK) ||
-                reservation.getReservationStatus().equals(ReservationStatus.REFUSED) ||
-                reservation.getReservationStatus().equals(ReservationStatus.CANCEL)
-        ) {
+        if (!reservation.getReservationStatus().equals(ReservationStatus.DONE) &&
+                !reservation.getReservationStatus().equals(ReservationStatus.PAYMENT_CALL)
+        ){
             throw new GlowGlowException(REVIEW_CREATE_FAILED);
         }
-        if (!dto.reviewerId().equals(userInfo.getId())){
-            throw new GlowGlowException(REVIEW_WRONG_REVIEWER_ID);
+        // 유저 ID 입력 데이터 검증
+        switch (userInfo.getUserRole()) {
+            case CUSTOMER -> {
+                if (!dto.reviewerId().equals(reservation.getCustomerId())
+                        || !dto.targetUserId().equals(reservation.getServiceProviderId())) {
+                    throw new GlowGlowException(REVIEW_WRONG_REVIEWER_ID);
+                }
+            }
+            case PROVIDER -> {
+                if (!dto.reviewerId().equals(reservation.getServiceProviderId())
+                        || !dto.targetUserId().equals(reservation.getCustomerId())) {
+                    throw new GlowGlowException(REVIEW_WRONG_REVIEWER_ID);
+                }
+            }
         }
+
         //리뷰 생성 및 저장
         Review review = reviewDomainService.create(dto, reservation);
         // GradeDto 로 변환 후 review 에 대한 평가정보 반영
@@ -73,7 +91,7 @@ public class ReviewService {
         reviewDomainService.delete(review, userInfo.getEmail());
     }
 
-    private Review checkIsUserExistAndReviewOwner(UUID reviewId, AuthUserInfo userInfo){
+    private Review checkIsUserExistAndReviewOwner(UUID reviewId, AuthUserInfo userInfo) {
         Review review = reviewDomainService.getOne(reviewId);
         if (!userClient.isUserExistsByEmail(userInfo.getEmail()))
             throw new GlowGlowException(AUTH_INVALID_CREDENTIALS);

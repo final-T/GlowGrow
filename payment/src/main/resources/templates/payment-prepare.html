@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="utf-8" />
-    <title>결제 준비</title>
+    <title>결제</title>
     <script src="https://js.tosspayments.com/v1/payment"></script>
     <style>
         body {
@@ -62,141 +62,197 @@
         <input type="text" id="token" placeholder="Bearer 토큰을 입력하세요" required />
     </div>
     <div class="form-group">
-        <label for="customerEmail">서비스 이용자 이메일:</label>
-        <input type="email" id="customerEmail" placeholder="이메일을 입력하세요" required />
+        <label for="customerId">서비스 이용자 ID:</label>
+        <input type="text" id="customerId" th:value="${preparedPayment.customerId}" readonly />
     </div>
     <div class="form-group">
-        <label for="payType">결제 타입:</label>
-        <select id="payType" required>
-            <option value="">선택하세요</option>
-            <option value="CARD">카드</option>
-            <option value="CASH">현금</option>
-            <option value="POINT">포인트</option>
-        </select>
+        <label for="userId">서비스 제공자 ID:</label>
+        <input type="text" id="userId" th:value="${preparedPayment.userId}" readonly />
     </div>
     <div class="form-group">
-        <label for="amount">결제 금액:</label>
-        <input type="number" id="amount" placeholder="금액을 입력하세요" required />
+        <label for="originalAmount">결제 금액:</label>
+        <span id="originalAmount" th:text="${preparedPayment.amount}"></span>원
+    </div>
+    <div class="form-group discount-group" style="display:none;">
+        <label>할인 금액:</label>
+        <span id="discountAmount">0</span>원
+    </div>
+    <div class="form-group final-amount-group" style="display:none;">
+        <label for="finalAmount">최종 결제 금액:</label>
+        <span id="finalAmount" th:text="${preparedPayment.amount}"></span>원
     </div>
     <div class="form-group">
         <label for="orderName">상품명:</label>
-        <input type="text" id="orderName" placeholder="상품명을 입력하세요" required />
+        <input type="text" id="orderName" th:value="${preparedPayment.orderName}" readonly />
     </div>
     <div class="form-group">
         <label for="reservationId">예약 ID:</label>
-        <input type="text" id="reservationId" placeholder="예약 ID를 입력하세요" required />
+        <input type="text" id="reservationId" th:value="${preparedPayment.reservationId}" readonly />
     </div>
     <div class="form-group">
-        <label for="couponId">쿠폰 ID (선택):</label>
-        <input type="text" id="couponId" placeholder="쿠폰 ID를 입력하세요" />
+        <label for="paymentId">결제 ID:</label>
+        <input type="text" id="paymentId" th:value="${preparedPayment.paymentId}" readonly />
+    </div>
+    <div class="form-group">
+        <label for="couponId">쿠폰 선택:</label>
+        <button id="load-coupons-button">내 쿠폰 불러오기</button>
+        <select id="couponId" style="display:none;">
+            <option value="">쿠폰을 선택하세요</option>
+        </select>
     </div>
     <button id="payment-button">결제하기</button>
 </section>
 
-<script>
+<script th:inline="javascript">
     var button = document.getElementById('payment-button');
+    var clientKey = /*[[${clientKey}]]*/ '';
 
-    // 페이지 로드 시 서버에서 clientKey를 가져오는 함수
-    function getClientKey() {
-        return fetch('/api/payments/client-key', {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-            }
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Failed to fetch client key');
+    document.addEventListener('DOMContentLoaded', function() {
+        var loadCouponsButton = document.getElementById('load-coupons-button');
+        var couponSelect = document.getElementById('couponId');
+        var originalAmountSpan = document.getElementById('originalAmount');
+        var discountGroup = document.querySelector('.discount-group');
+        var discountAmountSpan = document.getElementById('discountAmount');
+        var finalAmountGroup = document.querySelector('.final-amount-group');
+        var finalAmountSpan = document.getElementById('finalAmount');
+
+        loadCouponsButton.addEventListener('click', function() {
+            var token = document.getElementById('token').value;
+
+            fetch(`/api/payments/user-coupons?reservationId=${document.getElementById('reservationId').value}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': token.startsWith('Bearer ') ? token : 'Bearer ' + token
                 }
-                return response.text();
-            });
-    }
-
-    button.addEventListener('click', function () {
-        var token = document.getElementById('token').value;
-        var payType = document.getElementById('payType').value;
-        var amount = parseInt(document.getElementById('amount').value, 10);
-        var orderName = document.getElementById('orderName').value;
-        var reservationId = document.getElementById('reservationId').value;
-        var couponId = document.getElementById('couponId').value || null;
-        var customerEmail = document.getElementById('customerEmail').value;
-
-        // 이메일 형식 검사를 위한 정규표현식
-        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-        // 입력 유효성 검사
-        if (!token || !payType || isNaN(amount) || amount <= 0 || !orderName || !reservationId || !customerEmail) {
-            alert('모든 필수 필드를 올바르게 입력해주세요.');
-            return;
-        }
-
-        if (!emailRegex.test(customerEmail)) {
-            alert('유효한 이메일 주소를 입력해주세요.');
-            return;
-        }
-
-        // 서버에 결제 요청 전송
-        fetch('/api/payments/toss', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': token.startsWith('Bearer ') ? token : 'Bearer ' + token
-            },
-            body: JSON.stringify({
-                payType: payType,
-                amount: amount,
-                orderName: orderName,
-                reservationId: reservationId,
-                couponId: couponId,
-                customerEmail: customerEmail
             })
-        })
-            .then(response => {
-                if (!response.ok) {
-                    return response.text().then(text => {
-                        throw new Error(text || '서버 응답이 올바르지 않습니다.');
+                .then(response => response.json())
+                .then(coupons => {
+                    couponSelect.innerHTML = '<option value="">쿠폰을 선택하세요</option>';
+
+                    // 서비스 제공자 ID 가져오기
+                    var serviceProviderId = document.getElementById('userId').value;
+
+                    coupons.forEach(coupon => {
+                        var couponId = coupon.couponcode.split('-')[0]; // 쿠폰 코드에서 ID 추출
+
+                        // 서비스 제공자 ID와 비교하여 일치하는 경우만 추가
+                        if (couponId === serviceProviderId) {
+                            var option = document.createElement('option');
+                            option.value = coupon.couponId;
+                            option.textContent = `${coupon.couponcode} - ${coupon.description} - ${coupon.discountValue}${coupon.discountType === 'PERCENTAGE' ? '%' : '원'} 할인 (${coupon.validFrom} ~ ${coupon.validUntil})`;
+                            option.setAttribute('data-coupon', JSON.stringify(coupon));
+                            couponSelect.appendChild(option);
+                        }
                     });
+
+                    loadCouponsButton.style.display = 'none';
+                    couponSelect.style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('쿠폰 불러오기 오류:', error);
+                    alert('쿠폰을 불러오는 데 실패했습니다.');
+                });
+        });
+
+        couponSelect.addEventListener('change', function() {
+            var selectedCoupon = couponSelect.options[couponSelect.selectedIndex];
+            var originalAmount = parseFloat(originalAmountSpan.textContent);
+            var discountAmount = 0;
+
+            if (selectedCoupon.value !== "") {
+                var couponData = JSON.parse(selectedCoupon.getAttribute('data-coupon'));
+
+                if (couponData.discountType === 'PERCENTAGE') {
+                    let calculatedDiscount = Math.round(originalAmount * (couponData.discountValue / 100.0));
+                    let maxDiscountAmount = Math.round(originalAmount * (couponData.maxDiscount / 100.0));
+                    discountAmount = Math.min(calculatedDiscount, maxDiscountAmount);
+                } else {
+                    discountAmount = Math.min(couponData.discountValue, originalAmount);
                 }
-                return response.json();  // JSON 응답을 반환
+
+                discountGroup.style.display = 'block';
+                finalAmountGroup.style.display = 'block';
+            } else {
+                discountGroup.style.display = 'none';
+                finalAmountGroup.style.display = 'none';
+            }
+
+            var finalAmount = originalAmount - discountAmount;
+
+            discountAmountSpan.textContent = discountAmount;
+            finalAmountSpan.textContent = finalAmount;
+        });
+
+        button.addEventListener('click', function () {
+            var token = document.getElementById('token').value;
+            var finalAmount = document.getElementById('finalAmount').style.display !== 'none'
+                ? parseInt(document.getElementById('finalAmount').textContent)
+                : parseInt(document.getElementById('originalAmount').textContent);
+
+            var originalAmount = parseInt(document.getElementById('originalAmount').textContent);
+            var discountAmount = parseInt(document.getElementById('discountAmount').textContent);
+
+            var selectedCoupon = document.getElementById('couponId').selectedOptions[0];
+            var couponData = selectedCoupon && selectedCoupon.value ? JSON.parse(selectedCoupon.getAttribute('data-coupon')) : null;
+
+
+
+            var formData = {
+                paymentId: document.getElementById('paymentId').value,
+                amount: finalAmount,
+                orderName: document.getElementById('orderName').value,
+                reservationId: document.getElementById('reservationId').value,
+                couponId: document.getElementById('couponId').value,
+                originalAmount: originalAmount,
+                discountAmount: discountAmount,
+                couponcode: couponData ? couponData.couponcode : null, couponData
+            };
+
+            fetch('/api/payments/toss', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': token.startsWith('Bearer ') ? token : 'Bearer ' + token
+                },
+                body: JSON.stringify(formData)
             })
-            .then(data => {
-                console.log('결제 요청 응답 데이터:', data);  // 응답 데이터를 로그로 출력
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            throw new Error(text || '서버 응답이 올바르지 않습니다.');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
 
-                return getClientKey()  // 서버에서 clientKey를 가져옴
-                    .then(clientKey => {
-                        var tossPayments = TossPayments(clientKey);
+                    var tossPayments = TossPayments(clientKey);
 
-                        var paymentAmount = parseInt(data.amount, 10); // data.amount로 결제 금액을 설정
-                        if (isNaN(paymentAmount) || paymentAmount <= 0) {
-                            throw new Error('올바르지 않은 결제 금액입니다.');
-                        }
+                    var hostname = window.location.hostname;
+                    var successUrl, failUrl;
 
-                        // window.location.hostname을 사용하여 동적으로 URL 설정
-                        var hostname = window.location.hostname;
-                        var successUrl, failUrl;
+                    if (hostname === 'localhost') {
+                        successUrl = "http://localhost:19096/api/payments/toss/success";
+                        failUrl = "http://localhost:19096/api/payments/toss/fail";
+                    } else {
+                        successUrl = "http://13.209.24.74:19096/api/payments/toss/success";
+                        failUrl = "http://13.209.24.74:19096/api/payments/toss/fail";
+                    }
 
-                        if (hostname === 'localhost') {
-                            // 로컬 개발 환경 URL
-                            successUrl = "http://localhost:19096/api/payments/toss/success";
-                            failUrl = "http://localhost:19096/api/payments/toss/fail";
-                        } else {
-                            // prod 환경 URL
-                            successUrl = "http://13.209.24.74:19091/api/payments/toss/success";
-                            failUrl = "http://13.209.24.74:19091/api/payments/toss/fail";
-                        }
+                    var tossPaymentData = {
+                        amount: finalAmount,
+                        orderId: formData.paymentId,
+                        orderName: formData.orderName,
+                        successUrl: successUrl,
+                        failUrl: failUrl,
+                        customerName: data.customerName
+                    };
 
-                        // 결제 요청
-                        tossPayments.requestPayment(data.payType, {
-                            amount: paymentAmount,
-                            orderId: data.paymentId,  // reservationId 사용
-                            orderName: orderName,
-                            successUrl: successUrl,
-                            failUrl: failUrl,
-                        }).catch(function (error) {
+                    tossPayments.requestPayment(tossPaymentData)
+                        .catch(function (error) {
                             if (error.code === "USER_CANCEL") {
-                                // 결제 고객이 결제창을 닫았을 때 에러 처리
                                 console.log("사용자가 결제를 취소했습니다.");
-                                fetch(failUrl +"-cancel?code=" + error.code + "&message=" + error.message, {
+                                fetch(failUrl + "-cancel?code=" + error.code + "&message=" + error.message, {
                                     method: 'GET',
                                     headers: {
                                         'Authorization': token.startsWith('Bearer ') ? token : 'Bearer ' + token
@@ -204,11 +260,11 @@
                                 });
                             }
                         });
-                    });
-            })
-            .catch(error => {
-                console.error('결제 요청 중 오류:', error);
-            });
+                })
+                .catch(error => {
+                    console.error('결제 요청 중 오류:', error);
+                });
+        });
     });
 </script>
 </body>

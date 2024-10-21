@@ -8,6 +8,7 @@ import com.tk.gg.reservation.domain.model.TimeSlot;
 import com.tk.gg.reservation.domain.service.ReservationDomainService;
 import com.tk.gg.reservation.domain.service.TimeSlotDomainService;
 import com.tk.gg.reservation.domain.type.ReservationStatus;
+import com.tk.gg.reservation.infrastructure.messaging.NotificationKafkaProducer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,6 +33,9 @@ class ReservationServiceTest {
 
     @Mock
     private TimeSlotDomainService timeSlotDomainService;
+
+    @Mock
+    private NotificationKafkaProducer notificationKafkaProducer;
 
     @InjectMocks
     private ReservationService reservationService;

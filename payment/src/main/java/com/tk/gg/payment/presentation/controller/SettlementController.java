@@ -3,6 +3,7 @@ package com.tk.gg.payment.presentation.controller;
 import com.tk.gg.common.response.ApiUtils;
 import com.tk.gg.common.response.GlobalResponse;
 import com.tk.gg.common.response.ResponseMessage;
+import com.tk.gg.payment.application.dto.SettlementDetailDto;
 import com.tk.gg.payment.application.dto.SettlementDto;
 import com.tk.gg.payment.application.service.SettlementService;
 import com.tk.gg.security.user.AuthUser;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -35,8 +37,11 @@ public class SettlementController {
 
     // 단일 정산 조회 api
     @GetMapping("/{settlementId}")
-    public GlobalResponse<SettlementDto.Response> getSettlementById(@PathVariable UUID settlementId){
-        SettlementDto.Response responseDto = settlementService.getSettlementById(settlementId);
+    public GlobalResponse<SettlementDto.Response> getSettlementById(
+            @PathVariable UUID settlementId,
+            @AuthUser AuthUserInfo authUserInfo
+    ){
+        SettlementDto.Response responseDto = settlementService.getSettlementById(settlementId,authUserInfo);
         return ApiUtils.success(ResponseMessage.SETTLEMENT_RETRIEVE_SUCCESS.getMessage(),responseDto);
     }
 
@@ -52,12 +57,13 @@ public class SettlementController {
     }
 
     // 정산 검색 api
-    @GetMapping
+    @GetMapping("/search")
     public GlobalResponse<Page<SettlementDto.Response>> searchSettlements(
+            @AuthUser AuthUserInfo authUserInfo,
             Pageable pageable,
             SettlementDto.SearchRequest requestDto
     ){
-        Page<SettlementDto.Response> responsePage = settlementService.searchSettlements(pageable,requestDto);
+        Page<SettlementDto.Response> responsePage = settlementService.searchSettlements(pageable, requestDto, authUserInfo);
         return ApiUtils.success(ResponseMessage.SETTLEMENT_RETRIEVE_SUCCESS.getMessage(),responsePage);
 
     }
@@ -72,4 +78,23 @@ public class SettlementController {
         return ApiUtils.success(ResponseMessage.SETTLEMENT_DELETE_SUCCESS.getMessage(),null);
 
     }
+
+    // 정산 스키줄링을 위한 정산 테스트 api
+    @GetMapping("/test")
+    public GlobalResponse<Void> test(){
+        settlementService.processAutomaticSettlements();
+        return ApiUtils.success("",null);
+    }
+
+    // 정산 세부사항 조회
+    @GetMapping("/details")
+    public GlobalResponse<List<SettlementDetailDto.Response>> getSettlementDetails(
+            @AuthUser AuthUserInfo authUserInfo,
+            @RequestParam Long settlementTime
+    ) {
+
+        List<SettlementDetailDto.Response> details = settlementService.getSettlementDetailsByProviderAndTime(authUserInfo, settlementTime);
+        return ApiUtils.success(ResponseMessage.SETTLEMENT_RETRIEVE_SUCCESS.getMessage(), details);
+    }
+
 }

@@ -18,7 +18,9 @@ import java.util.UUID;
 @Getter
 @Builder
 @Entity
-@Table(name = "p_reservations")
+@Table(name = "p_reservations", indexes = {
+        @Index(name = "idx_reservation_status", columnList = "reservation_status")
+})
 public class Reservation extends BaseEntity {
 
     @Id
@@ -26,7 +28,7 @@ public class Reservation extends BaseEntity {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     private TimeSlot timeSlot;
 
     @Column(nullable = false)
@@ -35,7 +37,7 @@ public class Reservation extends BaseEntity {
     @Column(nullable = false)
     private Long serviceProviderId;
 
-    @Column(name = "reservationStatus", nullable = false)
+    @Column(name = "reservation_status", nullable = false)
     @Enumerated(EnumType.STRING)
     private ReservationStatus reservationStatus;
 
@@ -64,9 +66,6 @@ public class Reservation extends BaseEntity {
 
     public void update(UpdateReservationDto dto, TimeSlot timeSlot){
         this.timeSlot = timeSlot;
-        this.customerId = dto.customerId();
-        this.serviceProviderId = dto.serviceProviderId();
-        this.reservationStatus = dto.reservationStatus();
         this.reservationDate = dto.reservationDate();
         this.reservationTime = dto.reservationTime();
         this.price = dto.price();

@@ -15,6 +15,7 @@ import java.util.UUID;
 @JsonDeserialize
 public class CouponUserResponseDto {
     private UUID couponId;
+    private String couponcode;
     private UUID promotionId;
     private String description;
     private String discountType;    // PERCENTAGE, AMOUNT

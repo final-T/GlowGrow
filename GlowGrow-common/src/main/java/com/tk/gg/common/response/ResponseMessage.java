@@ -23,6 +23,9 @@ public enum ResponseMessage {
     MULTIMEDIA_DELETE_SUCCESS("파일을 성공적으로 삭제했습니다."), // S3
     MULTIMEDIA_UPDATE_SUCCESS("멀티미디어를 성공적으로 수정했습니다."),
 
+    // 결제 관련 메시지
+    PAYMENT_RETRIEVE_SUCCESS("결제 정보가 성공적으로 조회되었습니다."),
+
     // 정산 관련 메시지
     SETTLEMENT_CREATE_SUCCESS("정산을 성공적으로 완료되었습니다."),
     SETTLEMENT_RETRIEVE_SUCCESS("정산을 성공적으로 조회되었습니다."),

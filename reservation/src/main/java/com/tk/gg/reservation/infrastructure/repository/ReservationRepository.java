@@ -15,5 +15,5 @@ public interface ReservationRepository extends JpaRepository<Reservation, UUID>,
         return findByIdAndDeletedByNull(reservationId);
     }
 
-    List<Reservation> findAllByReservationStatus(ReservationStatus reservationStatus);
+    List<Reservation> findAllByReservationStatus(ReservationStatus status);
 }

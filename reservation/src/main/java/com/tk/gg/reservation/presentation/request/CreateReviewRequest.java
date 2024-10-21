@@ -3,8 +3,6 @@ package com.tk.gg.reservation.presentation.request;
 
 import com.tk.gg.reservation.application.dto.CreateReviewDto;
 import com.tk.gg.reservation.presentation.request.validation.RatingConstraint;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 

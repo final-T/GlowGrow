@@ -9,7 +9,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -31,7 +34,7 @@ public class Settlement extends BaseEntity {
     Long totalAmount;
 
     @Column(name = "settlement_time",nullable = false)
-    LocalDateTime settlementTime;
+    Long settlementTime;
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -39,6 +42,13 @@ public class Settlement extends BaseEntity {
 
     @Column(nullable = false)
     private Boolean isDeleted = false;
+
+    @Column(nullable = false)
+    private Boolean isAutomated = false;
+
+
+    @OneToMany(mappedBy = "settlement", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SettlementDetail> settlementDetails = new ArrayList<>();
 
     //소프트 삭제 메서드
     public void softDelete(AuthUserInfo authUserInfo){
@@ -62,11 +72,12 @@ public class Settlement extends BaseEntity {
     }
 
     @Builder(builderClassName = "CreateSettlementBuilder", builderMethodName = "createSettlementBuilder")
-    public Settlement(Long providerId, Long totalAmount, LocalDateTime settlementTime, AuthUserInfo authUserInfo) {
+    public Settlement(Long providerId, Long totalAmount, Long settlementTime, AuthUserInfo authUserInfo, Boolean isAutomated) {
         this.providerId = providerId;
         this.totalAmount = totalAmount;
         this.settlementTime = settlementTime;
         this.status =  SettlementStatus.COMPLETED;
+        this.isAutomated = isAutomated;
         this.createdBy = String.valueOf(authUserInfo.getId());
         this.updatedBy = String.valueOf(authUserInfo.getId());
     }

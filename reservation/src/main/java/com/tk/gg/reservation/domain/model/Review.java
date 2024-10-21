@@ -15,7 +15,9 @@ import java.util.UUID;
 @Getter
 @Builder
 @Entity
-@Table(name = "p_reviews")
+@Table(name = "p_reviews", indexes = {
+        @Index(name = "idx_reservation_id", columnList = "reservation_id")
+})
 public class Review extends BaseEntity {
 
     @Id
@@ -36,7 +38,6 @@ public class Review extends BaseEntity {
     @Column(nullable = false)
     private Integer rating;
 
-    @Lob
     private String content;
 
     @Override

@@ -8,6 +8,8 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
+	// 카프카 테스트
+	testImplementation 'org.springframework.kafka:spring-kafka-test:3.2.4'
 	testImplementation 'org.springframework.security:spring-security-test'
 
 	implementation 'org.springframework.boot:spring-boot-starter-web'

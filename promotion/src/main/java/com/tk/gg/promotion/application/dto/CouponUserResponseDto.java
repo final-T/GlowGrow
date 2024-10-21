@@ -14,6 +14,7 @@ import java.util.UUID;
 @Builder
 public class CouponUserResponseDto {
     private UUID couponId;
+    private String couponcode;
     private UUID promotionId;
     private String description;
     private DiscountType discountType;
@@ -27,6 +28,7 @@ public class CouponUserResponseDto {
     public static CouponUserResponseDto from(CouponUser couponUser) {
         return CouponUserResponseDto.builder()
                 .couponId(couponUser.getCoupon().getCouponId())
+                .couponcode(couponUser.getCoupon().getCode())
                 .promotionId(couponUser.getCoupon().getPromotion().getPromotionId())
                 .description(couponUser.getCoupon().getDescription())
                 .discountType(couponUser.getCoupon().getDiscountType())

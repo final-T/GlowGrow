@@ -3,6 +3,7 @@ package com.tk.gg.users.domain.model;
 import com.tk.gg.common.enums.Gender;
 import com.tk.gg.common.enums.UserRole;
 import com.tk.gg.common.jpa.BaseEntity;
+import com.tk.gg.security.user.AuthUserInfo;
 import com.tk.gg.users.application.dto.UserDto;
 import com.tk.gg.users.presenation.request.UpdateUserInfoRequest;
 import jakarta.persistence.*;
@@ -77,8 +78,10 @@ public class User extends BaseEntity {
                 .build();
     }
 
-    public void delete() {
+    public void delete(AuthUserInfo authUserInfo) {
         this.isDeleted = true;
+        this.deletedBy = authUserInfo.getUsername();
+        this.deletedAt = LocalDateTime.now();
     }
 
     public void updateInfo(UpdateUserInfoRequest request) {

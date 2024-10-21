@@ -16,4 +16,5 @@ include 'post'
 include 'payment'
 include 'notification'
 include 'chat'
+include 'multimedia'
 
