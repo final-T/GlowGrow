@@ -20,4 +20,8 @@ public class UserService {
     public UserDto updateUserInfo(AuthUserInfo authUserInfo, UpdateUserInfoRequest request) {
         return userDomainService.updateUserInfo(authUserInfo, request);
     }
+
+    public void deleteUser(AuthUserInfo authUserInfo, String password) {
+        userDomainService.deleteUser(authUserInfo, password);
+    }
 }
