@@ -4,6 +4,8 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.tk.gg.common.enums.UserRole;
+import com.tk.gg.common.response.exception.GlowGlowError;
+import com.tk.gg.common.response.exception.GlowGlowException;
 import com.tk.gg.reservation.domain.model.QReservation;
 import com.tk.gg.reservation.domain.model.Reservation;
 import com.tk.gg.reservation.domain.repository.ReservationRepositoryCustom;
@@ -33,6 +35,7 @@ public class ReservationRepositoryImpl implements ReservationRepositoryCustom {
     ) {
         List<Reservation> reservationList = queryFactory
                 .selectFrom(reservation)
+                .join(reservation.timeSlot)
                 .where(
                         isDeletedByNullCondition(), // 삭제되지 않은 것만
                         startDateCondition(searchCondition.startDate()),  // 시작 날짜 조건
@@ -49,6 +52,7 @@ public class ReservationRepositoryImpl implements ReservationRepositoryCustom {
 
         Long total = queryFactory
                 .from(reservation)
+                .join(reservation.timeSlot)
                 .select(reservation.count())
                 .where(
                         isDeletedByNullCondition(),
@@ -116,6 +120,6 @@ public class ReservationRepositoryImpl implements ReservationRepositoryCustom {
         } else if (userInfo.getUserRole().equals(UserRole.PROVIDER)) {
             return reservation.serviceProviderId.eq(userInfo.getId()); // PROVIDER는 자신이 제공자인 예약만 조회
         }
-        return null; // 기본적으로 조회 불가
+        else throw new GlowGlowException(GlowGlowError.AUTH_UNAUTHORIZED);
     }
 }

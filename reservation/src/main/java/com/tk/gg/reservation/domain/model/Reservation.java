@@ -28,7 +28,7 @@ public class Reservation extends BaseEntity {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     private TimeSlot timeSlot;
 
     @Column(nullable = false)
