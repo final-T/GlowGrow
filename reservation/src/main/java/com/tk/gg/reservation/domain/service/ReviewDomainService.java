@@ -45,10 +45,6 @@ public class ReviewDomainService {
         review.delete(deletedBy);
     }
 
-    public boolean existsByReservationId(UUID reservationId) {
-        return reviewRepository.existsByReservationId(reservationId);
-    }
-
     public List<Review> getReviewsByReservationId(UUID reservationId) {
         return reviewRepository.findAllByReservationId(reservationId);
     }
