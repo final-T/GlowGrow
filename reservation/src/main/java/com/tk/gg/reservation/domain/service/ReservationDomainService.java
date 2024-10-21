@@ -71,8 +71,7 @@ public class ReservationDomainService {
         reservation.delete(deletedBy);
     }
 
-    public List<Reservation> getReservationsByStatusIsDoneWithLimit(int offset, int batchSize) {
-        Pageable pageable = PageRequest.of(offset / batchSize, batchSize); // 페이지 번호와 배치 크기 설정
-        return reservationRepository.findAllByReservationStatusWithLimit(ReservationStatus.DONE, pageable);
+    public List<Reservation> getReservationsByStatusIsDone() {
+        return reservationRepository.findAllByReservationStatus(ReservationStatus.DONE);
     }
 }
