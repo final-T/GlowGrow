@@ -156,6 +156,23 @@ services:
   #      args:
   #        - FILE_DIRECTORY=.
   #    image: ${DOCKER_HUB_NAMESPACE}/chat-service
+
+  multimedia:
+    image: ${DOCKER_HUB_NAMESPACE}/glowgrow-multimedia
+    container_name: multimedia
+    ports:
+      - "19100:19100"
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: ./multimedia/Dockerfile
+      args:
+        - FILE_DIRECTORY=.
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+    depends_on:
+      - eureka
 networks:
   default:
     name: GlowGrow-network
