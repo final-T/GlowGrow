@@ -10,7 +10,7 @@ ARG FILE_DIRECTORY
 COPY $FILE_DIRECTORY /app
 
 # multimedia 모듈만 빌드
-RUN ./gradlew :multimeida:clean :multimeida:build -x test --no-daemon
+RUN ./gradlew :multimedia:clean :multimedia:build -x test --no-daemon
 
 FROM openjdk:17-jdk-slim
 
