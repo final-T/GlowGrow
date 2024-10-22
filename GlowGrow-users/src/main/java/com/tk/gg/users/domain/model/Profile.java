@@ -21,7 +21,7 @@ public class Profile extends BaseEntity {
     @Column(name = "profile_id", nullable = false, updatable = false)
     private UUID profileId;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
     @Setter

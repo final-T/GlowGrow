@@ -20,7 +20,7 @@ public class MultimediaService {
 
     public MultimediaDto uploadMultimedia(AuthUserInfo authUserInfo, MultipartFile file, FileUploadType type) {
         // S3에 파일 업로드
-        String uploadUrl = s3Service.uploadMultiMedia(authUserInfo.getId(), file);
+        String uploadUrl = s3Service.uploadMultiMedia(authUserInfo.getId(), file,type);
         MultimediaDto multimediaDto = MultimediaDto.of(authUserInfo, file, type, uploadUrl);
 
         // 파일 정보 저장

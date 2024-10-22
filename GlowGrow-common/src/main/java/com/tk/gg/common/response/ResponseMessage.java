@@ -6,6 +6,9 @@ public enum ResponseMessage {
     POST_UPDATE_SUCCESS("게시글이 성공적으로 수정되었습니다."),
     POST_DELETE_SUCCESS("게시글이 성공적으로 삭제되었습니다."),
     POST_RETRIEVE_SUCCESS("게시글을 성공적으로 조회했습니다."),
+    POST_URL_CREATE_SUCCESS("게시글에 성공적으로 url을 넣었습니다."),
+    POST_FILE_LIST_SUCCESS("게시글의 UploadUrl을 성공적으로 조회했습니다."),
+    POST_FILE_DELETE_SUCCESS("게시글의 UploadUrl을 성공적으로 삭제했습니다."),
 
     // 좋아요 관련 메시지
     LIKE_SUCCESS("게시물에 좋아요를 표시했습니다."),

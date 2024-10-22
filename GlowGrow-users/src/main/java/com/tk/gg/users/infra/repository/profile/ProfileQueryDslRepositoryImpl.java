@@ -1,7 +1,7 @@
 package com.tk.gg.users.infra.repository.profile;
 
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.Projections;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.core.types.dsl.StringPath;
@@ -17,8 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.tk.gg.users.domain.model.QPreferLocation.preferLocation;
 import static com.tk.gg.users.domain.model.QPreferPrice.preferPrice;
@@ -40,33 +39,21 @@ public class ProfileQueryDslRepositoryImpl implements ProfileQueryDslRepository 
 
         BooleanBuilder conditions = getBooleanBuilder(profileSearch);
 
-        List<ProfilePageResponse> profilePageResponses = queryFactory
-                .select(Projections.constructor(
-                        ProfilePageResponse.class,
+        // 먼저 모든 데이터를 튜플 형태로 가져옵니다.
+        List<Tuple> resultTuples = queryFactory
+                .select(
                         profile.profileId,
                         user.userId,
                         user.username,
                         profile.profileImageUrl,
-                        // Style list mapping
-                        Projections.list(Projections.constructor(
-                                StyleResponse.class,
-                                preferStyle.preferStyleId,
-                                preferStyle.styleName
-                        )),
-                        // Price list mapping
-                        Projections.list(Projections.constructor(
-                                PriceResponse.class,
-                                preferPrice.preferPriceId,
-                                preferPrice.price
-                        )),
-                        // Location list mapping
-                        Projections.list(Projections.constructor(
-                                LocationResponse.class,
-                                preferLocation.preferLocationId,
-                                preferLocation.locationName
-                        )),
+                        preferStyle.preferStyleId,
+                        preferStyle.styleName,
+                        preferPrice.preferPriceId,
+                        preferPrice.price,
+                        preferLocation.preferLocationId,
+                        preferLocation.locationName,
                         profile.createdAt
-                ))
+                )
                 .from(profile)
                 .join(profile.user, user)
                 .leftJoin(profile.preferStyles, preferStyle)
@@ -76,9 +63,34 @@ public class ProfileQueryDslRepositoryImpl implements ProfileQueryDslRepository 
                 .orderBy(profile.createdAt.desc())
                 .offset(pageable.getOffset())   // Pagination offset
                 .limit(pageable.getPageSize())  // Page size
-                .fetch();  // fetch the paginated results
+                .fetch();
 
-        // Fetch total count for pagination
+        // 중복 제거 및 ProfilePageResponse 생성
+        Map<UUID, ProfilePageResponse> profileResponseMap = new LinkedHashMap<>();
+
+        for (Tuple tuple : resultTuples) {
+            UUID profileId = tuple.get(profile.profileId);
+
+            ProfilePageResponse profilePageResponse = profileResponseMap.computeIfAbsent(profileId, id ->
+                    new ProfilePageResponse(
+                            id,
+                            tuple.get(user.userId),
+                            tuple.get(user.username),
+                            tuple.get(profile.profileImageUrl),
+                            new ArrayList<>(), // 스타일 리스트
+                            new ArrayList<>(), // 가격 리스트
+                            new ArrayList<>(), // 위치 리스트
+                            tuple.get(profile.createdAt)
+                    )
+            );
+
+            // 스타일, 가격, 위치 리스트 추가
+            addToProfileList(profilePageResponse, tuple, preferStyle, preferPrice, preferLocation);
+        }
+
+        List<ProfilePageResponse> profilePageResponses = new ArrayList<>(profileResponseMap.values());
+
+        // 총 카운트를 가져옵니다.
         Long total = Optional.ofNullable(
                         queryFactory
                                 .select(profile.count())
@@ -90,6 +102,7 @@ public class ProfileQueryDslRepositoryImpl implements ProfileQueryDslRepository 
 
         return new PageImpl<>(profilePageResponses, pageable, total);
     }
+
 
     private static BooleanBuilder getBooleanBuilder(ProfileSearch profileSearch) {
         BooleanBuilder conditions = new BooleanBuilder();
@@ -120,6 +133,41 @@ public class ProfileQueryDslRepositoryImpl implements ProfileQueryDslRepository 
             conditions.and(fieldName.in(list)).and(isDeleted.eq(false));
         } else {
             conditions.and(isDeleted.eq(false));
+        }
+    }
+
+    private void addToProfileList(ProfilePageResponse profilePageResponse, Tuple tuple, QPreferStyle preferStyle, QPreferPrice preferPrice, QPreferLocation preferLocation) {
+        // 스타일 리스트 추가 (중복 체크)
+        if (tuple.get(preferStyle.preferStyleId) != null) {
+            StyleResponse newStyle = new StyleResponse(
+                    tuple.get(preferStyle.preferStyleId),
+                    tuple.get(preferStyle.styleName)
+            );
+            if (profilePageResponse.styleList().stream().noneMatch(s -> s.preferStyleId().equals(newStyle.preferStyleId()))) {
+                profilePageResponse.styleList().add(newStyle);
+            }
+        }
+
+        // 가격 리스트 추가 (중복 체크)
+        if (tuple.get(preferPrice.preferPriceId) != null) {
+            PriceResponse newPrice = new PriceResponse(
+                    tuple.get(preferPrice.preferPriceId),
+                    tuple.get(preferPrice.price)
+            );
+            if (profilePageResponse.priceList().stream().noneMatch(p -> p.preferPriceId().equals(newPrice.preferPriceId()))) {
+                profilePageResponse.priceList().add(newPrice);
+            }
+        }
+
+        // 위치 리스트 추가 (중복 체크)
+        if (tuple.get(preferLocation.preferLocationId) != null) {
+            LocationResponse newLocation = new LocationResponse(
+                    tuple.get(preferLocation.preferLocationId),
+                    tuple.get(preferLocation.locationName)
+            );
+            if (profilePageResponse.locationList().stream().noneMatch(l -> l.preferLocationId().equals(newLocation.preferLocationId()))) {
+                profilePageResponse.locationList().add(newLocation);
+            }
         }
     }
 

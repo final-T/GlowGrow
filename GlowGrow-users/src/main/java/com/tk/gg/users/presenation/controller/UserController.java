@@ -12,8 +12,7 @@ import com.tk.gg.users.presenation.response.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import static com.tk.gg.common.response.ResponseMessage.USER_GRADE_RETRIEVE_SUCCESS;
-import static com.tk.gg.common.response.ResponseMessage.USER_UPDATE_SUCCESS;
+import static com.tk.gg.common.response.ResponseMessage.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -37,5 +36,14 @@ public class UserController {
     ) {
         return ApiUtils.success(USER_GRADE_RETRIEVE_SUCCESS.getMessage(),
                 gradeService.getMyGrade(authUserInfo));
+    }
+
+    @DeleteMapping
+    public GlobalResponse<String> deleteUser(
+            @AuthUser AuthUserInfo authUserInfo,
+            @RequestParam("password") String password
+    ) {
+        userService.deleteUser(authUserInfo, password);
+        return ApiUtils.success(USER_DELETE_SUCCESS.getMessage());
     }
 }

@@ -21,6 +21,8 @@ public enum GlowGlowError {
     // Post (게시판 관련 에러)
     POST_NO_EXIST(404,"POST_001","존재하지 않은 게시물입니다."),
     POST_NO_AUTH_PERMISSION_DENIED(403,"POST_002","게시물에 대한 권한이 없습니다."),
+    POST_FILE_NO_EXIST(404, "POST_FILE_001", "존재하지 않는 게시물 파일입니다."),
+
 
     // Like (좋아요 관련 에러)
     POST_LIKE_UPDATE_FAILED(404, "LIKE_001", "게시물 좋아요 업데이트에 실패했습니다."),

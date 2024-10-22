@@ -32,6 +32,7 @@ public class ProfileDomainService {
     public ProfileDto saveProfile(ProfileDto profileDto) {
         if(profileRepository.findByUserUserIdAndIsDeletedFalse(profileDto.userDto().userId()).isPresent())
             throw new GlowGlowException(PROFILE_ALREADY_EXIST);
+
         Profile profile = profileRepository.save(profileDto.toEntity());
         return ProfileDto.from(profile);
     }
