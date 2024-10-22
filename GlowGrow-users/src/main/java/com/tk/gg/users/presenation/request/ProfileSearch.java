@@ -10,4 +10,10 @@ public record ProfileSearch(
         List<String> locationList,
         UserRole role
 ) {
+    public boolean isEmpty() {
+        return role() == null &&
+                locationList() == null &&
+                styleList() == null &&
+                priceList() == null;
+    }
 }
