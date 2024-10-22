@@ -14,7 +14,7 @@ RUN ./gradlew :multimedia:clean :multimedia:build -x test --no-daemon
 
 FROM openjdk:17-jdk-slim
 
-COPY --from=build /app/post/build/libs/*SNAPSHOT.jar /app.jar
+COPY --from=build /app/multimedia/build/libs/*SNAPSHOT.jar /app.jar
 
 # JAR 파일 실행
 CMD ["java", "-jar", "/app.jar"]

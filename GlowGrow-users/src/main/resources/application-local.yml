@@ -23,10 +23,7 @@ spring:
     bootstrap-servers: localhost:9092
     consumer:
       auto-offset-reset: earliest
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:19090/eureka/
+
 
 # springdoc-openapi-ui# springdoc-openapi-ui
 gateway:
@@ -40,3 +37,8 @@ springdoc:
   enable-spring-security: true
   default-consumes-media-type: application/json;charset=UTF-8 # 요청 객체 Data Type
   default-produces-media-type: application/json;charset=UTF-8 # 응답 객체 Data Type
+eureka:
+  client:
+    enabled: false
+    service-url:
+      defaultZone: http://localhost:19090/eureka/
