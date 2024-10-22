@@ -6,9 +6,9 @@ spring:
     activate:
       on-profile: local
   datasource:
-    url: jdbc:postgresql://glowgrow.czwckme4iqom.ap-northeast-2.rds.amazonaws.com:5432/
-    username: postgres
-    password: admin123!
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
