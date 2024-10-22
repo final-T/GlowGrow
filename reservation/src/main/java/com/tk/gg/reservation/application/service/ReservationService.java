@@ -97,7 +97,12 @@ public class ReservationService {
         TimeSlot timeSlot = timeSlotDomainService.getOne(dto.timeSlotId());
         // 예약이 빈 슬롯이 아니면 에러
         if (!timeSlot.getIsReserved().equals(true)) throw new GlowGlowException(RESERVATION_UPDATE_FAILED);
-
+        // timeSlot 과 날짜 및 시간이 일치해야 함
+        if (!dto.reservationDate().equals(timeSlot.getAvailableDate()) ||
+                !dto.reservationTime().equals(timeSlot.getAvailableTime())
+        ) {
+            throw new GlowGlowException(RESERVATION_WRONG_TIME);
+        }
         Reservation reservation = reservationDomainService.getOne(reservationId);
         if (!canHandleReservation(reservation, userInfo)) {
             throw new GlowGlowException(RESERVATION_NOT_OWNER);
