@@ -1,7 +1,7 @@
 # 모든 서비스 도커 이미지를 빌드합니다.
 services=(
   "glowgrow-eureka" "glowgrow-gateway" "glowgrow-auth" "glowgrow-user"
-  "glowgrow-payment" "glowgrow-notification" "glowgrow-post" "glowgrow-promotion" "glowgrow-reservation"
+  "glowgrow-payment" "glowgrow-notification" "glowgrow-post" "glowgrow-promotion" "glowgrow-reservation" "glowgrow-multimedia"
 )
 
 # 도커 이미지에 commit hash를 기반으로한 이미지 태그를 설정합니다.
