@@ -24,15 +24,15 @@ public class SecurityConfig {
         matcherChain.addAll( // Reservation
                 SecurityRequestMatcher.authenticatedOf(GET, "/api/reservations/**"), // 조회
                 SecurityRequestMatcher.authenticatedOf(POST, "/api/reservations"), // 생성
-                SecurityRequestMatcher.authenticatedOf(PATCH, "/api/reservations/{reservationId}/status"), // 수정
-                SecurityRequestMatcher.authenticatedOf(PUT, "/api/reservations/{reservationId}"), // 수정
-                SecurityRequestMatcher.hasAnyRolesOf(List.of(MASTER, PROVIDER), DELETE, "/api/reservations/{reservationId}") // 삭제
+                SecurityRequestMatcher.authenticatedOf(PATCH, "/api/reservations/{reservationId}"), // 수정
+                SecurityRequestMatcher.authenticatedOf(PATCH, "/api/reservations/{reservationId}/status"), // 상태 수정
+                SecurityRequestMatcher.authenticatedOf(DELETE, "/api/reservations/{reservationId}") // 삭제
         );
         matcherChain.addAll( // Review
                 SecurityRequestMatcher.authenticatedOf(GET, "/api/reviews/**"), // 조회
                 SecurityRequestMatcher.authenticatedOf(POST, "/api/reviews"), // 생성
-                SecurityRequestMatcher.hasAnyRolesOf(List.of(MASTER, CUSTOMER), PUT, "/api/reviews/{reviewId}"), // 수정
-                SecurityRequestMatcher.hasAnyRolesOf(List.of(MASTER, CUSTOMER), DELETE, "/api/reviews/{reviewId}") // 삭제
+                SecurityRequestMatcher.authenticatedOf(PUT, "/api/reviews/{reviewId}"), // 수정
+                SecurityRequestMatcher.hasRoleOf(MASTER, DELETE, "/api/reviews/{reviewId}") // 삭제
         );
         matcherChain.addAll( // Report
                 SecurityRequestMatcher.authenticatedOf(GET, "/api/reports/**"), // 조회

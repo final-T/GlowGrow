@@ -291,7 +291,7 @@ public class PaymentService {
     public List<PendingPaymentRequest> getPendingPaymentRequestsByProviderId(AuthUserInfo authUserInfo) {
         UserRole userRole = authUserInfo.getUserRole();
 
-        if(!UserRole.MASTER.equals(userRole)){
+        if(UserRole.CUSTOMER.equals(userRole)){
             throw new GlowGlowException(GlowGlowError.PAYMENT_NO_AUTH_PERMISSION_DENIED);
         }
 

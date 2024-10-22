@@ -5,6 +5,9 @@ import com.tk.gg.users.application.dto.UserDto;
 import com.tk.gg.users.presenation.request.UpdateProfileRequest;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -42,24 +45,24 @@ public class Profile extends BaseEntity {
     private Boolean isDeleted = false;
 
     @Builder.Default
-    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PreferLocation> preferLocations = new ArrayList<>();
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<PreferLocation> preferLocations = new HashSet<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PreferPrice> preferPrices = new ArrayList<>();
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<PreferPrice> preferPrices = new HashSet<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PreferStyle> preferStyles = new ArrayList<>();
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<PreferStyle> preferStyles = new HashSet<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Award> awards = new ArrayList<>();
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<Award> awards = new HashSet<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<WorkExperience> workExperiences = new ArrayList<>();
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<WorkExperience> workExperiences = new HashSet<>();
 
     public static Profile create(User user, String profileImageUrl, String specialization, String bio) {
         return Profile.builder()

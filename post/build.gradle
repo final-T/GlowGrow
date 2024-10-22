@@ -8,6 +8,14 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+    // AssertJ 의존성 추가
+    testImplementation 'org.assertj:assertj-core:3.24.2'
+
+    // Test
+    testCompileOnly 'org.projectlombok:lombok'    // 테스트에도 lombok 추가
+    testAnnotationProcessor 'org.projectlombok:lombok'  // 테스트에도 lombok 추가
+
+
     // S3
     implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:3.2.0")
     implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3'
@@ -49,4 +57,20 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+// 테스트 태스크를 명시적으로 활성화
+tasks.withType(Test).configureEach {
+    enabled = true
+}
+
+sourceSets {
+    test {
+        java {
+            srcDirs = ['src/test/java']
+        }
+        resources {
+            srcDirs = ['src/test/resources']
+        }
+    }
 }

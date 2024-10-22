@@ -11,6 +11,8 @@ import com.tk.gg.payment.domain.model.PendingPaymentRequest;
 import com.tk.gg.payment.infrastructure.config.TossPaymentConfig;
 import com.tk.gg.security.user.AuthUser;
 import com.tk.gg.security.user.AuthUserInfo;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,11 +32,13 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RequestMapping("/api/payments")
 @Slf4j
+@Tag(name = "Payment API", description = "결제 API")
 public class PaymentController {
 
     private final TossPaymentConfig tossPaymentConfig;
     private final PaymentService paymentService;
 
+    @Operation(summary = "결제 준비 API (PROVIDER)", description = "예약정보를 바탕으로 결제 정보를 생성합니다.(결제금액, 상품명 입력)")
     @PostMapping("/prepare")
     public ResponseEntity<UUID> requestPaymentFromProvider(
             @RequestBody @Valid PaymentRequestDto requestDto,
@@ -45,6 +49,7 @@ public class PaymentController {
     }
 
 
+    @Operation(summary = "결제 확인 API (CUSTOMER)", description = "서비스 이용자는 결제 정보를 바탕으로 결제를 진행합니다.(필요 시 쿠폰 등록)")
     @GetMapping("/prepare/{paymentId}")
     public ModelAndView showPaymentPrepare(@PathVariable UUID paymentId) {
         PaymentRequestDto preparedPayment = paymentService.getPreparedPayment(paymentId);
@@ -57,6 +62,7 @@ public class PaymentController {
         return modelAndView;
     }
 
+    @Operation(summary = "TOSS 결제 요청 API (CUSTOMER)", description = "TOSS SDK를 사용하여 실제 결제를 진행합니다. (결제 확인으로부터 가능)")
     @PostMapping("/toss")
     public ResponseEntity requestTossPayment(
             @AuthUser AuthUserInfo authUserInfo,
@@ -78,6 +84,7 @@ public class PaymentController {
         return ResponseEntity.ok(responseDto);
     }
 
+    @Operation(summary = "TOSS 결제 성공 API (CUSTOMER)", description = "결제가 성공한다면 리다이렉트되는 API입니다.")
     @GetMapping("/toss/success")
     public ModelAndView tossPaymentSuccess(
             @RequestParam String paymentKey,
@@ -100,6 +107,7 @@ public class PaymentController {
         return modelAndView;
     }
 
+    @Operation(summary = "TOSS 실패 API (CUSTOMER)", description = "결제가 실패하면 리다이렉트되는 API입니다.")
     @GetMapping("/toss/fail")
     public ResponseEntity tossPaymentFail(
             @RequestParam String code,
@@ -110,6 +118,7 @@ public class PaymentController {
         return ResponseEntity.ok().body(responseDto);
     }
 
+    @Operation(summary = "TOSS 결제 사용자 취소 API (CUSTOMER)", description = "사용자가 결제창을 나갈 경우 리다이렉트되는 API입니다.")
     // 사용자 취소
     @GetMapping("/toss/fail-cancel")
     public ResponseEntity tossPaymentUserCancel(
@@ -125,6 +134,7 @@ public class PaymentController {
      * 내 결제 목록 조회
      * @return:
      */
+    @Operation(summary = "내 결제 목록 확인 API", description = "내가 결제한 결제 목록을 확인하는 API입니다. (CUSTOMER)")
     @GetMapping("/myPayment")
     @ResponseBody
     public GlobalResponse<List<PaymentResponseDto.Get>> getPayments(@AuthUser AuthUserInfo authUserInfo){
@@ -156,6 +166,7 @@ public class PaymentController {
      *                 모든 검색 조건은 선택적입니다. 제공되지 않은 조건은 검색 시 무시됩니다.
      * @return 검색된 결제 내역 페이지
      */
+    @Operation(summary = "결제 검색 API", description = "사용자 역할에 따른 접근 제어가 가능한 결제 검색 API입니다.")
     @GetMapping("/search")
     @ResponseBody
     public GlobalResponse<Page<PaymentResponseDto.Get>> searchPayments(
@@ -182,6 +193,7 @@ public class PaymentController {
      * 나에게 온 결제 요청 확인하기
      * @return: 서비스 제공자에게 온 결제 요청 목록
      */
+    @Operation(summary = "결제 요청 확인 API", description = "나에게 온 결제요청을 확인하는 API입니다. (PROVIDER)")
     @GetMapping("/pending-requests")
     @ResponseBody
     public GlobalResponse<List<PendingPaymentRequest>> getPendingPaymentRequests(@AuthUser AuthUserInfo authUserInfo) {

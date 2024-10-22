@@ -112,24 +112,6 @@ public class SettlementService {
         settlementDomainService.deleteSettlement(settlementId, authUserInfo);
     }
 
-    @Transactional
-    public void processAutomaticSettlements() {
-        LocalDateTime endDate = LocalDateTime.now().withDayOfMonth(1).minusSeconds(1); // 지난 달의 마지막 날
-        LocalDateTime startDate = endDate.minusMonths(1).withDayOfMonth(1); // 지난 달의 첫 날
-
-        //TODO : 빈값이 반환됨
-        List<Long> allProviderIds = paymentDomainService.getAllProviderIds();
-
-        if (allProviderIds.isEmpty()) {
-            log.info("@@@@@ No providers found with status 'COMPLETED'.");
-        }
-
-        for (Long providerId : allProviderIds) {
-            log.info("@"+providerId);
-        }
-
-    }
-
     @Transactional(readOnly = true)
     public List<SettlementDetailDto.Response> getSettlementDetailsByProviderAndTime(AuthUserInfo authUserInfo, Long settlementTime) {
         // 권한 검증
