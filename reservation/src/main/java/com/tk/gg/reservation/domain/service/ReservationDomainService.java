@@ -50,10 +50,6 @@ public class ReservationDomainService {
 
     //TODO : 예약 취소, 거절 가능 날짜 검증 추가
     public void updateOne(Reservation reservation, UpdateReservationDto dto, TimeSlot timeSlot) {
-        // 예약 시간을 바꿀 때 한번 더 빈 시간대인지 검증
-        if (!reservation.getTimeSlot().equals(timeSlot) && timeSlot.getIsReserved().equals(true))
-            throw new GlowGlowException(RESERVATION_UPDATE_FAILED);
-
         reservation.update(dto, timeSlot);
     }
 

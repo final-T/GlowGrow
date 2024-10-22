@@ -82,6 +82,8 @@ public class ReservationService {
         }
         Reservation reservation = reservationDomainService.create(dto, timeSlot);
 
+        // TODO 실제 유저 ID 검증
+
         // 예약 접수 알림
         notificationKafkaProducer.sendReservationNotificationToUsers(
                 dto.customerId(), dto.serviceProviderId(), "예약이 접수되었습니다."
@@ -93,6 +95,14 @@ public class ReservationService {
     @Transactional
     public void updateReservation(UUID reservationId, UpdateReservationDto dto, AuthUserInfo userInfo) {
         TimeSlot timeSlot = timeSlotDomainService.getOne(dto.timeSlotId());
+        // 예약이 빈 슬롯이 아니면 에러
+        if (!timeSlot.getIsReserved().equals(true)) throw new GlowGlowException(RESERVATION_UPDATE_FAILED);
+        // timeSlot 과 날짜 및 시간이 일치해야 함
+        if (!dto.reservationDate().equals(timeSlot.getAvailableDate()) ||
+                !dto.reservationTime().equals(timeSlot.getAvailableTime())
+        ) {
+            throw new GlowGlowException(RESERVATION_WRONG_TIME);
+        }
         Reservation reservation = reservationDomainService.getOne(reservationId);
         if (!canHandleReservation(reservation, userInfo)) {
             throw new GlowGlowException(RESERVATION_NOT_OWNER);
