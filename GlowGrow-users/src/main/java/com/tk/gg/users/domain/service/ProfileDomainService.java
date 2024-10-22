@@ -76,6 +76,12 @@ public class ProfileDomainService {
         workExperienceRepository.saveAll(workExperienceList);
     }
 
+    public Page<ProfilePageResponse> getProfileList(Pageable pageable) {
+        Page<Profile> profileList = profileRepository.findAllByIsDeletedFalse(pageable);
+        Page<ProfileDto> profileDtos = profileList.map(ProfileDto::from);
+        return profileDtos.map(ProfilePageResponse::from);
+    }
+
     public Page<ProfilePageResponse> searchProfiles(ProfileSearch profileSearch, Pageable pageable) {
         return profileRepository.searchProfiles(profileSearch, pageable);
     }

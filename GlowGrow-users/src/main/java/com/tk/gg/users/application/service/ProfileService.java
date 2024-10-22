@@ -39,6 +39,9 @@ public class ProfileService {
 
     @Transactional(readOnly = true)
     public Page<ProfilePageResponse> searchProfiles(ProfileSearch profileSearch, Pageable pageable) {
+        if(profileSearch.isEmpty()){
+            return profileDomainService.getProfileList(pageable);
+        }
         return profileDomainService.searchProfiles(profileSearch, pageable);
     }
 
