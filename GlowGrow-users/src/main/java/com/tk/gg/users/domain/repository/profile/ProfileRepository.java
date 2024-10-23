@@ -16,7 +16,8 @@ public interface ProfileRepository extends JpaRepository<Profile, UUID>, Profile
     Optional<Profile> findByUserUserIdAndIsDeletedFalse(Long UserId);
     Optional<Profile> findByProfileIdAndUserUserIdAndIsDeletedFalse(UUID profileId, Long UserId);
 
-    @EntityGraph(attributePaths = {"preferLocations", "preferPrices", "preferStyles", "awards", "workExperiences"})
-    @Query("SELECT p FROM Profile p WHERE p.isDeleted = false")
+    @Query("SELECT p FROM Profile p " +
+            "INNER JOIN FETCH p.user " +
+            "WHERE p.isDeleted = false")
     Page<Profile> findAllByIsDeletedFalse(Pageable pageable);
 }
