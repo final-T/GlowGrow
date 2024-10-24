@@ -38,6 +38,9 @@ springdoc:
     urls[7]:
       name: auth service
       url: http://${SERVER_HOST}:${AUTH_SERVER_PORT}/v3/api-docs
+    urls[8]:
+      name: multimedia service
+      url: http://${SERVER_HOST}:${multimedia_SERVER_PORT}/v3/api-docs
 
 management:
   endpoints:
