@@ -46,23 +46,23 @@ public class Profile extends BaseEntity {
 
     @Builder.Default
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private Set<PreferLocation> preferLocations = new HashSet<>();
+    private List<PreferLocation> preferLocations = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private Set<PreferPrice> preferPrices = new HashSet<>();
+    private List<PreferPrice> preferPrices = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private Set<PreferStyle> preferStyles = new HashSet<>();
+    private List<PreferStyle> preferStyles = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private Set<Award> awards = new HashSet<>();
+    private List<Award> awards = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private Set<WorkExperience> workExperiences = new HashSet<>();
+    private List<WorkExperience> workExperiences = new ArrayList<>();
 
     public static Profile create(User user, String profileImageUrl, String specialization, String bio) {
         return Profile.builder()

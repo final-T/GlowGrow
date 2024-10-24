@@ -42,7 +42,7 @@ public class GradeDomainService {
 
 
         UserGrade userGrade = userGradeRepository.findByUserUserId(userDto.userId())
-                .orElse(UserGrade.of(User.of(userDto), UserGradeType.SEED, 0.0));
+                .orElseGet(() -> UserGrade.of(User.of(userDto), UserGradeType.SEED, 0.0));
 
         Double updateScore = calculateScoreByReservation(userGrade.getUserGradeType(), userGrade.getScore());
         userGrade.updateGrade(checkUserGrantType(userGrade.getUserGradeType(), updateScore), updateScore);
@@ -55,7 +55,7 @@ public class GradeDomainService {
         }
 
         UserGrade userGrade = userGradeRepository.findByUserUserId(userDto.userId())
-                .orElse(UserGrade.of(User.of(userDto), UserGradeType.SEED, 0.0));
+                .orElseGet(() -> UserGrade.of(User.of(userDto), UserGradeType.SEED, 0.0));
         Double updateScore = userGrade.getScore();
 
         switch (response.userType()){
@@ -174,8 +174,8 @@ public class GradeDomainService {
 
     public UserGradeDto getMyGrade(AuthUserInfo authUserInfo) {
         UserGrade userGrade = userGradeRepository.findByUserUserId(authUserInfo.getId())
-                // 사용자가 회원가입한 후 바로 등급 조회시 없기 때문에 없으면 새로운 등급을  생성
-                .orElse(createGrade(authUserInfo.getId()));
+                .orElseGet(() -> createGrade(authUserInfo.getId()));
+
         return UserGradeDto.from(userGrade);
     }
 
