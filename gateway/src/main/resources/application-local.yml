@@ -38,4 +38,7 @@ springdoc:
     urls[7]:
       name: auth service
       url: http://localhost:19099/v3/api-docs
+    urls[8]:
+      name: multimedia service
+      url: http://localhost:19100/v3/api-docs
 
