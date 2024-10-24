@@ -56,7 +56,7 @@
 
 [🔗 API Spec (Swagger)](http://13.209.24.74:19091/webjars/swagger-ui/index.html)
 
-## 문서 자료
+## ERD
 
 [🔗 ERD](https://www.erdcloud.com/d/CxyebQgd99CDENisa) <br>
 
@@ -65,7 +65,104 @@
 ![image](https://github.com/user-attachments/assets/ac9500e3-7d39-41a7-98d9-fc70a1182812)
 
 
-## 프로젝트 기능 및 서비스 구성
+## 프로젝트 주요 기능
+
+<details>
+  <summary><b>JWT 기반 로그인 기능</b></summary>
+  <div markdown="1">
+    <ul>
+      <li>AccessToken과 RefreshToken을 활용한 인증 관리</li>
+</ul>
+  </div>
+</details>
+
+<details>
+  <summary><b>프로필 생성 및 게시글 작성 기능</b></summary>
+  <div markdown="1">
+    <ul>
+      <li>S3 이미지 업로드를 통한 파일 관리를 합니다.</li>
+      <li>프로필 및 게시글 등록/수정/삭제/조회</li>
+      <li>검색어를 통한 프로필 게시글 검색/상세 조회</li>
+      <li>게시글의 경우 조회수/좋아요/댓글 기능이 있어 이를 활용한 인기순 정렬이 가능합니다.</li>
+</ul>
+  </div>
+</details>
+
+<details>
+  <summary><b>회원 등급 관리 기능</b></summary>
+  <div markdown="1">
+    <ul>
+      <li>예약/리뷰/신고에 따른 카프카 이벤트를 읽어 등급에 반영합니다.</li>
+      <li>회원 등급에 따라 같은 서비스 이벤트여도 반영하는 점수가 달라집니다.</li>
+      <li>신고 서비스 경우에는 회원 등급에 상관없이 같은 점수로 떨어집니다.</li>
+</ul>
+  </div>
+</details>
+
+<details>
+  <summary><b>예약/리뷰/신고 기능</b></summary>
+  <div markdown="1">
+    <ul>
+      <li>디자이너 예약 타임테이블 생성/수정/삭제</li>
+      <li>권한 별 예약 상태 수정 : 예약 상태 수정에 따른 **Kafka** 이벤트 발행**(알림, 유저, 결제)</li>
+      <li>해당 예약에 대한 리뷰or신고 생성/수정/삭제</li>
+      <li>예약/리뷰/신고 조회 : 모든 목록(페이징) 조회는 **Querydsl** 을 활용한 동적 검색 쿼리 적용</li>
+</ul>
+  </div>
+</details>
+
+<details>
+  <summary><b>결제 기능</b></summary>
+  <div markdown="1">
+    <ul>
+      <li>Toss API를 사용한 결제 기능</li>
+      <li>후불결제 방식을 이용하여 서비스의 질에 따라 결제 금액이 달라집니다.</li>
+      <li>결제 취소 요청을 할 수 있습니다.</li>
+      <li>서비스 제공자(디자이너)는 결제가 완료된 건에 대하여 정산받을 수 있습니다.</li>
+</ul>
+  </div>
+</details>
+
+<details>
+  <summary><b>프로모션 기능</b></summary>
+  <div markdown="1">
+    <ul>
+      <li>프로모션(이벤트)/쿠폰 CRUD Search</li>
+      <li>쿠폰 발급 - Redis Lua Script 이용한 선착순 쿠폰 재고 동시성 제어</li>
+      <li>kafka를 이용해 사용자 쿠폰 발급 비동기 처리</li>
+</ul>
+  </div>
+</details>
+
+<details>
+  <summary><b>알림 기능</b></summary>
+  <div markdown="1">
+    <ul>
+      <li>각 서비스에서 알림 이벤트를 카프카를 통해 발행시 이를 읽어 알림을 보냅니다.</li>
+      <li>알림 조회, 읽음 처리</li>
+</ul>
+  </div>
+</details>
+<details>
+  <summary><b>채팅 기능</b></summary>
+  <div markdown="1">
+    <ul>
+      <li>WebSocket(STOMP)를 이용한 서비스 이용자 간 채팅, 확장성을 고려해 kafka 브로커 사용</li>
+      <li>알림 조회, 읽음 처리</li>
+</ul>
+  </div>
+</details>
+
+<details>
+  <summary><b>로그/성능 모니터링</b></summary>
+  <div markdown="1">
+    <ul>
+      <li>Prometheus, Grafana, loki, zipkin 을 이용한 서비스 로그 및 성능 모니터링</li>
+</ul>
+  </div>
+</details>
+
+## 기능별 API
 
 ### 🔒 Auth
 
@@ -387,4 +484,13 @@
 </div>
 </details>
 
-## 💡 Trouble Shooting (작성 중)
+## 💡 Trouble Shooting
+
+- [Redis와 Kafka로 개선한 선착순 쿠폰 발금](https://teamsparta.notion.site/Redis-Kafka-dda762e9502c4f298b449849ddf5eed7?pvs=25)
+- [원자적 업데이트를 통한 조회수, 좋아요 동시성 제어](https://teamsparta.notion.site/398da49b332c448983df1e649e38d423?pvs=25)
+- [멀티모듈에서의 Docker 빌드 문제](https://teamsparta.notion.site/Docker-099749aaa252452ebf700f1f951fb383?pvs=25)
+- [프로필 검색 기능 : 중복 검색](https://teamsparta.notion.site/72c83f621a094432be18a30882140654?pvs=25)
+- [MultipleBagFetchException 문제](https://teamsparta.notion.site/MultipleBagFetchException-93994e305412483aae0dc53391b6bb51?pvs=25)
+- [[부하테스트 - 프로필 조회] 프로필 목록 조회 성능 향상](https://teamsparta.notion.site/2095e8f017334e5289652e62bbe218a5?pvs=25)
+- [채팅 서버 분산 처리 - 세션 관리](https://teamsparta.notion.site/c7bd6530e3bc4d7abc9dad214ecf44e1?pvs=25)
+
