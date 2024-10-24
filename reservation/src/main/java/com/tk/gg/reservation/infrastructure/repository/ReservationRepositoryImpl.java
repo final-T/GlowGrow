@@ -35,7 +35,6 @@ public class ReservationRepositoryImpl implements ReservationRepositoryCustom {
     ) {
         List<Reservation> reservationList = queryFactory
                 .selectFrom(reservation)
-                .join(reservation.timeSlot)
                 .where(
                         isDeletedByNullCondition(), // 삭제되지 않은 것만
                         startDateCondition(searchCondition.startDate()),  // 시작 날짜 조건
@@ -52,7 +51,6 @@ public class ReservationRepositoryImpl implements ReservationRepositoryCustom {
 
         Long total = queryFactory
                 .from(reservation)
-                .join(reservation.timeSlot)
                 .select(reservation.count())
                 .where(
                         isDeletedByNullCondition(),
