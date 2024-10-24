@@ -1,15 +1,18 @@
 # GlowGrow
-
+![ ](https://github.com/user-attachments/assets/81d999db-56b3-43e9-9e5c-32dbfb00fe65)
 > 다양한 경험을 통해 실력을 높이고 싶은 인턴 디자이너들과 저렴한 가격으로 디자인을 받고 싶은 고객들을 연결해주는 예약 사이트
+> 
+> GlowGrow - 빛나다(Glow)‘와 ‘성장하다(Grow)’를 결합한 합성어
 
 ### 프로젝트 목표
 
 - **대규모 트래픽**을 안정적으로 처리할 수 있는 C2C 예약 시스템을 구축하여, 인턴 디자이너와 고객 간의 원활한 매칭 및 예약이 가능하도록 합니다. **MSA 기반**으로 각 기능을 독립적으로 확장할 수
-  있도록 설계하여 서비스 **유연성과 확장성을 극대화**합니다. 또한 실시간 알림 및 채팅을 통해 사용자 경험을 향상시키고, 프로모션, 리뷰, 결제 시스템을 통해 플랫폼의 신뢰성과 효율성을 강화합니다.
+  있도록 설계하여 서비스 **유연성과 확장성을 극대화**합니다.
+   또한 실시간 알림 및 채팅을 통해 사용자 경험을 향상시키고, 프로모션, 리뷰, 결제 시스템을 통해 플랫폼의 신뢰성과 효율성을 강화합니다.
 - **Kafka**를 활용한 비동기 통신으로 MSA 구조 내 서비스 간 통신 부담 최소화
 - **Zipkin**, **Grafana**를 사용한 애플리케이션 모니터링으로 서비스 안정성 확보
 
-<BR>
+---
 
 ### 📚 STACKS
 
@@ -41,7 +44,7 @@
   <img src="https://img.shields.io/badge/S3 -569A31?style=flat-square&logo=amazons3&logoColor=white">
   <img src="https://img.shields.io/badge/RDS -527FFF?style=flat-square&logo=amazonrds&logoColor=white">
 
-<BR>
+---
 
 ## 👨‍👩‍👧‍👦 Our Team
 
@@ -63,6 +66,9 @@
 ## 인프라 아키텍처
 
 ![image](https://github.com/user-attachments/assets/ac9500e3-7d39-41a7-98d9-fc70a1182812)
+
+## 모니터링 아키텍처
+![모니터링 설계도](https://github.com/user-attachments/assets/e7dd1c83-7180-4d78-bdec-d3e188bd6e77)
 
 
 ## 프로젝트 주요 기능
@@ -117,7 +123,7 @@
     <ul>
       <li>Toss API를 사용한 결제 기능</li>
       <li>후불결제 방식을 이용하여 서비스의 질에 따라 결제 금액이 달라집니다.</li>
-      <li>결제 취소 요청을 할 수 있습니다.</li>
+      <li>결제 취소 요청을 통한 유연한 결제 관리를 할 수 있습니다.</li>
       <li>서비스 제공자(디자이너)는 결제가 완료된 건에 대하여 정산받을 수 있습니다.</li>
 </ul>
   </div>
@@ -232,7 +238,7 @@
 </div>
 </details>
 
-### 📝 Post (Comment, Like, Multimedia)
+### 📝 Post (Comment, Like, PostFile)
 
 > 게시글, 댓글, 좋아요, 멀티미디어 기능을 제공합니다.
 
@@ -250,6 +256,7 @@
 | GET    | `/api/posts/{{postId}}` | 특정 게시글 조회 |
 | PATCH  | `/api/posts/{{postId}}` | 특정 게시글 수정 |
 | DELETE | `/api/posts/{{postId}}` | 특정 게시글 삭제 |
+
 
 </ul>
 </div>
@@ -274,19 +281,26 @@
 </div>
 </details>
 
-- 멀티미디어 (파일 업로드)
-  <details>
-  <summary><b>EndPoint</b></summary>
-  <div markdown="1">
-  <ul>
+</ul>
+</div>
+</details>
 
-| 메소드    | 엔드포인트                                             | 설명             |
-|--------|---------------------------------------------------|----------------|
-| GET    | `/api/multimedia?multiMediaId={{multiMediaId}}`   | 멀티미디어 조회       |
-| POST   | `/api/multimedia?file={{file}}&postId={{postId}}` | 멀티미디어 파일 업로드   |
-| DELETE | `/api/multimedia?multiMediaId={{multiMediaId}}`   | 멀티미디어 파일 삭제    |
-| GET    | `/api/multimedia/search`                          | 멀티미디어 파일 검색    |
-| GET    | `/api/multimedia/{{multiMediaId}}`                | 특정 멀티미디어 파일 조회 |
+- S3파일 UploadURL 관련
+  <details>
+    <summary><b>EndPoint</b></summary>
+    <div markdown="1">
+    <ul>
+
+| 메소드    | 엔드포인트                               | 설명             |
+|--------|-------------------------------------|----------------|
+| GET    | `/api/posts/{{postId}}/files`        | 게시글 S3 UploadUrl 조회          |
+| POST    | `/api/posts/{{postId}}/files` | 게시글 S3 UploadUrl 추가       |
+| DELETE  | `/api/posts/{{postId}}/files` | 게시글 S3 UploadUrl 삭제       |
+
+</ul>
+</div>
+</details>
+
 
 </ul>
 </div>
@@ -450,15 +464,19 @@
     <div markdown="1">
     <ul>
 
-| 메소드  | 엔드포인트                                                                                                                                   | 설명          |
-|------|-----------------------------------------------------------------------------------------------------------------------------------------|-------------|
-| GET  | `/api/payments/client-key`                                                                                                              | 클라이언트 키 조회  |
-| GET  | `/api/payments/prepare`                                                                                                                 | 결제 준비       |
-| POST | `/api/payments/toss`                                                                                                                    | 결제 처리       |
-| GET  | `/api/payments/toss/fail?code={{$random.alphanumeric(8)}}&message={{$random.alphanumeric(8)}}&orderId={{$random.alphanumeric(8)}}`      | 결제 실패 처리    |
-| GET  | `/api/payments/toss/fail-cancel?code={{$random.alphanumeric(8)}}&message={{$random.alphanumeric(8)}}`                                   | 결제 실패 취소 처리 |
-| GET  | `/api/payments/toss/success?paymentKey={{$random.alphanumeric(8)}}&orderId={{$random.alphanumeric(8)}}&amount={{$random.integer(100)}}` | 결제 성공 처리    |
-| POST | `/api/payments/toss/cancel?paymentKey={{$random.alphanumeric(8)}}&cancelReason={{$random.alphanumeric(8)}}`                             | 결제 취소 처리    |
+| 메소드    | 엔드포인트                                                              | 설명       |
+|--------|--------------------------------------------------------------------|----------|
+| POST | /api/payments/toss/cancel | 결제 환불 API |
+| POST | /api/payments/toss | TOSS 결제 요청 API |
+| POST | /api/payments/prepare | 결제 준비 API |
+| GET | /api/payments/toss/fail | TOSS 실패 API |
+| GET | /api/payments/toss/fail-cancel | TOSS 결제 사용자 취소 API |
+| GET | /api/payments/search | 결제 검색 API |
+| GET | /api/payments/pending-requests | 결제 요청 확인 API |
+| GET | /api/payments/myPayment | 내 결제 목록 확인 API |
+
+
+
 
 </ul>
 </div>
@@ -472,10 +490,9 @@
 
 | 메소드    | 엔드포인트                                                              | 설명       |
 |--------|--------------------------------------------------------------------|----------|
-| POST   | `/api/settlements`                                                 | 정산 생성    |
+| POST   | `/api/settlements`                                                 | 수동 정산 생성    |
 | GET    | `/api/settlements/details?settlementTime={{$random.integer(100)}}` | 정산 상세 조회 |
 | GET    | `/api/settlements/search`                                          | 정산 검색    |
-| GET    | `/api/settlements/test`                                            | 정산 테스트   |
 | GET    | `/api/settlements/{{settlementId}}`                                | 특정 정산 조회 |
 | PATCH  | `/api/settlements/{{settlementId}}`                                | 특정 정산 수정 |
 | DELETE | `/api/settlements/{{settlementId}}`                                | 특정 정산 삭제 |
