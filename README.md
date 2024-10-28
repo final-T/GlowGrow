@@ -57,6 +57,7 @@
 
 ## API Spec
 
+현재는 비용문제로 인해 서버를 내렸습니다.
 [🔗 API Spec (Swagger)](http://13.209.24.74:19091/webjars/swagger-ui/index.html)
 
 ## ERD
